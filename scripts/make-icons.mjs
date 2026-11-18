@@ -5,6 +5,7 @@ import { deflateSync } from 'node:zlib';
 import { mkdirSync, writeFileSync } from 'node:fs';
 
 const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
 const PAPER = hex('#f4ecdc'), KRAFT = hex('#b98a5a'), TOMATO = hex('#e5583f'), CREAM = hex('#fbf6ea'), BASKET = hex('#8f6640');
 
 // Shapes in a 0..1 unit square, drawn in order (later wins).
@@ -19,6 +20,9 @@ function colourAt(x, y) {
   const inBasket = x > 0.62 && x < 0.9 && y > 0.66 && y < 0.86;
   const inside = x > 0.66 && x < 0.86 && y > 0.6 && y < 0.82;
   if (inBasket && !inside) c = BASKET;
+  // Motion dots behind the ball.
+  if (Math.hypot(x - 0.14, y - 0.2) < 0.026 && c === PAPER) c = mix(PAPER, TOMATO, 0.45);
+  if (Math.hypot(x - 0.08, y - 0.135) < 0.018 && c === PAPER) c = mix(PAPER, TOMATO, 0.3);
   // Ball on the ramp.
   const d = Math.hypot(x - 0.3, y - 0.32);
   if (d < 0.13) c = TOMATO;

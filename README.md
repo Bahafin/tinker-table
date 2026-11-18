@@ -8,6 +8,10 @@ The game is live at **https://bahafin.github.io/tinker-table/**. Every push to `
 
 On the iPad, open it in Safari, tap Share, then **Add to Home Screen**. Open it once while online, and after that it plays offline.
 
+### For grown-ups
+
+Press and hold the small grown-ups button in the top corner of the level map. It opens a guide on what the game practises, how to play together, and a talk card for each level with questions to ask. You can print the guide or save it as a PDF.
+
 ### A nicer voice
 
 The game picks the most natural English voice the device has. To get a much better one:
@@ -56,5 +60,5 @@ The tests run every level without a browser. They check four things:
 
 1. Copy one of the files in `src/levels/`.
 2. Change the fixed parts, the tray, the voice line and the `solution`.
-3. Add it to `src/levels/index.ts`.
+3. Add it to `src/levels/index.ts`, and add its talk card to `src/parents/content.ts`.
 4. Run `npm test`. It tells you whether the level works and isn't already solved.

@@ -1,9 +1,9 @@
 // Offline support: keep a copy of everything the game loads, so it still opens
 // with no internet once it has been played online at least once.
-const CACHE = 'tinker-table-v1';
+const CACHE = 'tinker-table-v2'; // bump when files with fixed names (icons, logo) change
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './manifest.webmanifest', './icons/icon-192.png'])));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './manifest.webmanifest', './icons/icon-192.png', './logo.svg', './favicon.svg'])));
   self.skipWaiting();
 });
 

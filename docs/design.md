@@ -91,6 +91,26 @@ Plus the **toy box**: every part except the goal-only star and cheese, unlimited
 - **Paper grain:** a generated paper-fibre texture is multiplied over the whole table, parts included.
 - **Later**, hand-drawn sprites replace the flat shapes. Each part's draw function is isolated so this swap doesn't touch the physics.
 
+## Grown-ups' corner
+- A small button in the map's top corner opens it, but only after it is **held for 1.5 s**. A ring fills while it's held, and a quick tap just wiggles it, so a child can't wander in by accident. This is also the parental gate the App Store expects for parent-only areas.
+- It is the only place with text. It covers:
+  - what the game practises (cause and effect, guess-try-look-change, space and angles, planning in steps, sticking with it, movement words, careful hands);
+  - a four-step routine for each level: **Look, Guess, Go, Talk**;
+  - tips for playing together.
+- **A talk card for every level and the toy box**, each with:
+  - the one idea the level is about;
+  - questions to ask before Go and after the run;
+  - words to use;
+  - a "try at home" activity;
+  - a "Play this level" button.
+- The content lives in `src/parents/content.ts`. A test fails if a level has no talk card.
+- "Print the talk cards" prints just this content, or saves it as a PDF.
+
+## Logo and icons
+- **Logo** (`public/logo.svg`): the app emblem next to "TINKER" on six paper letter tiles in the game's colours, with "TABLE" resting on a wooden plank.
+- **Emblem:** a ball rolling down a ramp towards a basket, on a paper tile. The same emblem is the favicon (`public/favicon.svg`) and the home-screen icon. `node scripts/make-icons.mjs` regenerates the icon PNGs.
+- The wordmark uses rounded system fonts, so the letters can look slightly different on each device. Turn the letters into outlines before any print or store use.
+
 ## Sound and voice
 - **Sound effects** are synthesised with Web Audio: place, rotate, clack, pop, boing, whoosh, chime and hmm.
 - **The voice** is `speechSynthesis` for now. The game scores the installed voices and picks the most natural English one. Microsoft "Natural", Apple "Premium" or "Enhanced", and Google voices score highest. Apple's novelty voices are never picked. Pitch is only raised for the plain old voices, because it makes modern ones sound odd. Later it will be the parent's own recorded voice.

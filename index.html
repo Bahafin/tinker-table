@@ -11,14 +11,35 @@
     <title>Tinker Table</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="icons/icon-180.png" />
-    <link rel="icon" type="image/png" href="icons/icon-192.png" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+    <meta name="description" content="A calm chain-reaction puzzle game for children aged 4 to 7, to play together with a grown-up." />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
     <!-- Level map -->
     <section id="map" class="screen">
-      <h1 class="logo">Tinker Table</h1>
+      <h1 class="logo"><img src="logo.svg" alt="Tinker Table" /></h1>
       <div id="levels"></div>
+      <!-- Grown-ups' corner: must be held, so a child's quick tap does nothing. -->
+      <button id="btn-grownups" class="grownups-btn" aria-label="For grown-ups: press and hold">
+        <span class="ring"></span>
+        <svg viewBox="0 0 48 48"><circle cx="17" cy="13" r="5" /><path d="M8 40V28a9 9 0 0 1 18 0v12" /><circle cx="34" cy="22" r="3.5" /><path d="M28 40v-7a6 6 0 0 1 12 0v7" /></svg>
+        <small>Grown-ups<br />press &amp; hold</small>
+      </button>
+    </section>
+
+    <!-- Grown-ups' corner (text is fine here: it's for parents) -->
+    <section id="grownups" class="screen hidden">
+      <header class="gu-bar">
+        <button id="btn-gu-close" class="icon" aria-label="Back to the game">
+          <svg viewBox="0 0 48 48"><path d="M14 14l20 20M34 14 14 34" /></svg>
+        </button>
+        <h2>For grown-ups</h2>
+        <div class="spacer"></div>
+        <button id="btn-gu-print" class="text-btn">Print the talk cards</button>
+      </header>
+      <article id="gu-body" class="gu-body"></article>
     </section>
 
     <!-- Build / play -->

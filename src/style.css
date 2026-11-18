@@ -147,3 +147,107 @@ svg .fill { fill: currentColor; stroke: none; }
   .go { width: 76px; height: 64px; }
   .bar { gap: 8px; padding-inline: 8px; }
 }
+
+/* ---------- logo ---------- */
+.logo img { display: block; height: clamp(56px, 11vh, 104px); width: auto; }
+
+/* ---------- grown-ups button (map) ---------- */
+.grownups-btn {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 14px);
+  right: calc(env(safe-area-inset-right) + 16px);
+  --p: 0;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  width: 92px;
+  padding: 8px 4px 6px;
+  border: none;
+  border-radius: 18px;
+  background: rgba(255, 250, 240, 0.65);
+  color: var(--ink);
+  opacity: 0.8;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+}
+.grownups-btn svg { width: 34px; height: 34px; position: relative; }
+.grownups-btn svg path, .grownups-btn svg circle { stroke-width: 3; }
+.grownups-btn small { font-size: 11px; line-height: 1.15; opacity: 0.75; }
+.grownups-btn .ring {
+  position: absolute;
+  top: 3px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: conic-gradient(var(--teal) calc(var(--p) * 360deg), transparent 0);
+  -webkit-mask: radial-gradient(circle, transparent 19px, #000 20px);
+  mask: radial-gradient(circle, transparent 19px, #000 20px);
+}
+.grownups-btn.nudge { animation: nudge 0.35s; }
+@keyframes nudge { 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+
+/* ---------- grown-ups' corner ---------- */
+#grownups { background: var(--bg); }
+.gu-bar { display: flex; align-items: center; gap: 14px; padding: 10px 16px; }
+.gu-bar h2 { margin: 0; font-size: 22px; }
+.text-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 10px 16px;
+  min-height: 44px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  font-weight: 600;
+  cursor: pointer;
+}
+.gu-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 20px 48px;
+  -webkit-user-select: text;
+  user-select: text;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+}
+.gu-body > * { max-width: 820px; margin-inline: auto; }
+.gu-logo { display: block; height: 88px; margin: 8px auto 4px; }
+.gu-body h3 { font-family: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif; font-size: 23px; margin: 32px auto 10px; }
+.gu-body .lead { font-size: 19px; }
+.gu-body .small { font-size: 14px; opacity: 0.7; margin-top: 32px; }
+.skills { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.skill, .talk { background: var(--card); border-radius: 16px; padding: 14px 16px; box-shadow: 0 2px 0 rgba(80, 55, 30, 0.12); }
+.skill h4 { margin: 0 0 4px; font-size: 17px; }
+.skill p { margin: 0; font-size: 15.5px; }
+.routine li, .tips li { margin-bottom: 6px; }
+#gu-cards { display: grid; gap: 14px; }
+.talk { display: grid; grid-template-columns: 200px 1fr; gap: 6px 18px; break-inside: avoid; }
+.talk-side { grid-row: span 6; display: grid; gap: 10px; align-content: start; }
+.talk-pic { width: 100%; aspect-ratio: 16 / 10; border-radius: 10px; }
+.talk h4 { margin: 0; font-size: 19px; }
+.talk h5 { margin: 4px 0 2px; font-size: 15px; color: var(--teal); }
+.talk p, .talk ul { margin: 0; }
+.talk ul { padding-left: 20px; }
+.talk .idea { font-weight: 600; }
+.talk .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.talk .words span { display: inline-block; background: #f1e6cf; border-radius: 8px; padding: 0 8px; margin: 2px 0; }
+@media (max-width: 640px) {
+  .talk { grid-template-columns: 1fr; }
+  .talk-side { grid-row: auto; grid-template-columns: 1fr auto; align-items: end; }
+  .talk .cols { grid-template-columns: 1fr; }
+  .gu-bar h2 { font-size: 19px; }
+}
+
+/* Print / save as PDF: just the grown-ups' content. */
+@media print {
+  html, body { overflow: visible; height: auto; background: #fff; }
+  body > section { display: none !important; }
+  #grownups { display: block !important; position: static; }
+  .gu-bar, .talk .text-btn { display: none !important; }
+  .gu-body { overflow: visible; padding: 0; font-size: 12pt; }
+  .skill, .talk { box-shadow: none; border: 1px solid #ddd; }
+}
+@media (max-width: 700px) {
+  .grownups-btn { position: static; order: -1; align-self: flex-end; }
+}

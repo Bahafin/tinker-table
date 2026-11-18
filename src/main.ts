@@ -5,6 +5,7 @@ import { WORLD_H, WORLD_W, type Level, type PartKind } from './sim/types';
 import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow } from './render/draw';
 import { Game, drawIcon } from './ui/game';
 import { speak, unlockAudio } from './ui/audio';
+import { INTRO, ROUTINE, SKILLS, TALK, TIPS } from './parents/content';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -70,6 +71,102 @@ function showMap() {
   box.append(t);
 }
 
+// ---------- grown-ups' corner ----------
+const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+function talkCard(level: Level, n: string, index: number, toy = false): HTMLElement {
+  const t = TALK[level.id];
+  const card = document.createElement('section');
+  card.className = 'talk';
+  const pic = thumb(level, toy);
+  pic.className = 'talk-pic';
+  const play = document.createElement('button');
+  play.className = 'text-btn';
+  play.textContent = 'Play this level';
+  play.onclick = () => { hideGrownups(); startLevel(index); };
+  card.innerHTML = `
+    <h4>${esc(n)}</h4>
+    <p class="idea">${esc(t.idea)}</p>
+    <div class="cols">
+      <div><h5>Before you press Go</h5><ul>${t.before.map((q) => `<li>${esc(q)}</li>`).join('')}</ul></div>
+      <div><h5>After it runs</h5><ul>${t.after.map((q) => `<li>${esc(q)}</li>`).join('')}</ul></div>
+    </div>
+    <p class="words"><b>Words to use:</b> ${t.words.map((w) => `<span>${esc(w)}</span>`).join(' ')}</p>
+    <p class="home"><b>Try at home:</b> ${esc(t.tryAtHome)}</p>`;
+  const side = document.createElement('div');
+  side.className = 'talk-side';
+  side.append(pic, play);
+  card.prepend(side);
+  return card;
+}
+
+let guBuilt = false;
+function showGrownups() {
+  if (!guBuilt) {
+    const body = $('gu-body');
+    body.innerHTML = `
+      <img class="gu-logo" src="logo.svg" alt="Tinker Table" />
+      <p class="lead">${esc(INTRO)}</p>
+      <h3>What your child is practising</h3>
+      <div class="skills">${SKILLS.map((s) => `<div class="skill"><h4>${esc(s.title)}</h4><p>${esc(s.body)}</p></div>`).join('')}</div>
+      <h3>A simple routine for every level</h3>
+      <ol class="routine">${ROUTINE.map((r) => `<li><b>${esc(r.step)}.</b> ${esc(r.say)}</li>`).join('')}</ol>
+      <h3>Playing together</h3>
+      <ul class="tips">${TIPS.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+      <h3>Talk cards for each level</h3>
+      <p>Pick one or two questions. You don't need to ask them all.</p>
+      <div id="gu-cards"></div>
+      <p class="small">Tinker Table collects no data. Progress stickers are kept only on this device.</p>`;
+    const cards = $('gu-cards');
+    LEVELS.forEach((lv, i) => cards.append(talkCard(lv, `Level ${i + 1}`, i)));
+    cards.append(talkCard(TOY_BOX, 'The toy box', -1, true));
+    guBuilt = true;
+  }
+  $('map').classList.add('hidden');
+  $('grownups').classList.remove('hidden');
+  $('gu-body').scrollTop = 0;
+}
+function hideGrownups() {
+  $('grownups').classList.add('hidden');
+  $('map').classList.remove('hidden');
+}
+
+/** Press and hold for HOLD_MS to open; a short tap just wiggles. */
+function wireHold(btn: HTMLElement, onDone: () => void) {
+  const HOLD_MS = 1500;
+  let start = 0, raf = 0, timer = 0;
+  const clear = () => {
+    cancelAnimationFrame(raf);
+    clearTimeout(timer);
+    start = 0;
+    btn.style.setProperty('--p', '0');
+  };
+  const stop = () => {
+    if (start && performance.now() - start < HOLD_MS) {
+      btn.classList.remove('nudge'); void btn.offsetWidth; btn.classList.add('nudge');
+    }
+    clear();
+  };
+  // The ring only shows progress; the timer decides, so it works even when frames are throttled.
+  const tick = () => {
+    btn.style.setProperty('--p', String(Math.min(1, (performance.now() - start) / HOLD_MS)));
+    raf = requestAnimationFrame(tick);
+  };
+  btn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    try { btn.setPointerCapture(e.pointerId); } catch { /* fine without it */ }
+    clear();
+    start = performance.now();
+    raf = requestAnimationFrame(tick);
+    timer = window.setTimeout(() => { clear(); onDone(); }, HOLD_MS);
+  });
+  btn.addEventListener('pointerup', stop);
+  btn.addEventListener('pointercancel', stop);
+  btn.addEventListener('contextmenu', (e) => e.preventDefault());
+  // Keyboard users: Enter/Space opens it straight away.
+  btn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onDone(); } });
+}
+
 // ---------- play ----------
 let game: Game | null = null;
 let current = 0;
@@ -131,6 +228,9 @@ function startLevel(i: number) {
 
 // ---------- wiring ----------
 document.addEventListener('pointerdown', unlockAudio, { capture: true });
+wireHold($('btn-grownups'), showGrownups);
+$('btn-gu-close').onclick = hideGrownups;
+$('btn-gu-print').onclick = () => window.print();
 $('btn-home').onclick = showMap;
 $('btn-home2').onclick = showMap;
 $('btn-goal').onclick = () => game && speak(game.level.voice);
