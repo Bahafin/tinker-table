@@ -1,0 +1,15 @@
+{
+  "id": "05-chain",
+  "voice": "Bump the fan with the ball, so it blows the balloon up to the star!",
+  "goal": { "type": "reach", "object": "balloon1", "target": "star1" },
+  "fixed": [
+    { "part": "ball", "id": "ball1", "x": 1.5, "y": 1 },
+    { "part": "ramp", "x": 2.5, "y": 2.5, "rot": 15 },
+    { "part": "fan", "x": 9, "y": 7.5, "rot": 0 },
+    { "part": "ramp", "x": 11.5, "y": 7, "rot": 0 },
+    { "part": "balloon", "id": "balloon1", "x": 11, "y": 9 },
+    { "part": "star", "id": "star1", "x": 14.5, "y": 1.5 }
+  ],
+  "tray": [{ "part": "ramp", "count": 2 }],
+  "solution": [{ "part": "ramp", "x": 6, "y": 6, "rot": 15 }]
+}

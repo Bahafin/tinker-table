@@ -1,0 +1,43 @@
+import { describe, expect, test } from 'vitest';
+import { LEVELS } from '../src/levels';
+import { Sim } from '../src/sim/sim';
+import { overlapsAny } from '../src/sim/placement';
+import type { Level, Placement } from '../src/sim/types';
+
+const fixedOf = (l: Level): Placement[] => l.fixed.map((p) => ({ ...p, fixed: true }));
+
+describe.each(LEVELS.map((l) => [l.id, l] as const))('level %s', (_id, level) => {
+  test('is not solved with nothing placed', () => {
+    expect(new Sim(fixedOf(level), level.goal).runHeadless()).toBe(false);
+  });
+
+  test('reference solution reaches the goal', () => {
+    expect(new Sim([...fixedOf(level), ...level.solution!], level.goal).runHeadless()).toBe(true);
+  });
+
+  test('solution only uses parts from the tray', () => {
+    for (const t of level.tray) {
+      expect(level.solution!.filter((p) => p.part === t.part).length).toBeLessThanOrEqual(t.count);
+    }
+    for (const p of level.solution!) expect(level.tray.some((t) => t.part === p.part)).toBe(true);
+  });
+
+  test('solution parts are placeable (on the grid, not overlapping)', () => {
+    const placed: Placement[] = fixedOf(level);
+    for (const p of level.solution!) {
+      expect(p.x * 2 % 1).toBe(0);
+      expect(p.y * 2 % 1).toBe(0);
+      expect(overlapsAny(p, placed)).toBe(false);
+      placed.push(p);
+    }
+  });
+
+  test('the same machine plays out the same way twice', () => {
+    const run = () => {
+      const s = new Sim([...fixedOf(level), ...level.solution!], level.goal);
+      s.runHeadless();
+      return s.time;
+    };
+    expect(run()).toBe(run());
+  });
+});

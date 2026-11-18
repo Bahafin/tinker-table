@@ -1,0 +1,14 @@
+{
+  "id": "03-seesaw",
+  "voice": "Drop the big ball on the see-saw, and fling the little ball into the basket!",
+  "goal": { "type": "reach", "object": "ball1", "target": "basket1" },
+  "fixed": [
+    { "part": "seesaw", "x": 8, "y": 8.6, "rot": 25 },
+    { "part": "ball", "id": "ball1", "x": 9.75, "y": 7.9 },
+    { "part": "basket", "id": "basket1", "x": 3, "y": 7.5 },
+    { "part": "block", "x": 3, "y": 8.6 },
+    { "part": "block", "x": 3, "y": 9.6 }
+  ],
+  "tray": [{ "part": "heavyball", "count": 1 }],
+  "solution": [{ "part": "heavyball", "x": 7, "y": 2.5 }]
+}

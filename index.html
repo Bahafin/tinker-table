@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Tinker Table" />
+    <meta name="theme-color" content="#e9dcc3" />
+    <title>Tinker Table</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <!-- Level map -->
+    <section id="map" class="screen">
+      <h1 class="logo">Tinker Table</h1>
+      <div id="levels"></div>
+    </section>
+
+    <!-- Build / play -->
+    <section id="play" class="screen hidden">
+      <header class="bar">
+        <button id="btn-home" class="icon" aria-label="Home">
+          <svg viewBox="0 0 48 48"><path d="M8 24 24 10l16 14" /><path d="M13 21v17h22V21" /><path d="M21 38v-9h6v9" /></svg>
+        </button>
+        <button id="btn-goal" class="goal" aria-label="Say the goal again">
+          <canvas id="goal-pic" width="200" height="64"></canvas>
+          <svg class="speaker" viewBox="0 0 48 48"><path d="M8 19h8l10-8v26l-10-8H8z" class="fill" /><path d="M32 17a9 9 0 0 1 0 14M36 12a15 15 0 0 1 0 24" /></svg>
+        </button>
+        <div class="spacer"></div>
+        <button id="btn-slow" class="icon" aria-label="Slow motion" aria-pressed="false">
+          <svg viewBox="0 0 48 48"><path d="M8 34h28c4 0 6-3 6-6" /><circle cx="22" cy="24" r="9" /><path d="M22 24a4 4 0 1 1 4 -4" /><path d="M38 28l2-10M42 28l3-9" /></svg>
+        </button>
+        <button id="btn-go" class="go" aria-label="Go">
+          <svg viewBox="0 0 48 48"><path d="M17 11 37 24 17 37z" class="fill" /></svg>
+        </button>
+        <button id="btn-stop" class="go stop hidden" aria-label="Stop">
+          <svg viewBox="0 0 48 48"><rect x="14" y="14" width="20" height="20" rx="3" class="fill" /></svg>
+        </button>
+      </header>
+      <canvas id="stage"></canvas>
+      <div id="won" class="won hidden">
+        <button id="btn-replay" class="icon big" aria-label="Watch again slowly">
+          <svg viewBox="0 0 48 48"><path d="M12 24a12 12 0 1 0 4-9" /><path d="M10 9v8h8" /></svg>
+        </button>
+        <button id="btn-next" class="go big" aria-label="Next">
+          <svg viewBox="0 0 48 48"><path d="M10 24h26M26 13l11 11-11 11" /></svg>
+        </button>
+        <button id="btn-home2" class="icon big" aria-label="Home">
+          <svg viewBox="0 0 48 48"><path d="M8 24 24 10l16 14" /><path d="M13 21v17h22V21" /><path d="M21 38v-9h6v9" /></svg>
+        </button>
+      </div>
+    </section>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
