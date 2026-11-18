@@ -1,0 +1,68 @@
+{
+  "id": "12-uphill",
+  "voice": "The cheese is up on the shelf. Make a ramp, so the hamster can climb up to it!",
+  "goal": {
+    "type": "reach",
+    "object": "hamster1",
+    "target": "cheese1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 2,
+      "y": 6
+    },
+    {
+      "part": "hamster",
+      "id": "hamster1",
+      "x": 2,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 11,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 12,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 13,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 14,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 15,
+      "y": 9.5
+    },
+    {
+      "part": "cheese",
+      "id": "cheese1",
+      "x": 14.5,
+      "y": 8.6
+    }
+  ],
+  "tray": [
+    {
+      "part": "ramp",
+      "count": 2
+    }
+  ],
+  "solution": [
+    {
+      "part": "ramp",
+      "x": 9,
+      "y": 9.5,
+      "rot": -15
+    }
+  ]
+}

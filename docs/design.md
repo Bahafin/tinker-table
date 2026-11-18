@@ -66,7 +66,8 @@ A run also ends when nothing has moved for 1.5 s, because a hamster or a fan can
 }
 ```
 - `x` and `y` are cell coordinates of the part's centre, on a 0.5 grid. `rot` is in degrees, clockwise, in 15° steps.
-- **The goal is reached** when the centre of `object` is inside `target`'s goal zone (the inside of the basket, or the star's area).
+- **The goal is reached** when the centre of `object` is inside `target`'s goal zone (the inside of the basket, or the star's area). For a pulley, the centre of its weight counts.
+- A `"pop"` goal (`{ "type": "pop", "object": "balloon1" }`) has no target. It is reached the moment that balloon pops.
 - **Every level must pass two automated checks:** its `solution` reaches the goal, and the level with nothing placed does **not**.
 
 ## Milestone 1 levels
@@ -81,6 +82,15 @@ Added in Milestone 2:
 6. **Hamster:** drop a ball on the sleeping hamster to wake him, and he rolls to the cheese.
 7. **Conveyor:** two belts carry the ball to the basket. They start running the wrong way, so the lesson is "tap to turn it around".
 8. **Wake up:** the ball rolls down to the hamster asleep on a shelf. He wakes, rolls off the shelf and finds the cheese.
+
+Added in Milestone 3. Each one teaches an idea no earlier level does:
+
+9. **Bridge:** fill the gap between two shelves with a short plank so the ball can roll across.
+10. **Boing:** a wall is too tall to roll past, so put the spring pad where the ball lands and bounce it over.
+11. **Pop:** the balloon floats along two slanted ceilings. Guess its path and put the pin in its way. The goal is the pop itself.
+12. **Uphill:** a bump wakes the hamster, and a ramp lets him climb *up* onto the cheese shelf (ramps so far only went down).
+13. **Wind:** place the fan where a falling ball switches it on, and point it at the other ball to blow it off the shelf into the basket.
+14. **Lift:** put a block in the ball's way so it drops into the pulley bucket. The bucket goes down and the weight goes up to the star.
 
 Plus the **toy box**: every part except the goal-only star and cheese, unlimited, no goal.
 
@@ -123,9 +133,10 @@ Plus the **toy box**: every part except the goal-only star and cheese, unlimited
 ## Roadmap
 **Done in Milestone 2:** hamster and conveyor parts, levels 6–8, the paper-grain pass, home-screen install and offline play.
 
+**Done in Milestone 3:** GitHub Pages hosting, rotate buttons, nicer voice choice, grown-ups' corner, logo, levels 9–14 (every part is now used in at least one level).
+
 **Next:**
 - Playtest with your son, then tune from what you see.
-- HTTPS hosting (e.g. GitHub Pages), which offline play and tilt need.
 - Recorded narration.
 - More parts: magnet, scissors that cut a rope.
 - Hand-drawn sprites.

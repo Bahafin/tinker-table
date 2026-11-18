@@ -1,0 +1,49 @@
+{
+  "id": "13-wind",
+  "voice": "Drop the ball on the fan to switch it on. Point the fan at the other ball, and blow it into the basket!",
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball2",
+      "x": 5,
+      "y": 1
+    },
+    {
+      "part": "ramp",
+      "x": 9.5,
+      "y": 6,
+      "rot": 0
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 8.5,
+      "y": 5.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 12.5,
+      "y": 9.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "fan",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "fan",
+      "x": 5,
+      "y": 5.5,
+      "rot": 0
+    }
+  ]
+}

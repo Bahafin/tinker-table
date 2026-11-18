@@ -94,12 +94,18 @@ export class Sim {
     return this.parts.find((p) => p.placement.id === id);
   }
 
+  /** The body whose centre counts for a goal: a pulley's weight, otherwise the part itself. */
+  static goalBody(rp: RuntimePart) {
+    return rp.kind === 'pulley' ? rp.bodies[1] : rp.bodies[0];
+  }
+
   goalReached(): boolean {
     if (!this.goal) return false;
     const obj = this.byId(this.goal.object);
-    const target = this.byId(this.goal.target);
+    if (this.goal.type === 'pop') return !!obj?.state.popped;
+    const target = this.goal.target ? this.byId(this.goal.target) : undefined;
     if (!obj || !target?.zone || obj.state.popped) return false;
-    const local = target.bodies[0].getLocalPoint(obj.bodies[0].getPosition());
+    const local = target.bodies[0].getLocalPoint(Sim.goalBody(obj).getPosition());
     const z = target.zone;
     return local.x > z.x0 && local.x < z.x1 && local.y > z.y0 && local.y < z.y1;
   }
@@ -130,7 +136,8 @@ export class Sim {
 
     if (this.goalReached()) {
       this.goalHeld += DT;
-      if (this.goalHeld >= GOAL_HOLD) this.success = true;
+      // A pop is over in an instant (and leaves nothing moving), so it counts straight away.
+      if (this.goalHeld >= GOAL_HOLD || this.goal?.type === 'pop') this.success = true;
     } else this.goalHeld = 0;
 
     if (this.time > 1 && !this.success) {

@@ -393,7 +393,9 @@ export class Game {
     this.mode = 'won';
     this.restoreSlow();
     sfx.chime();
-    const target = this.sim!.byId(this.level.goal!.target)!.bodies[0].getPosition();
+    const g = this.level.goal!;
+    const at = g.target ? this.sim!.byId(g.target)! : this.sim!.byId(g.object)!;
+    const target = at.bodies[0].getPosition();
     const colors = [PAPER.tomato, PAPER.mustard, PAPER.teal, PAPER.sky, PAPER.leaf];
     for (let i = 0; i < 70; i++) {
       const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.2;

@@ -186,11 +186,14 @@ function drawGoalPic(level: Level) {
     return;
   }
   const kindOf = (id: string) => level.fixed.find((p) => p.id === id)!.part;
-  drawIcon(ctx, kindOf(level.goal.object), w * 0.18, h / 2, h * 0.8);
+  const obj = kindOf(level.goal.object);
+  // The pulley is drawn hanging above its placement point, so centre it by hand.
+  if (obj === 'pulley') drawIcon(ctx, obj, w * 0.18, h * 0.82, h * 1.25);
+  else drawIcon(ctx, obj, w * 0.18, h / 2, h * 0.8);
   ctx.strokeStyle = PAPER.ink; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   ctx.beginPath(); ctx.moveTo(w * 0.36, h / 2); ctx.lineTo(w * 0.6, h / 2);
   ctx.moveTo(w * 0.53, h / 2 - 9); ctx.lineTo(w * 0.61, h / 2); ctx.lineTo(w * 0.53, h / 2 + 9); ctx.stroke();
-  drawIcon(ctx, kindOf(level.goal.target), w * 0.8, h / 2, h * 0.9);
+  drawIcon(ctx, level.goal.target ? kindOf(level.goal.target) : 'pin', w * 0.8, h / 2, h * 0.9);
 }
 
 function syncButtons() {

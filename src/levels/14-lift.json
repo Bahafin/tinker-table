@@ -1,0 +1,60 @@
+{
+  "id": "14-lift",
+  "voice": "Stop the ball, so it drops into the bucket. Down goes the bucket, and up goes the weight, to the star!",
+  "goal": {
+    "type": "reach",
+    "object": "lift1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 1,
+      "y": 1.5
+    },
+    {
+      "part": "ramp",
+      "x": 2,
+      "y": 2.5,
+      "rot": 15
+    },
+    {
+      "part": "ramp",
+      "x": 5.5,
+      "y": 3.5,
+      "rot": 0
+    },
+    {
+      "part": "ramp",
+      "x": 8,
+      "y": 3.5,
+      "rot": 0
+    },
+    {
+      "part": "pulley",
+      "id": "lift1",
+      "x": 11,
+      "y": 7
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 12,
+      "y": 5.8
+    }
+  ],
+  "tray": [
+    {
+      "part": "block",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "block",
+      "x": 11,
+      "y": 4
+    }
+  ]
+}
