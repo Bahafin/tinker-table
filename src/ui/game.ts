@@ -23,6 +23,13 @@ interface Confetti { x: number; y: number; vx: number; vy: number; a: number; va
 
 const SLOW = 0.4;
 const MIN_TOUCH_PX = 64;
+/** Rotate buttons: radius in screen px (64 px across). */
+const HANDLE_R = 32;
+/** How far a pointer may slide and still count as a tap. Small fingers wobble. */
+const TAP_SLOP = { mouse: 8, touch: 22 };
+
+/** A round rotate button beside the selected part. dir -1 turns left, +1 turns right, 0 flips. */
+interface Handle { dir: -1 | 0 | 1; px: number; py: number }
 
 const iconCache = new Map<PartKind, RuntimePart>();
 export function partIcon(kind: PartKind): RuntimePart {
@@ -66,6 +73,10 @@ export class Game {
   private endTimer = 0;
   private confetti: Confetti[] = [];
   private wiggle: { index: number; until: number } | null = null;
+  /** The placed part currently showing rotate buttons, if any. */
+  private selected: number | null = null;
+  private selectedAt = 0;
+  private turnFlash: { dir: number; until: number } | null = null;
   private raf = 0;
   private L = { scale: 1, ox: 0, oy: 0, trayTop: 0, trayH: 0, item: 0, itemX0: 0, cw: 0, ch: 0, dpr: 1 };
 
@@ -91,6 +102,7 @@ export class Game {
   go() {
     if (this.mode !== 'build') return;
     this.drag = null;
+    this.selected = null;
     this.sim = new Sim([...this.fixed, ...this.placements], this.level.goal);
     this.acc = 0;
     this.endTimer = 0;
@@ -172,6 +184,9 @@ export class Game {
       sfx.pickup();
       return;
     }
+    // Rotate buttons sit on top of everything, so they are checked first.
+    const h = this.handleAt(w.px, w.py);
+    if (h) { this.turn(this.selected!, h.dir); return; }
     const minHalf = MIN_TOUCH_PX / 2 / this.L.scale;
     for (let i = this.placements.length - 1; i >= 0; i--) {
       const p = this.placements[i];
@@ -180,6 +195,8 @@ export class Game {
         return;
       }
     }
+    // Tapped the empty table: put the buttons away.
+    this.selected = null;
   };
 
   private startDrag(e: PointerEvent, p: Placement, index: number, grab: { x: number; y: number }, w: { px: number; py: number }) {
@@ -196,7 +213,8 @@ export class Game {
     if (!d || e.pointerId !== d.pointerId) return;
     const w = this.toWorld(e);
     d.py = w.py;
-    if (!d.moved && Math.hypot(w.px - d.downAt.x, w.py - d.downAt.y) > 10) {
+    const slop = e.pointerType === 'mouse' ? TAP_SLOP.mouse : TAP_SLOP.touch;
+    if (!d.moved && Math.hypot(w.px - d.downAt.x, w.py - d.downAt.y) > slop) {
       d.moved = true;
       sfx.pickup();
     }
@@ -213,21 +231,17 @@ export class Game {
     const w = this.toWorld(e);
 
     if (!d.moved) {
-      // A tap rotates.
-      const p = this.placements[d.index];
-      if (!PARTS[p.part].rotatable) { this.doWiggle(d.index); return; }
-      const step = PARTS[p.part].rotStep ?? 15;
-      const rotated = { ...p, rot: ((((p.rot ?? 0) + step + 180) % 360) + 360) % 360 - 180 };
-      if (overlapsAny(rotated, this.others(d.index))) { sfx.nope(); this.doWiggle(d.index); return; }
-      this.placements[d.index] = rotated;
-      sfx.rotate();
-      this.changed();
+      // A tap selects the part and shows its rotate buttons. It never turns it,
+      // so a stray tap can't undo a careful angle.
+      this.select(d.index);
+      if (!PARTS[this.placements[d.index].part].rotatable) this.doWiggle(d.index);
       return;
     }
 
     // Dropped on the tray: put it away.
     if (w.py > this.L.trayTop) {
       if (d.index >= 0) this.placements.splice(d.index, 1);
+      this.selected = null;
       sfx.place();
       this.changed();
       return;
@@ -242,9 +256,68 @@ export class Game {
     }
     if (d.index >= 0) this.placements[d.index] = snapped;
     else this.placements.push(snapped);
+    // A freshly placed part shows its rotate buttons straight away, so they get discovered.
+    this.select(d.index >= 0 ? d.index : this.placements.length - 1);
     sfx.place();
     this.changed();
   };
+
+  private select(index: number) {
+    const p = this.placements[index];
+    if (!p || !PARTS[p.part].rotatable) { this.selected = null; return; }
+    if (this.selected !== index) this.selectedAt = this.t;
+    this.selected = index;
+  }
+
+  /** Turn a placed part one step left (-1) or right (+1), or flip it (0). */
+  private turn(index: number, dir: -1 | 0 | 1) {
+    const p = this.placements[index];
+    const step = PARTS[p.part].rotStep ?? 15;
+    const by = dir === 0 ? step : step * dir;
+    const rotated = { ...p, rot: ((((p.rot ?? 0) + by + 180) % 360) + 360) % 360 - 180 };
+    if (overlapsAny(rotated, this.others(index))) { sfx.nope(); this.doWiggle(index); return; }
+    this.placements[index] = rotated;
+    this.turnFlash = { dir, until: this.t + 0.2 };
+    sfx.rotate();
+    this.changed();
+  }
+
+  /** Where the selected part's rotate buttons are, in screen px. */
+  private handles(): Handle[] {
+    if (this.mode !== 'build' || this.selected === null || this.drag?.moved) return [];
+    const p = this.placements[this.selected];
+    if (!p) return [];
+    const L = this.L;
+    const def = PARTS[p.part];
+    const a = ((p.rot ?? 0) * Math.PI) / 180;
+    const hw = def.hit.w, hh = def.hit.h, dy = def.hit.dy ?? 0;
+    // Screen-space half size of the turned hit box.
+    const ex = (Math.abs(Math.cos(a)) * hw + Math.abs(Math.sin(a)) * hh) * L.scale;
+    const ey = (Math.abs(Math.sin(a)) * hw + Math.abs(Math.cos(a)) * hh) * L.scale;
+    const cx = L.ox + (p.x - Math.sin(a) * dy) * L.scale;
+    const cy = L.oy + (p.y + Math.cos(a) * dy) * L.scale;
+    const r = HANDLE_R, gap = 8;
+    const flip = def.rotStep === 180;
+    const out: Handle[] = [];
+    // Above the part if there's room, else below it, else either side of it.
+    let y = cy - ey - r - gap;
+    if (y - r < 0) y = cy + ey + r + gap;
+    if (y + r > L.trayTop) {
+      if (flip) out.push({ dir: 0, px: cx + ex + r + gap, py: cy });
+      else out.push({ dir: -1, px: cx - ex - r - gap, py: cy }, { dir: 1, px: cx + ex + r + gap, py: cy });
+    } else if (flip) {
+      out.push({ dir: 0, px: cx, py: y });
+    } else {
+      out.push({ dir: -1, px: cx - r - gap / 2, py: y }, { dir: 1, px: cx + r + gap / 2, py: y });
+    }
+    for (const h of out) h.px = Math.min(L.cw - r - 2, Math.max(r + 2, h.px));
+    return out;
+  }
+
+  private handleAt(px: number, py: number): Handle | null {
+    for (const h of this.handles()) if (Math.hypot(px - h.px, py - h.py) <= HANDLE_R + 6) return h;
+    return null;
+  }
 
   private cancel = (e: PointerEvent) => {
     if (this.drag && e.pointerId === this.drag.pointerId) {
@@ -391,6 +464,73 @@ export class Game {
     ctx.restore();
 
     this.renderTray(ctx);
+    this.renderHandles(ctx);
+  }
+
+  private renderHandles(ctx: CanvasRenderingContext2D) {
+    const hs = this.handles();
+    if (!hs.length) return;
+    const L = this.L;
+    const p = this.placements[this.selected!];
+    const def = PARTS[p.part];
+
+    // A dashed ring round the selected part, so it's clear which one the buttons turn.
+    ctx.save();
+    ctx.translate(L.ox + p.x * L.scale, L.oy + p.y * L.scale);
+    ctx.rotate(((p.rot ?? 0) * Math.PI) / 180);
+    ctx.setLineDash([7, 6]);
+    ctx.lineDashOffset = -this.t * 20;
+    ctx.strokeStyle = 'rgba(60,45,30,0.45)';
+    ctx.lineWidth = 2.5;
+    const pad = 6;
+    ctx.beginPath();
+    ctx.roundRect(-def.hit.w * L.scale - pad, (-def.hit.h + (def.hit.dy ?? 0)) * L.scale - pad,
+      def.hit.w * 2 * L.scale + pad * 2, def.hit.h * 2 * L.scale + pad * 2, 10);
+    ctx.stroke();
+    ctx.restore();
+
+    // The buttons pop in, then bob a little so the eye finds them.
+    const age = this.t - this.selectedAt;
+    const pop = Math.min(1, age / 0.18);
+    const bob = age < 1.2 ? Math.sin(age * 10) * 3 * (1 - age / 1.2) : 0;
+    for (const h of hs) {
+      const r = HANDLE_R * (0.6 + 0.4 * pop);
+      const s = r / HANDLE_R;
+      const pressed = this.turnFlash && this.turnFlash.dir === h.dir && this.t < this.turnFlash.until;
+      ctx.save();
+      ctx.translate(h.px, h.py + bob);
+      if (pressed) ctx.scale(0.88, 0.88);
+      ctx.shadowColor = 'rgba(80,55,30,0.3)'; ctx.shadowOffsetY = 3; ctx.shadowBlur = 6;
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fillStyle = '#fffaf0'; ctx.fill();
+      ctx.shadowColor = 'transparent';
+      ctx.lineWidth = 3; ctx.strokeStyle = PAPER.mustard; ctx.stroke();
+      ctx.strokeStyle = PAPER.ink; ctx.fillStyle = PAPER.ink;
+      ctx.lineWidth = 4.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      if (h.dir === 0) {
+        // Flip: a double-headed arrow.
+        ctx.beginPath(); ctx.moveTo(-12 * s, 0); ctx.lineTo(12 * s, 0); ctx.stroke();
+        for (const k of [-1, 1]) {
+          ctx.beginPath(); ctx.moveTo(k * 19 * s, 0); ctx.lineTo(k * 9 * s, -8 * s); ctx.lineTo(k * 9 * s, 8 * s); ctx.closePath(); ctx.fill();
+        }
+      } else {
+        // A curved arrow, drawn clockwise then mirrored for the left button.
+        ctx.scale(h.dir, 1);
+        const R = 13 * s, oy = 2 * s;
+        const a0 = -Math.PI * 0.95, a1 = Math.PI * 0.3;
+        ctx.beginPath(); ctx.arc(0, oy, R, a0, a1); ctx.stroke();
+        const ex = Math.cos(a1) * R, ey = oy + Math.sin(a1) * R;
+        const tx = -Math.sin(a1), ty = Math.cos(a1); // direction of travel
+        const nx = Math.cos(a1), ny = Math.sin(a1);  // across the arrow
+        const len = 10 * s, wid = 7.5 * s;
+        ctx.beginPath();
+        ctx.moveTo(ex + tx * len * 0.75, ey + ty * len * 0.75);
+        ctx.lineTo(ex - tx * len * 0.25 + nx * wid, ey - ty * len * 0.25 + ny * wid);
+        ctx.lineTo(ex - tx * len * 0.25 - nx * wid, ey - ty * len * 0.25 - ny * wid);
+        ctx.closePath(); ctx.fill();
+      }
+      ctx.restore();
+    }
   }
 
   private grainPattern: CanvasPattern | null = null;

@@ -13,7 +13,7 @@ A calm chain-reaction puzzle game for ages 4–7, played with a parent on a tabl
 1. **No text anywhere in the game.** Goals are pictures and a voice. Buttons are icons.
 2. **Touch targets at least 64 px.** A part can be grabbed anywhere on it plus a generous margin around it.
 3. **Snap everything.** Positions snap to a half-cell grid, and angles to 15° steps.
-4. **Tap a placed part to rotate it** 15° clockwise. Parts whose angle doesn't matter (ball, block) give a little wiggle instead.
+4. **Rotate with big arrow buttons.** Placing a part, or tapping it, selects it: a dashed outline appears round it, and two round 64 px buttons pop up above it. ↺ turns it 15° anticlockwise and ↻ turns it 15° clockwise, so a wrong turn is one tap to undo. Tapping the part itself never turns it. Tapping empty table hides the buttons. Parts whose angle doesn't matter (ball, block) give a little wiggle and show no buttons. A finger may slide up to 22 px and still count as a tap.
 5. **Drag a part back onto the tray to remove it.** There is no delete button and no long-press.
 6. **Parts that came with the level are fixed:** they can't be moved and have a small brass pin on them. Parts the child placed can always be moved.
 7. **No fail state, no timer, no score.** A missed run softly resets after the machine settles, with a gentle "hmm" sound.
@@ -49,7 +49,7 @@ A calm chain-reaction puzzle game for ages 4–7, played with a parent on a tabl
 | Conveyor belt | 3 × 0.4 | static | Carries things along its top at 2.5 cells/s. A tap flips its direction. |
 | Cheese | 1 × 0.7 | sensor | Goal: the hamster reaches it. |
 
-Parts that only face left or right (hamster, conveyor) flip on a tap instead of turning 15°.
+Parts that only face left or right (hamster, conveyor) get one ↔ flip button instead of the two turn buttons.
 
 A run also ends when nothing has moved for 1.5 s, because a hamster or a fan can keep pushing something against a wall forever.
 
