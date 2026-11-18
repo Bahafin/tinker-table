@@ -8,6 +8,14 @@ The game is live at **https://bahafin.github.io/tinker-table/**. Every push to `
 
 On the iPad, open it in Safari, tap Share, then **Add to Home Screen**. Open it once while online, and after that it plays offline.
 
+### A nicer voice
+
+The game picks the most natural English voice the device has. To get a much better one:
+- **iPad / Mac:** Settings → Accessibility → Spoken Content → Voices → English. Download a voice marked **Premium** or **Enhanced**, for example "Ava (Premium)". Then close and reopen the game.
+- **Windows:** open the game in **Microsoft Edge**, which has "Natural" voices built in (they need internet).
+
+To see which voice was chosen, run `tinkerVoices()` in the browser console.
+
 ## Run it
 
 Install and start the game:

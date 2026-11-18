@@ -93,7 +93,7 @@ Plus the **toy box**: every part except the goal-only star and cheese, unlimited
 
 ## Sound and voice
 - **Sound effects** are synthesised with Web Audio: place, rotate, clack, pop, boing, whoosh, chime and hmm.
-- **The voice** is a `speechSynthesis` placeholder for now. Later it will be the parent's own recorded voice.
+- **The voice** is `speechSynthesis` for now. The game scores the installed voices and picks the most natural English one. Microsoft "Natural", Apple "Premium" or "Enhanced", and Google voices score highest. Apple's novelty voices are never picked. Pitch is only raised for the plain old voices, because it makes modern ones sound odd. Later it will be the parent's own recorded voice.
 
 ## Home-screen app
 - A web manifest and app icon let the game be added to the iPad home screen and open full screen.

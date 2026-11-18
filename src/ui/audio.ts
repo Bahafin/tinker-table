@@ -64,16 +64,73 @@ export const sfx = {
   hmm: () => { tone(330, 0.25, 'sine', 0.18); tone(262, 0.35, 'sine', 0.18, 0.22); },
 };
 
+// ---------- voice ----------
+// Devices ship several voices; the default is usually the oldest, most robotic one.
+// We score what's installed and pick the most natural English voice.
+
+/** Novelty or very old voices (Apple's joke voices, eSpeak) that should never be picked. */
+const BAD_VOICES = /\b(albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|deranged|hysterical|eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley|junior|ralph|fred|kathy)\b|espeak/i;
+/** Voices that are known to sound warm and clear. */
+const NICE_NAMES = /\b(ava|zoe|samantha|serena|allison|susan|karen|moira|tessa|kate|aria|jenny|sonia|libby|emma|michelle|ana|natasha|clara|maisie|zira|hazel)\b/i;
+
+export function scoreVoice(v: SpeechSynthesisVoice, userLang = 'en-US'): number {
+  if (!/^en[-_]/i.test(v.lang) && v.lang.toLowerCase() !== 'en') return -1000;
+  if (BAD_VOICES.test(v.name)) return -500;
+  let s = 0;
+  if (/natural|neural/i.test(v.name)) s += 100;       // Microsoft Edge online voices
+  if (/premium/i.test(v.name)) s += 90;               // Apple, downloaded in Settings
+  if (/enhanced/i.test(v.name)) s += 70;              // Apple, downloaded in Settings
+  if (/^google/i.test(v.name)) s += 40;               // Chrome's online voices
+  if (NICE_NAMES.test(v.name)) s += 15;
+  if (v.lang.replace('_', '-').toLowerCase() === userLang.toLowerCase()) s += 8;
+  else if (v.lang.slice(0, 5).toLowerCase() === 'en-gb' || v.lang.slice(0, 5).toLowerCase() === 'en-us') s += 4;
+  if (v.localService) s += 2;                          // keeps working offline
+  return s;
+}
+
+let chosen: SpeechSynthesisVoice | null = null;
+function pickVoice(): SpeechSynthesisVoice | null {
+  try {
+    const all = window.speechSynthesis?.getVoices() ?? [];
+    let best: SpeechSynthesisVoice | null = null, bestScore = -1;
+    for (const v of all) {
+      const sc = scoreVoice(v, navigator.language || 'en-US');
+      if (sc > bestScore) { best = v; bestScore = sc; }
+    }
+    chosen = best;
+  } catch { chosen = null; }
+  return chosen;
+}
+try {
+  // Voices arrive asynchronously in most browsers.
+  window.speechSynthesis?.addEventListener?.('voiceschanged', pickVoice);
+  pickVoice();
+} catch { /* no speech */ }
+
 export function speak(text: string) {
   try {
     const s = window.speechSynthesis;
     if (!s) return;
     s.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.9;
-    u.pitch = 1.15;
+    const v = chosen ?? pickVoice();
+    if (v) { u.voice = v; u.lang = v.lang; }
+    // Modern voices sound odd when pitch-shifted; only liven up the plain ones a bit.
+    const modern = !!v && /natural|neural|premium|enhanced|google/i.test(v.name);
+    u.rate = modern ? 0.95 : 0.9;
+    u.pitch = modern ? 1 : 1.1;
     s.speak(u);
   } catch {
     /* no voice available */
   }
 }
+
+/** For checking on a device: which voice was picked, and the best few on offer. */
+if (typeof window !== 'undefined') (window as unknown as { tinkerVoices: () => unknown }).tinkerVoices = () => {
+  const all = window.speechSynthesis?.getVoices() ?? [];
+  return {
+    chosen: chosen?.name,
+    top: all.map((v) => [scoreVoice(v, navigator.language), v.name, v.lang] as const)
+      .sort((a, b) => b[0] - a[0]).slice(0, 8),
+  };
+};

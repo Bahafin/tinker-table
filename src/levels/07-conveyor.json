@@ -1,6 +1,6 @@
 {
   "id": "07-conveyor",
-  "voice": "Use the moving belts to carry the ball to the basket. Tap a belt to turn it around!",
+  "voice": "Use the moving belts to carry the ball to the basket. Tap a belt, then press its arrow button to turn it around!",
   "goal": { "type": "reach", "object": "ball1", "target": "basket1" },
   "fixed": [
     { "part": "ball", "id": "ball1", "x": 12, "y": 1 },
