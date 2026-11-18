@@ -166,20 +166,22 @@ const DRAW: Record<string, (ctx: Ctx, rp: RuntimePart, t: number) => void> = {
   },
   fan(ctx, rp, t) {
     withBody(ctx, rp.bodies[0], () => {
-      rrect(ctx, -0.45, -0.45, 0.9, 0.9, 0.12); paper(ctx, PAPER.sky);
+      // Box fan seen from the front, with a little arrow nose showing which way it blows.
+      ctx.beginPath(); ctx.moveTo(0.45, -0.18); ctx.lineTo(0.62, 0); ctx.lineTo(0.45, 0.18); ctx.closePath(); paper(ctx, PAPER.sky);
+      rrect(ctx, -0.45, -0.45, 0.9, 0.9, 0.14); paper(ctx, PAPER.sky);
       noShadow(ctx, () => {
+        ctx.beginPath(); ctx.arc(0, 0, 0.34, 0, Math.PI * 2); paper(ctx, PAPER.cream);
         ctx.save();
-        ctx.translate(0.1, 0);
-        ctx.scale(0.45, 1); // blades seen from the side so the facing is obvious
-        ctx.rotate(rp.state.on ? t * 20 : 0);
+        ctx.rotate(rp.state.on ? t * 18 : 0.3);
         for (let i = 0; i < 3; i++) {
           ctx.rotate((Math.PI * 2) / 3);
-          ctx.beginPath(); ctx.ellipse(0, -0.2, 0.09, 0.2, 0, 0, Math.PI * 2); paper(ctx, PAPER.cream);
+          ctx.beginPath(); ctx.ellipse(0, -0.16, 0.08, 0.16, 0.35, 0, Math.PI * 2); paper(ctx, PAPER.sky);
         }
         ctx.restore();
-        // "wind" lines show which way it blows
-        const k = rp.state.on ? (t * 3) % 1 : 0.3;
-        for (const y of [-0.25, 0, 0.25]) line(ctx, 0.6 + k * 0.5, y, 0.85 + k * 0.5, y, rp.state.on ? PAPER.sky : '#bcd9ec', 0.05);
+        ctx.beginPath(); ctx.arc(0, 0, 0.06, 0, Math.PI * 2); paper(ctx, PAPER.ink);
+        // Wind lines: faint when off, moving when on.
+        const k = rp.state.on ? (t * 3) % 1 : 0;
+        for (const y of [-0.28, 0, 0.28]) line(ctx, 0.75 + k * 0.6, y, 1.0 + k * 0.6, y, rp.state.on ? PAPER.sky : '#cfe3f0', 0.05);
       });
     });
   },
@@ -213,6 +215,93 @@ const DRAW: Record<string, (ctx: Ctx, rp: RuntimePart, t: number) => void> = {
     });
     withBody(ctx, weight, () => { rrect(ctx, -0.3, -0.3, 0.6, 0.6, 0.08); paper(ctx, PAPER.navy); });
   },
+  hamster(ctx, rp, t) {
+    const b = rp.bodies[0];
+    const awake = !!rp.state.on;
+    // The ball rolls...
+    withBody(ctx, b, () => {
+      ctx.beginPath(); ctx.arc(0, 0, 0.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(214, 236, 246, 0.85)'; ctx.fill();
+      noShadow(ctx, () => {
+        ctx.lineWidth = 0.04; ctx.strokeStyle = PAPER.sky; ctx.stroke();
+        for (let i = 0; i < 4; i++) {
+          ctx.rotate(Math.PI / 4);
+          line(ctx, -0.46, 0, -0.38, 0, PAPER.sky, 0.04);
+          line(ctx, 0.38, 0, 0.46, 0, PAPER.sky, 0.04);
+        }
+      });
+    });
+    // ...but the hamster inside stays upright and faces its way.
+    const p = b.getPosition();
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.scale(rp.state.dir ?? 1, 1);
+    noShadow(ctx, () => {
+      const bob = awake ? Math.abs(Math.sin(t * 14)) * 0.04 : 0;
+      ctx.translate(0, 0.08 - bob);
+      if (awake) {
+        for (const [lx, ph] of [[-0.12, 0], [0.12, Math.PI]] as const)
+          line(ctx, lx, 0.15, lx + Math.sin(t * 14 + ph) * 0.08, 0.28, '#c47d3a', 0.06);
+      }
+      ctx.beginPath(); ctx.ellipse(0, 0, 0.28, 0.2, 0, 0, Math.PI * 2); paper(ctx, '#e39a52');
+      ctx.beginPath(); ctx.ellipse(0.04, 0.06, 0.16, 0.1, 0, 0, Math.PI * 2); paper(ctx, PAPER.cream);
+      ctx.beginPath(); ctx.ellipse(0.2, -0.1, 0.15, 0.13, 0, 0, Math.PI * 2); paper(ctx, '#e39a52');
+      ctx.beginPath(); ctx.arc(0.13, -0.24, 0.06, 0, Math.PI * 2); paper(ctx, '#f2b8a2');
+      ctx.beginPath(); ctx.arc(0.34, -0.09, 0.03, 0, Math.PI * 2); paper(ctx, PAPER.tomato);
+      if (awake) { ctx.beginPath(); ctx.arc(0.24, -0.13, 0.03, 0, Math.PI * 2); paper(ctx, PAPER.ink); }
+      else line(ctx, 0.2, -0.12, 0.28, -0.12, PAPER.ink, 0.025);
+    });
+    ctx.restore();
+    if (!awake) {
+      // Sleepy "z" squiggles drifting up.
+      noShadow(ctx, () => {
+        for (let i = 0; i < 2; i++) {
+          const k = (t * 0.5 + i * 0.5) % 1;
+          const s = 0.08 + k * 0.06;
+          const zx = p.x + 0.4 + k * 0.3, zy = p.y - 0.55 - k * 0.6;
+          ctx.globalAlpha = 1 - k;
+          ctx.beginPath(); ctx.moveTo(zx - s, zy - s); ctx.lineTo(zx + s, zy - s); ctx.lineTo(zx - s, zy + s); ctx.lineTo(zx + s, zy + s);
+          ctx.strokeStyle = PAPER.navy; ctx.lineWidth = 0.035; ctx.lineJoin = 'round'; ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
+      });
+    }
+  },
+  conveyor(ctx, rp, t) {
+    withBody(ctx, rp.bodies[0], () => {
+      rrect(ctx, -1.5, -0.2, 3, 0.4, 0.2); paper(ctx, PAPER.ink);
+      noShadow(ctx, () => {
+        for (const x of [-1.3, -0.65, 0, 0.65, 1.3]) {
+          ctx.beginPath(); ctx.arc(x, 0.02, 0.11, 0, Math.PI * 2); paper(ctx, PAPER.grey);
+        }
+        // Arrows along the belt show (and animate) which way it runs.
+        const dir = rp.state.dir ?? 1;
+        ctx.save();
+        ctx.beginPath(); ctx.rect(-1.4, -0.2, 2.8, 0.14); ctx.clip();
+        const off = ((t * 1.2) % 0.5) * dir;
+        for (let x = -2; x <= 2; x += 0.5) {
+          const cx = x + off;
+          line(ctx, cx - 0.06 * dir, -0.19, cx + 0.05 * dir, -0.13, PAPER.mustard, 0.04);
+          line(ctx, cx + 0.05 * dir, -0.13, cx - 0.06 * dir, -0.07, PAPER.mustard, 0.04);
+        }
+        ctx.restore();
+      });
+    });
+  },
+  cheese(ctx, rp, t) {
+    withBody(ctx, rp.bodies[0], () => {
+      ctx.rotate(Math.sin(t * 2) * 0.04);
+      ctx.beginPath(); ctx.moveTo(-0.5, 0.32); ctx.lineTo(0.5, 0.32); ctx.lineTo(0.5, -0.1); ctx.lineTo(-0.5, -0.3); ctx.closePath();
+      paper(ctx, '#f4c94a');
+      noShadow(ctx, () => {
+        ctx.beginPath(); ctx.moveTo(-0.5, -0.3); ctx.lineTo(0.5, -0.1); ctx.lineTo(0.5, 0); ctx.lineTo(-0.5, -0.2); ctx.closePath();
+        paper(ctx, '#f8dc84');
+        for (const [hx, hy, hr] of [[-0.2, 0.1, 0.08], [0.2, 0.15, 0.06], [0.05, -0.02, 0.05]]) {
+          ctx.beginPath(); ctx.arc(hx, hy, hr, 0, Math.PI * 2); paper(ctx, '#d9a92c');
+        }
+      });
+    });
+  },
 };
 
 export function drawPart(ctx: Ctx, rp: RuntimePart, t: number) {
@@ -241,4 +330,34 @@ export function drawTable(ctx: Ctx, w: number, h: number) {
   ctx.fillRect(0, 0, w, h);
   ctx.fillStyle = PAPER.dot;
   for (let x = 0.5; x < w; x += 0.5) for (let y = 0.5; y < h; y += 0.5) ctx.fillRect(x - 0.025, y - 0.025, 0.05, 0.05);
+}
+
+let grain: HTMLCanvasElement | null = null;
+/** A small tile of paper fibres, multiplied over the table to make it feel like paper. */
+export function paperGrain(): HTMLCanvasElement {
+  if (grain) return grain;
+  const c = document.createElement('canvas');
+  c.width = c.height = 160;
+  const g = c.getContext('2d')!;
+  const img = g.createImageData(160, 160);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = 236 + Math.random() * 19;
+    img.data[i] = v;
+    img.data[i + 1] = v - 2;
+    img.data[i + 2] = v - 6;
+    img.data[i + 3] = 255;
+  }
+  g.putImageData(img, 0, 0);
+  g.globalAlpha = 0.18;
+  g.strokeStyle = '#a08060';
+  g.lineWidth = 0.6;
+  for (let i = 0; i < 70; i++) {
+    const x = Math.random() * 160, y = Math.random() * 160, a = Math.random() * Math.PI, l = 3 + Math.random() * 9;
+    g.beginPath();
+    g.moveTo(x, y);
+    g.quadraticCurveTo(x + Math.cos(a) * l * 0.5 + 1, y + Math.sin(a) * l * 0.5, x + Math.cos(a) * l, y + Math.sin(a) * l);
+    g.stroke();
+  }
+  grain = c;
+  return c;
 }

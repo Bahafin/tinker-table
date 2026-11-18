@@ -7,6 +7,8 @@ const MAX_TIME = 25;
 const GOAL_HOLD = 0.3;
 const FAN_REACH = 4.5;
 const FAN_FORCE = 14;
+export const CONVEYOR_SPEED = 2.5;
+const HAMSTER_SPIN = 5;
 
 type Tag = { rp: RuntimePart };
 
@@ -22,6 +24,7 @@ export class Sim {
   settled = false;
   events: SimEvent[] = [];
   private goalHeld = 0;
+  private stillFor = 0;
   private toDestroy: RuntimePart[] = [];
 
   private goal?: Goal;
@@ -40,6 +43,7 @@ export class Sim {
       this.parts.push(rp);
     }
     this.world.on('begin-contact', (c) => this.onContact(c));
+    this.world.on('pre-solve', (c) => this.onPreSolve(c));
   }
 
   private onContact(c: Contact) {
@@ -58,9 +62,32 @@ export class Sim {
         this.events.push({ type: 'whoosh' });
       }
       if (x?.kind === 'spring' && yb.isDynamic()) this.events.push({ type: 'boing' });
+      if (x?.kind === 'hamster' && !x.state.on && yb.isDynamic()) {
+        x.state.on = true;
+        this.events.push({ type: 'squeak' });
+      }
     }
     const rel = a.getLinearVelocity().clone().sub(b.getLinearVelocity()).length();
     if (rel > 1.2) this.events.push({ type: 'clack', strength: Math.min(1, rel / 8) });
+  }
+
+  /** Conveyor belts move whatever touches them along the belt. */
+  private onPreSolve(c: Contact) {
+    const fa = c.getFixtureA(), fb = c.getFixtureB();
+    const ra = (fa.getBody().getUserData() as Tag | null)?.rp;
+    const rb = (fb.getBody().getUserData() as Tag | null)?.rp;
+    if (ra?.kind === 'conveyor') c.setTangentSpeed(-CONVEYOR_SPEED * ra.state.dir!);
+    else if (rb?.kind === 'conveyor') c.setTangentSpeed(CONVEYOR_SPEED * rb.state.dir!);
+  }
+
+  /** An awake hamster runs inside its ball, rolling it at a steady pace. */
+  private applyHamsters() {
+    for (const h of this.parts) {
+      if (h.kind !== 'hamster' || !h.state.on) continue;
+      const b = h.bodies[0];
+      const target = HAMSTER_SPIN * h.state.dir!;
+      b.applyTorque((target - b.getAngularVelocity()) * b.getInertia() * 8, true);
+    }
   }
 
   byId(id: string) {
@@ -95,6 +122,7 @@ export class Sim {
   step() {
     if (this.success || this.settled) return;
     this.applyFans();
+    this.applyHamsters();
     this.world.step(DT, 8, 3);
     for (const rp of this.toDestroy) for (const b of rp.bodies) this.world.destroyBody(b);
     this.toDestroy = [];
@@ -106,10 +134,16 @@ export class Sim {
     } else this.goalHeld = 0;
 
     if (this.time > 1 && !this.success) {
-      let awake = false;
-      for (let b: Body | null = this.world.getBodyList(); b; b = b.getNext())
-        if (b.isDynamic() && b.isAwake()) { awake = true; break; }
-      if (!awake || this.time > MAX_TIME) this.settled = true;
+      // Done when everything sleeps, or nothing has really moved for a while
+      // (a hamster or a fan can keep pushing something against a wall forever).
+      let awake = false, fastest = 0;
+      for (let b: Body | null = this.world.getBodyList(); b; b = b.getNext()) {
+        if (!b.isDynamic()) continue;
+        if (b.isAwake()) awake = true;
+        fastest = Math.max(fastest, b.getLinearVelocity().length());
+      }
+      this.stillFor = fastest < 0.05 ? this.stillFor + DT : 0;
+      if (!awake || this.stillFor > 1.5 || this.time > MAX_TIME) this.settled = true;
     }
   }
 

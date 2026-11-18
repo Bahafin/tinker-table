@@ -45,8 +45,13 @@ A calm chain-reaction puzzle game for ages 4–7, played with a parent on a tabl
 | Fan | 1 × 1 | static | Starts when anything bumps it, then blows along its facing (4 cells reach). |
 | Spring pad | 1.4 × 0.3 | static, very bouncy | Throws things back up. |
 | Pulley bucket | 3 × 4 | bucket + counterweight on a pulley rope | A ball in the bucket lifts the weight. |
+| Hamster ball | Ø 1 | dynamic | Asleep until something bumps it, then rolls steadily the way it faces. A tap flips its facing. |
+| Conveyor belt | 3 × 0.4 | static | Carries things along its top at 2.5 cells/s. A tap flips its direction. |
+| Cheese | 1 × 0.7 | sensor | Goal: the hamster reaches it. |
 
-Characters (for example a sleepy hamster that runs its wheel when woken) come later.
+Parts that only face left or right (hamster, conveyor) flip on a tap instead of turning 15°.
+
+A run also ends when nothing has moved for 1.5 s, because a hamster or a fan can keep pushing something against a wall forever.
 
 ## Level format (`src/levels/*.json`)
 ```json
@@ -71,23 +76,39 @@ Characters (for example a sleepy hamster that runs its wheel when woken) come la
 4. **Balloon:** guide a balloon up to the star.
 5. **Chain:** a three-step machine that combines what came before.
 
-Plus the **toy box**: every part, unlimited, no goal.
+Added in Milestone 2:
+
+6. **Hamster:** drop a ball on the sleeping hamster to wake him, and he rolls to the cheese.
+7. **Conveyor:** two belts carry the ball to the basket. They start running the wrong way, so the lesson is "tap to turn it around".
+8. **Wake up:** the ball rolls down to the hamster asleep on a shelf. He wakes, rolls off the shelf and finds the cheese.
+
+Plus the **toy box**: every part except the goal-only star and cheese, unlimited, no goal.
 
 ## Look: paper craft
 - **Background:** warm off-white paper with a faint dot grid.
 - **Parts:** flat paper colours (tomato, mustard, teal, sky, kraft brown), each with a soft drop shadow so it looks cut out and lifted off the table.
 - **Fixed parts** have a small brass pin drawn on them.
-- **Later**, real paper textures and hand-drawn sprites replace the flat shapes. Each part's draw function is isolated so this swap doesn't touch the physics.
+- **Paper grain:** a generated paper-fibre texture is multiplied over the whole table, parts included.
+- **Later**, hand-drawn sprites replace the flat shapes. Each part's draw function is isolated so this swap doesn't touch the physics.
 
 ## Sound and voice
 - **Sound effects** are synthesised with Web Audio: place, rotate, clack, pop, boing, whoosh, chime and hmm.
 - **The voice** is a `speechSynthesis` placeholder for now. Later it will be the parent's own recorded voice.
 
-## Roadmap after Milestone 1
-- Paper-craft art pass.
+## Home-screen app
+- A web manifest and app icon let the game be added to the iPad home screen and open full screen.
+- A service worker (`public/sw.js`) saves the game's files on the first online visit, so it then plays offline. This only works over HTTPS or on localhost, so it needs proper hosting to help on the iPad.
+- `node scripts/make-icons.mjs` redraws the icon PNGs.
+
+## Roadmap
+**Done in Milestone 2:** hamster and conveyor parts, levels 6–8, the paper-grain pass, home-screen install and offline play.
+
+**Next:**
+- Playtest with your son, then tune from what you see.
+- HTTPS hosting (e.g. GitHub Pages), which offline play and tilt need.
 - Recorded narration.
-- More parts: hamster wheel, conveyor, magnet, scissors that cut a rope.
+- More parts: magnet, scissors that cut a rope.
+- Hand-drawn sprites.
 - Rooms or worlds.
-- Tilt puzzles using the iPad's sensors, which needs HTTPS hosting.
-- Installable home-screen app with offline play.
+- Tilt puzzles using the iPad's sensors.
 - Deciding whether a native App Store build is worth it.

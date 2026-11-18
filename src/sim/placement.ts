@@ -17,6 +17,9 @@ const SOLID: Record<PartKind, { w: number; h: number; dy?: number }> = {
   fan: { w: 0.45, h: 0.45 },
   spring: { w: 0.7, h: 0.15 },
   pulley: { w: 1.5, h: 2.2 },
+  hamster: { w: 0.5, h: 0.5 },
+  conveyor: { w: 1.5, h: 0.2 },
+  cheese: { w: 0.5, h: 0.35 },
 };
 
 const SHRINK = 0.03;

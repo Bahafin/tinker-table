@@ -139,6 +139,11 @@ $('btn-stop').onclick = () => game?.reset();
 $('btn-slow').onclick = () => { if (game) { game.slow = !game.slow; syncButtons(); } };
 $('btn-replay').onclick = () => { $('won').classList.add('hidden'); game?.replay(); };
 $('btn-next').onclick = () => startLevel(current + 1 < LEVELS.length ? current + 1 : -1);
+// Offline play once installed. Service workers only run on https or localhost,
+// and only in the built app (the dev server reloads too often for caching).
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => { /* fine: plays online */ });
+}
 // iOS: stop pinch zoom gestures from scaling the page.
 document.addEventListener('gesturestart', (e) => e.preventDefault());
 

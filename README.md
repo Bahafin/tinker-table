@@ -22,6 +22,10 @@ Vite prints a `Network:` address, something like `http://192.168.1.20:5173`.
 2. Tap Share, then **Add to Home Screen**. The game then opens full screen like an app.
 3. If the iPad can't reach it, Windows Firewall is probably blocking Node. Allow Node.js on private networks when Windows asks, or in the firewall settings.
 
+### Offline play
+
+The built game (`npm run build`) saves its own files the first time it is opened, then plays without internet. This only works when it is served over HTTPS, for example from GitHub Pages. It does not work from the PC over home Wi-Fi.
+
 ## Tests
 
 ```bash

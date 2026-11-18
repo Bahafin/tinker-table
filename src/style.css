@@ -46,7 +46,7 @@ html, body {
 }
 #levels {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 260px));
+  grid-template-columns: repeat(3, minmax(0, 230px));
   gap: clamp(12px, 2.5vw, 28px);
   max-width: 100%;
 }

@@ -10,13 +10,16 @@ export interface RuntimePart {
   bodies: Body[];
   /** Goal zone in the part's local frame (relative to bodies[0]). */
   zone?: { x0: number; y0: number; x1: number; y1: number };
-  state: { on?: boolean; popped?: boolean };
+  /** on: fan blowing / hamster awake. dir: +1 right, -1 left (conveyor, hamster). */
+  state: { on?: boolean; popped?: boolean; dir?: number };
 }
 
 export interface PartDef {
   /** Hit box half extents in cells (unrotated), centred on the placement point. */
   hit: { w: number; h: number; dy?: number };
   rotatable: boolean;
+  /** Degrees per tap. 180 means a tap flips the part to face the other way. */
+  rotStep?: number;
   build(world: World, p: Placement, rp: RuntimePart): void;
 }
 
@@ -156,6 +159,8 @@ export const PARTS: Record<PartKind, PartDef> = {
     build(world, p, rp) {
       const top = world.createBody({ type: 'static', position: new Vec2(p.x, p.y - 2.2) });
       // The top bar is only drawn, not solid, so balls can drop past it into the bucket.
+      // A small stopper under the right wheel keeps the weight from rising through it.
+      top.createFixture(new Box(0.3, 0.15, new Vec2(1, 0.45)), {});
       const bucket = world.createBody({ type: 'dynamic', position: new Vec2(p.x - 1, p.y), fixedRotation: true, linearDamping: 0.5 });
       bucket.createFixture(new Box(0.5, 0.06, new Vec2(0, 0.4)), { density: 1, friction: 0.8 });
       bucket.createFixture(new Box(0.06, 0.4, new Vec2(-0.47, 0)), { density: 1, friction: 0.8 });
@@ -169,9 +174,47 @@ export const PARTS: Record<PartKind, PartDef> = {
       rp.bodies.push(bucket, weight, top);
     },
   },
+  hamster: {
+    // A hamster asleep in a rolling ball. Bump it and it wakes and rolls the way it faces.
+    hit: { w: 0.5, h: 0.5 },
+    rotatable: true,
+    rotStep: 180,
+    build(world, p, rp) {
+      const b = world.createBody({ type: 'dynamic', position: new Vec2(p.x, p.y) });
+      b.createFixture(new Circle(0.5), { density: 0.8, friction: 0.9, restitution: 0.1 });
+      rp.bodies.push(b);
+      rp.state.on = false;
+      rp.state.dir = Math.abs(p.rot ?? 0) === 180 ? -1 : 1;
+    },
+  },
+  conveyor: {
+    // A belt that carries things along its top. A tap flips which way it runs.
+    hit: { w: 1.5, h: 0.35 },
+    rotatable: true,
+    rotStep: 180,
+    build(world, p, rp) {
+      const b = staticBody(world, { ...p, rot: 0 });
+      b.createFixture(new Box(1.5, 0.2), { friction: 0.9 });
+      rp.bodies.push(b);
+      rp.state.dir = Math.abs(p.rot ?? 0) === 180 ? -1 : 1;
+    },
+  },
+  cheese: {
+    hit: { w: 0.5, h: 0.4 },
+    rotatable: false,
+    build(world, p, rp) {
+      const b = staticBody(world, { ...p, rot: 0 });
+      b.createFixture(new Box(0.5, 0.35), { isSensor: true });
+      rp.bodies.push(b);
+      rp.zone = { x0: -0.9, y0: -0.8, x1: 0.9, y1: 0.8 };
+    },
+  },
 };
 
 export const ALL_PARTS: PartKind[] = [
   'ball', 'heavyball', 'ramp', 'shortramp', 'block', 'domino', 'seesaw',
-  'balloon', 'pin', 'fan', 'spring', 'pulley', 'basket', 'star',
+  'balloon', 'pin', 'fan', 'spring', 'conveyor', 'hamster', 'pulley', 'basket', 'star', 'cheese',
 ];
+
+/** Parts offered in the toy box (goal-only parts like the star and cheese are left out). */
+export const TOY_PARTS: PartKind[] = ALL_PARTS.filter((k) => k !== 'star' && k !== 'cheese');

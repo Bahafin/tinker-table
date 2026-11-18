@@ -2,7 +2,7 @@ import { Sim, DT } from '../sim/sim';
 import { PARTS, type RuntimePart } from '../sim/parts';
 import { clampToWorld, hitTest, overlapsAny } from '../sim/placement';
 import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from '../sim/types';
-import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow } from '../render/draw';
+import { drawFixedPin, drawPart, drawTable, PAPER, paperGrain, setPaperShadow } from '../render/draw';
 import { sfx } from './audio';
 
 export type Mode = 'build' | 'run' | 'won';
@@ -216,7 +216,8 @@ export class Game {
       // A tap rotates.
       const p = this.placements[d.index];
       if (!PARTS[p.part].rotatable) { this.doWiggle(d.index); return; }
-      const rotated = { ...p, rot: ((((p.rot ?? 0) + 15 + 180) % 360) + 360) % 360 - 180 };
+      const step = PARTS[p.part].rotStep ?? 15;
+      const rotated = { ...p, rot: ((((p.rot ?? 0) + step + 180) % 360) + 360) % 360 - 180 };
       if (overlapsAny(rotated, this.others(d.index))) { sfx.nope(); this.doWiggle(d.index); return; }
       this.placements[d.index] = rotated;
       sfx.rotate();
@@ -383,12 +384,31 @@ export class Game {
     }
 
     ctx.shadowColor = 'transparent';
+    this.drawGrain(ctx);
     for (const c of this.confetti) {
       ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.a); ctx.fillStyle = c.c; ctx.fillRect(-0.1, -0.06, 0.2, 0.12); ctx.restore();
     }
     ctx.restore();
 
     this.renderTray(ctx);
+  }
+
+  private grainPattern: CanvasPattern | null = null;
+
+  /** Multiply a paper-fibre texture over the table, in screen pixels so it stays crisp. */
+  private drawGrain(ctx: CanvasRenderingContext2D) {
+    this.grainPattern ??= ctx.createPattern(paperGrain(), 'repeat');
+    if (!this.grainPattern) return;
+    const L = this.L;
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = 0.55;
+    ctx.beginPath();
+    ctx.roundRect(L.ox * L.dpr, L.oy * L.dpr, WORLD_W * L.scale * L.dpr, WORLD_H * L.scale * L.dpr, 0.25 * L.scale * L.dpr);
+    ctx.fillStyle = this.grainPattern;
+    ctx.fill();
+    ctx.restore();
   }
 
   private getPreview() {

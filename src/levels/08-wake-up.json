@@ -1,0 +1,14 @@
+{
+  "id": "08-wake-up",
+  "voice": "Roll the ball to the sleepy hamster, so he wakes up and finds the cheese!",
+  "goal": { "type": "reach", "object": "hamster1", "target": "cheese1" },
+  "fixed": [
+    { "part": "ball", "id": "ball1", "x": 1.5, "y": 1 },
+    { "part": "ramp", "x": 2.5, "y": 2.5, "rot": 15 },
+    { "part": "ramp", "x": 8, "y": 5.5, "rot": 0 },
+    { "part": "hamster", "id": "hamster1", "x": 8, "y": 4.875 },
+    { "part": "cheese", "id": "cheese1", "x": 15, "y": 9.4 }
+  ],
+  "tray": [{ "part": "ramp", "count": 2 }],
+  "solution": [{ "part": "ramp", "x": 4.5, "y": 4, "rot": 0 }]
+}
