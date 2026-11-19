@@ -69,6 +69,8 @@ export const sfx = {
   pour: () => noise(1.2, 0.18, 'bandpass', 1400),
   /** A drop soaking into a flower. */
   drip: () => { const now = performance.now(); if (now - lastClack < 60) return; lastClack = now; tone(900, 0.07, 'sine', 0.12, 0, 1400); },
+  /** Scissors cutting a rope. */
+  snip: () => { noise(0.04, 0.5, 'highpass', 3000); noise(0.05, 0.4, 'highpass', 2500); },
   hmm: () => { tone(330, 0.25, 'sine', 0.18); tone(262, 0.35, 'sine', 0.18, 0.22); },
 };
 

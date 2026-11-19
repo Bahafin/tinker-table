@@ -5,7 +5,7 @@ What we plan to build next, in order. Every feature has to keep three rules:
 - **No fail state.** Nothing scores, times or tells the child off.
 - **Free to run.** No servers, no accounts and no analytics. Everything stays on the device or inside a link.
 
-The current game: 30 levels, the toy box, the grown-ups' corner, offline play, and the web version on GitHub Pages. See [design.md](design.md).
+The current game: 45 levels in five rooms, the toy box, the grown-ups' corner, offline play, and the web version on GitHub Pages. See [design.md](design.md).
 
 ## Decisions so far
 - **The web version stays the main home.** A store app later wraps the same code with Capacitor.
@@ -46,7 +46,7 @@ The current game: 30 levels, the toy box, the grown-ups' corner, offline play, a
   - Each room has a picture banner (no words) and its own paper tint, which carries on to the table in play.
   - (Reworked in Milestone 4.5: the front page now shows rooms, not levels.)
 
-## Milestone 4.5: rooms that feel like rooms (in progress)
+## Milestone 4.5: rooms that feel like rooms (done)
 - **Why:** a different background alone made rooms feel thin. Each room should have its own things to play with.
 - **Done:**
   - The front page shows the rooms as big tiles, with the Toy box (and the puzzle maker) as the sixth room.
@@ -56,7 +56,8 @@ The current game: 30 levels, the toy box, the grown-ups' corner, offline play, a
   - **Workshop: done.** A spring-loaded hammer on a hinge that whacks when bumped. Three new levels after the six Workshop tutorials (the room now has nine).
   - **Kitchen: done.** A toaster that catches what drops in and pops it up and over with a ding. Three new levels after the Kitchen's first six (the room now has nine).
   - **Garden: done.** A watering can that tips and pours real water drops, and a thirsty flower (a new target) that blooms when watered. The garden's star became a butterfly. Three new levels after the Garden's first six (the room now has nine).
-  - **Attic:** a rope and scissors: a ball hangs until something cuts the rope.
+  - **Attic: done.** A ball on a rope (it swings if turned) and scissors that cut ropes and pop balloons. Three new levels after the Attic's first six.
+- Every room now has nine levels (45 in all) and its own part.
 - This replaces the "new parts" list in Milestone 6 (musical parts stay there).
 
 ## Milestone 5: thinking out loud

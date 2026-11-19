@@ -347,6 +347,37 @@ const DRAW: Record<string, (ctx: Ctx, rp: RuntimePart, t: number) => void> = {
       });
     });
   },
+  rope(ctx, rp, t) {
+    const [hook, ball] = rp.bodies;
+    const h = hook.getPosition(), b = ball.getPosition();
+    noShadow(ctx, () => {
+      if (!rp.state.on) {
+        line(ctx, h.x, h.y, b.x, b.y, PAPER.kraftDark, 0.05);
+      } else {
+        // Cut: a short frayed end hangs from the hook.
+        line(ctx, h.x, h.y, h.x + Math.sin(t * 2) * 0.05, h.y + 0.6, PAPER.kraftDark, 0.05);
+        line(ctx, h.x, h.y + 0.6, h.x - 0.05, h.y + 0.7, PAPER.kraftDark, 0.03);
+        line(ctx, h.x, h.y + 0.6, h.x + 0.05, h.y + 0.7, PAPER.kraftDark, 0.03);
+      }
+    });
+    // The hook: a little brass plate and ring.
+    rrect(ctx, h.x - 0.22, h.y - 0.3, 0.44, 0.16, 0.05); paper(ctx, PAPER.brass);
+    noShadow(ctx, () => { ctx.beginPath(); ctx.arc(h.x, h.y - 0.05, 0.1, 0, Math.PI * 2); ctx.strokeStyle = PAPER.brass; ctx.lineWidth = 0.05; ctx.stroke(); });
+    // The ball, in the room's look.
+    (skinFor('ball') ?? DRAW.ball)(ctx, { ...rp, kind: 'ball', bodies: [ball] }, t);
+  },
+  scissors(ctx, rp) {
+    withBody(ctx, rp.bodies[0], () => {
+      // Two open blades crossing at a pin, with red finger loops on the left.
+      for (const s of [-1, 1]) {
+        ctx.save(); ctx.rotate(s * 0.22);
+        ctx.beginPath(); ctx.moveTo(-0.05, -0.04); ctx.lineTo(0.48, -0.015); ctx.lineTo(0.48, 0.015); ctx.lineTo(-0.05, 0.05); ctx.closePath(); paper(ctx, '#b7bec4');
+        ctx.beginPath(); ctx.ellipse(-0.3, 0, 0.13, 0.09, 0, 0, Math.PI * 2); ctx.strokeStyle = PAPER.tomato; ctx.lineWidth = 0.06; ctx.stroke();
+        ctx.restore();
+      }
+      noShadow(ctx, () => { ctx.beginPath(); ctx.arc(0, 0, 0.045, 0, Math.PI * 2); paper(ctx, PAPER.ink); });
+    });
+  },
   cheese(ctx, rp, t) {
     withBody(ctx, rp.bodies[0], () => {
       ctx.rotate(Math.sin(t * 2) * 0.04);

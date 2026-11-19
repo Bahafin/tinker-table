@@ -1,0 +1,12 @@
+{
+  "id": "43-snip",
+  "voice": "The ball is hanging on a rope. Snip! Put the scissors on the rope, and the ball drops down into the basket.",
+  "goal": { "type": "reach", "object": "rope1", "target": "basket1" },
+  "fixed": [
+    { "part": "rope", "id": "rope1", "x": 5, "y": 1, "rot": 0 },
+    { "part": "ramp", "x": 6, "y": 6, "rot": 15 },
+    { "part": "basket", "id": "basket1", "x": 9, "y": 9.4 }
+  ],
+  "tray": [{ "part": "scissors", "count": 1 }],
+  "solution": [{ "part": "scissors", "x": 5, "y": 2, "rot": 0 }]
+}

@@ -24,6 +24,10 @@ const CAN_EVERY = 4;
 export const WATER_NEEDED = 6;
 /** The can tips this far (radians) to pour. */
 export const CAN_TILT = Math.PI / 4;
+/** How close a rope has to come to a point on the scissors' blades to be cut. */
+const SNIP_REACH = 0.15;
+/** After this long, a ball swinging on an uncut rope no longer keeps the run going. */
+const SWING_GRACE = 6;
 
 /** drop: a water drop poured by a watering can (rp is that can). */
 type Tag = { rp: RuntimePart; drop?: boolean };
@@ -95,7 +99,7 @@ export class Sim {
         x.state.on = true;
         this.events.push({ type: 'pour' });
       }
-      if (x?.kind === 'balloon' && y?.kind === 'pin' && !x.state.popped) {
+      if (x?.kind === 'balloon' && (y?.kind === 'pin' || y?.kind === 'scissors') && !x.state.popped) {
         x.state.popped = true;
         this.toDestroy.push(x);
         this.events.push({ type: 'pop' });
@@ -140,6 +144,28 @@ export class Sim {
       const b = h.bodies[0];
       const target = HAMSTER_SPIN * h.state.dir!;
       b.applyTorque((target - b.getAngularVelocity()) * b.getInertia() * 8, true);
+    }
+  }
+
+  /** A rope touching the scissors' blades is cut. */
+  private applyScissors() {
+    for (const r of this.parts) {
+      if (r.kind !== 'rope' || r.state.on) continue;
+      const a = r.bodies[0].getPosition(), b = r.bodies[1].getPosition();
+      const abx = b.x - a.x, aby = b.y - a.y;
+      const near = (c: Vec2) => {
+        const k = Math.max(0, Math.min(1, ((c.x - a.x) * abx + (c.y - a.y) * aby) / (abx * abx + aby * aby)));
+        const dx = a.x + abx * k - c.x, dy = a.y + aby * k - c.y;
+        return dx * dx + dy * dy < SNIP_REACH * SNIP_REACH;
+      };
+      // Any part of the scissors touching the rope cuts it: check points along the blades.
+      const cut = this.parts.some((s) => s.kind === 'scissors' &&
+        [-0.35, -0.1, 0.15, 0.4].some((u) => near(s.bodies[0].getWorldPoint(new Vec2(u, 0)))));
+      if (cut) {
+        this.world.destroyJoint(r.rope!);
+        r.state.on = true;
+        this.events.push({ type: 'snip' });
+      }
     }
   }
 
@@ -205,7 +231,7 @@ export class Sim {
 
   /** The body whose centre counts for a goal: a pulley's weight, otherwise the part itself. */
   static goalBody(rp: RuntimePart) {
-    return rp.kind === 'pulley' ? rp.bodies[1] : rp.bodies[0];
+    return rp.kind === 'pulley' || rp.kind === 'rope' ? rp.bodies[1] : rp.bodies[0];
   }
 
   goalReached(): boolean {
@@ -240,6 +266,7 @@ export class Sim {
     this.applyFans();
     this.applyToasters();
     this.applyCans();
+    this.applyScissors();
     this.stepCount++;
     this.applyHamsters();
     this.world.step(DT, 8, 3);
@@ -273,8 +300,10 @@ export class Sim {
       // Done when everything sleeps, or nothing has really moved for a while
       // (a hamster or a fan can keep pushing something against a wall forever).
       let awake = false, fastest = 0;
+      // A ball still swinging on its rope after a while doesn't count: it would swing for ages.
+      const swinging = this.time > SWING_GRACE ? new Set(this.parts.filter((p) => p.kind === 'rope' && !p.state.on).map((p) => p.bodies[1])) : null;
       for (let b: Body | null = this.world.getBodyList(); b; b = b.getNext()) {
-        if (!b.isDynamic()) continue;
+        if (!b.isDynamic() || swinging?.has(b)) continue;
         if (b.isAwake()) awake = true;
         fastest = Math.max(fastest, b.getLinearVelocity().length());
       }

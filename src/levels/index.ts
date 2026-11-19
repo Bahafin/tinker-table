@@ -41,6 +41,9 @@ import l39 from './39-toaster-hamster.json';
 import l40 from './40-watering-can.json';
 import l41 from './41-water-path.json';
 import l42 from './42-water-wake.json';
+import l43 from './43-snip.json';
+import l44 from './44-swing-snip.json';
+import l45 from './45-car-snip.json';
 import { TOY_PARTS } from '../sim/parts';
 
 export const LEVELS = [l1, l2, l3, l4, l5, l6,
@@ -54,10 +57,12 @@ export const LEVELS = [l1, l2, l3, l4, l5, l6,
   l37, l38, l39,
   // Playroom: the toy car arrives first, then gets used again at the end of the room.
   l31, l19, l20, l21, l22, l23, l24, l32, l33,
-  l25, l26, l27, l28, l29, l30] as Level[];
+  l25, l26, l27, l28, l29, l30,
+  // Attic: the rope and scissors come after its first six levels.
+  l43, l45, l44] as Level[];
 
 /**
- * Rooms on the map, in order (six levels each, nine in rooms with their own part: the Workshop's hammer, the Garden's watering can, the Kitchen's toaster, the Playroom's toy car). Each room has its own paper tint
+ * Rooms on the map, in order: nine levels each, the last three (or, in the Playroom, the first and last two) using the room's own part. Each room has its own paper tint
  * (cards and the table) and an accent colour for its banner.
  */
 export interface Room { id: string; name: string; first: number; count: number; paper: string; accent: string }
@@ -66,7 +71,7 @@ export const ROOMS: Room[] = [
   { id: 'garden', name: 'Garden', first: 9, count: 9, paper: '#edf1dc', accent: '#7cae4e' },
   { id: 'kitchen', name: 'Kitchen', first: 18, count: 9, paper: '#f7e7dc', accent: '#e5583f' },
   { id: 'playroom', name: 'Playroom', first: 27, count: 9, paper: '#e6eef5', accent: '#5aa2d6' },
-  { id: 'attic', name: 'Attic', first: 36, count: 6, paper: '#ece7f1', accent: '#3d4a73' },
+  { id: 'attic', name: 'Attic', first: 36, count: 9, paper: '#ece7f1', accent: '#3d4a73' },
 ];
 /**
  * Each room draws some parts as its own things (see render/skins.ts), so the spoken goal

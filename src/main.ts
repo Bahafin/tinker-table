@@ -99,6 +99,7 @@ function roomScene(room: Room): HTMLCanvasElement {
   // The playroom's own toy, the car, takes the pin's spot.
   if (room.id === 'playroom') things[2] = ['car', 10.2, 3.8, 3.2];
   if (room.id === 'garden') { things[2] = ['can', 10.2, 3.6, 3]; things[3] = ['flower', 13.2, 2.6, 3.4]; }
+  if (room.id === 'attic') { things[2] = ['rope', 10.4, 3.4, 6.4]; things[1] = ['scissors', 5, 2.4, 2.4]; }
   if (room.id === 'kitchen') things[2] = ['toaster', 10.2, 3.6, 3.2];
   if (room.id === 'workshop') things[2] =['hammer', 10.3, 3.6, 5.6];
   for (const [k, x, y, size] of things) drawIcon(ctx, k, x * s, y * s, size * s);
@@ -454,7 +455,8 @@ function drawGoalPic(level: Level) {
     return;
   }
   const kindOf = (id: string) => level.fixed.find((p) => p.id === id)!.part;
-  const obj = kindOf(level.goal.object);
+  // A ball on a rope is shown as just the ball: the rope makes the picture too tall to read.
+  const obj = kindOf(level.goal.object) === 'rope' ? 'ball' : kindOf(level.goal.object);
   // The pulley is drawn hanging above its placement point, so centre it by hand.
   if (obj === 'pulley') drawIcon(ctx, obj, w * 0.18, h * 0.82, h * 1.25);
   else drawIcon(ctx, obj, w * 0.18, h / 2, h * 0.8);

@@ -1,4 +1,4 @@
-import { World, Body, Box, Circle, Polygon, RevoluteJoint, PulleyJoint, Vec2 } from 'planck';
+import { World, Body, Box, Circle, Polygon, RevoluteJoint, PulleyJoint, RopeJoint, Vec2, type Joint } from 'planck';
 import type { PartKind, Placement } from './types';
 
 const DEG = Math.PI / 180;
@@ -7,6 +7,8 @@ export const CAR_SPIN = 12;
 export const CAR_TORQUE = 0.6;
 /** How far the hammer can swing from upright (a little past flat). */
 const HAMMER_SWING = 100 * DEG;
+/** Length of the rope part, hook to ball centre. */
+export const ROPE_LEN = 2.5;
 
 /** A part as it exists inside a physics world. */
 export interface RuntimePart {
@@ -20,6 +22,8 @@ export interface RuntimePart {
   state: { on?: boolean; popped?: boolean; dir?: number; load?: number; drops?: number };
   /** The hammer's hinge, held still until something bumps the hammer. */
   brake?: RevoluteJoint;
+  /** A rope part's rope, until the scissors cut it. */
+  rope?: Joint;
 }
 
 export interface PartDef {
@@ -301,6 +305,32 @@ export const PARTS: Record<PartKind, PartDef> = {
       rp.state.load = 0;
     },
   },
+  rope: {
+    // A ball hanging on a rope from a hook. Turned, the ball starts raised to one
+    // side and swings when the machine starts. Placement point is the hook.
+    hit: { w: 0.45, h: 1.6, dy: 1.25 },
+    rotatable: true,
+    build(world, p, rp) {
+      const a = ang(p);
+      const hook = world.createBody({ type: 'static', position: new Vec2(p.x, p.y) });
+      hook.createFixture(new Circle(0.08), { isSensor: true });
+      const ball = world.createBody({ type: 'dynamic', position: new Vec2(p.x - Math.sin(a) * ROPE_LEN, p.y + Math.cos(a) * ROPE_LEN), linearDamping: 0.3, angularDamping: 0.1 });
+      ball.createFixture(new Circle(0.35), { density: 1, friction: 0.4, restitution: 0.3 });
+      rp.rope = world.createJoint(new RopeJoint({ bodyA: hook, bodyB: ball, localAnchorA: new Vec2(0, 0), localAnchorB: new Vec2(0, 0), maxLength: ROPE_LEN })) ?? undefined;
+      rp.bodies.push(hook, ball);
+      rp.state.on = false;
+    },
+  },
+  scissors: {
+    // Open scissors. Any rope that touches the blades is cut, and balloons pop on them.
+    hit: { w: 0.45, h: 0.3 },
+    rotatable: true,
+    build(world, p, rp) {
+      const b = staticBody(world, p);
+      b.createFixture(new Box(0.4, 0.12), { isSensor: true });
+      rp.bodies.push(b);
+    },
+  },
   cheese: {
     hit: { w: 0.5, h: 0.4 },
     rotatable: false,
@@ -315,7 +345,7 @@ export const PARTS: Record<PartKind, PartDef> = {
 
 export const ALL_PARTS: PartKind[] = [
   'ball', 'heavyball', 'ramp', 'shortramp', 'block', 'domino', 'seesaw',
-  'balloon', 'pin', 'fan', 'spring', 'conveyor', 'hamster', 'car', 'hammer', 'toaster', 'can', 'pulley', 'basket', 'star', 'cheese', 'flower',
+  'balloon', 'pin', 'fan', 'spring', 'conveyor', 'hamster', 'car', 'hammer', 'toaster', 'can', 'rope', 'scissors', 'pulley', 'basket', 'star', 'cheese', 'flower',
 ];
 
 /** Parts offered in the toy box (goal-only parts like the star and cheese are left out). */

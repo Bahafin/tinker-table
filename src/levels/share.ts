@@ -9,9 +9,9 @@ import type { Level, PartKind, Placement } from '../sim/types';
 const KINDS: PartKind[] = [
   'ball', 'heavyball', 'ramp', 'shortramp', 'block', 'basket', 'star', 'domino', 'seesaw',
   'balloon', 'pin', 'fan', 'spring', 'pulley', 'hamster', 'conveyor', 'cheese',
-  'car', 'hammer', 'toaster', 'can', 'flower',
+  'car', 'hammer', 'toaster', 'can', 'flower', 'rope', 'scissors',
 ];
-export const GOAL_OBJECTS = new Set<PartKind>(['ball', 'heavyball', 'balloon', 'hamster', 'pulley', 'car', 'can']);
+export const GOAL_OBJECTS = new Set<PartKind>(['ball', 'heavyball', 'balloon', 'hamster', 'pulley', 'car', 'can', 'rope']);
 export const GOAL_TARGETS = new Set<PartKind>(['basket', 'star', 'cheese', 'flower']);
 
 const MAX_PARTS = 40;

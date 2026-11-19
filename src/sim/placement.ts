@@ -25,6 +25,9 @@ const SOLID: Record<PartKind, { w: number; h: number; dy?: number }> = {
   toaster: { w: 0.85, h: 0.5 },
   can: { w: 0.45, h: 0.45 },
   flower: { w: 0.4, h: 0.6 },
+  // Only the hanging ball is solid; the rope itself doesn't stop parts being placed.
+  rope: { w: 0.35, h: 0.35, dy: 2.5 },
+  scissors: { w: 0.4, h: 0.25 },
 };
 
 const SHRINK = 0.03;

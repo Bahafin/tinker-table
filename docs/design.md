@@ -55,6 +55,8 @@ A calm chain-reaction puzzle game for ages 4–7, played with a parent on a tabl
 | Toaster | 1.7 × 1 | static, wide slot on top | Anything whose centre sits in the slot for 0.4 s pops out with a "ding": straight up about 4 cells and tossed 1.5 cells/s the way the toaster faces (it lands about 2.6 cells away). It's a lift, not a bounce: it pops to the same height however gently things arrive. The slot is wide (1.2) so a ball dropped within ±0.5 of the middle is caught; things rolling along the floor can't get in, they have to drop in. A tap flips its facing. The Kitchen's own part. |
 | Watering can | 0.9 × 0.9 (+ spout) | static | Any bump (not its own water) tips it 45° toward its spout, and it pours 18 water drops (small dynamic circles) over about 1.2 s. Water runs down ramps and splashes off things, can wake the hamster or switch on a fan, and soaks away when it reaches the floor, the table's edge, or sits still for half a second. A tap flips its facing. The Garden's own part. |
 | Flower | 0.9 × 1.2 | sensor, in a pot | A target: drops that reach it soak in, and it opens up as it drinks. The goal (can → flower) is reached at 6 drops. |
+| Rope | hook + ball Ø 0.7 on a 2.5 rope | static hook, dynamic ball, rope joint | A ball hanging from a hook. Turning it starts the ball raised to one side, so it swings when Go is pressed. As a goal object, the ball counts. A ball left swinging on an uncut rope stops counting as movement after 6 s, so a missed run still ends. The Attic's own part. |
+| Scissors | 0.9 × 0.6 | static sensor | Cuts any rope that touches its blades (anywhere along them), and pops balloons like a pin. Things pass through them. The Attic's own part. |
 
 Parts that only face left or right (hamster, conveyor, car, hammer, toaster, watering can) get one ↔ flip button instead of the two turn buttons.
 
@@ -125,6 +127,12 @@ The hammer levels come after the six Workshop tutorials:
 34. **Hammer** (7th in the Workshop): the hammer is already there. Drop a ball on it, and it whacks the other ball off a low shelf into the toolbox. Teaches "bump it and it whacks".
 35. **Face the hammer:** a ball rolls in from the right. Place the hammer in its path, turned to face the ball on the shelf.
 36. **Hammer dominoes:** a falling domino starts the line; add two dominoes so the line reaches the hammer, which whacks the ball across the room.
+
+The rope and scissors levels come after the Attic's first six:
+
+43. **Snip!:** cut the hanging rope; the ball drops onto a ramp that rolls it into the trunk.
+45. **Car snip:** snip the ball down onto the shelf and send the car to push it off the end into the trunk. Both parts are needed.
+44. **Swing and snip:** the ball swings from a raised start. Where the scissors meet the rope decides when it's cut, and so where the ball flies.
 
 The watering can levels come after the Garden's first six:
 

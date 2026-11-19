@@ -279,6 +279,27 @@ export const TALK: Record<string, TalkCard> = {
     words: ['chain', 'one after another', 'gap', 'reach', 'next'],
     tryAtHome: 'Line up books or blocks on the floor and knock over the first one. How far apart can they be and still all fall?',
   },
+  '43-snip': {
+    idea: 'New parts: a ball on a rope, and scissors. Cutting the rope lets go of the ball, and gravity does the rest. Something held up falls as soon as it is let go.',
+    before: ['What is holding the ball up?', 'What will happen when the rope is cut?'],
+    after: ['Where did the ball go after the snip?', 'Where else on the rope could the scissors go?'],
+    words: ['rope', 'cut', 'snip', 'hold up', 'let go', 'fall'],
+    tryAtHome: 'Hang a small toy on a string from a chair and let your child cut or untie it over a box. Where does it land?',
+  },
+  '45-car-snip': {
+    idea: 'Two things working together: the snip drops the ball onto the shelf, and the car pushes it along to the basket. Neither part can do the job alone.',
+    before: ['What does the scissors do? And the car?', 'Where will the ball land when the rope is cut?'],
+    after: ['What happened when there was only the car?', 'Tell me the story: snip, then...?'],
+    words: ['together', 'drop', 'push', 'first', 'then'],
+    tryAtHome: 'Build a two-step game: you drop a ball onto the table, and your child pushes it with a toy car into a cup.',
+  },
+  '44-swing-snip': {
+    idea: 'A swinging ball keeps moving the way it was going when you let go. Cutting the rope at different moments sends the ball to different places, so your child has to choose the right moment.',
+    before: ['Which way is the ball moving at the bottom of the swing?', 'Where should the rope be cut so the ball flies to the basket?'],
+    after: ['What happened when the rope was cut early? Late?', 'Why did the ball keep going sideways after the snip?'],
+    words: ['swing', 'let go', 'moment', 'early', 'late', 'keep going'],
+    tryAtHome: 'Swing on a swing and jump off (carefully!) at different moments, or swing a soft toy on a string and let go. Where does it land?',
+  },
   '40-watering-can': {
     idea: 'New parts: the watering can and a thirsty flower. Bump the can and it tips and pours; the flower drinks the water and opens up. Plants need water to grow.',
     before: ['What does the flower need?', 'How can we tip the watering can over?'],
