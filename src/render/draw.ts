@@ -325,8 +325,8 @@ export function setPaperShadow(ctx: Ctx, px: number) {
   ctx.shadowBlur = px;
 }
 
-export function drawTable(ctx: Ctx, w: number, h: number) {
-  ctx.fillStyle = PAPER.table;
+export function drawTable(ctx: Ctx, w: number, h: number, paper: string = PAPER.table) {
+  ctx.fillStyle = paper;
   ctx.fillRect(0, 0, w, h);
   ctx.fillStyle = PAPER.dot;
   for (let x = 0.5; x < w; x += 0.5) for (let y = 0.5; y < h; y += 0.5) ctx.fillRect(x - 0.025, y - 0.025, 0.05, 0.05);

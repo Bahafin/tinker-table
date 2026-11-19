@@ -90,6 +90,8 @@ export class Game {
   private raf = 0;
   /** Runs that ended without reaching the goal, for the hint button. */
   misses = 0;
+  /** Table paper colour (each room on the map has its own tint). */
+  paper: string = PAPER.table;
   /** Set while making a puzzle in the toy box. */
   making: Making | null = null;
   private hint: { rp: RuntimePart; from: number } | null = null;
@@ -546,11 +548,11 @@ export class Game {
     ctx.scale(L.scale, L.scale);
     ctx.save();
     ctx.shadowColor = 'rgba(80,55,30,0.25)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 4;
-    ctx.beginPath(); ctx.roundRect(0, 0, WORLD_W, WORLD_H, 0.25); ctx.fillStyle = PAPER.table; ctx.fill();
+    ctx.beginPath(); ctx.roundRect(0, 0, WORLD_W, WORLD_H, 0.25); ctx.fillStyle = this.paper; ctx.fill();
     ctx.restore();
     ctx.save();
     ctx.beginPath(); ctx.roundRect(0, 0, WORLD_W, WORLD_H, 0.25); ctx.clip();
-    drawTable(ctx, WORLD_W, WORLD_H);
+    drawTable(ctx, WORLD_W, WORLD_H, this.paper);
     ctx.restore();
 
     setPaperShadow(ctx, Math.max(1.5, L.scale * 0.04));

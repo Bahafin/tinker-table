@@ -1,5 +1,5 @@
 import './style.css';
-import { LEVELS, TOY_BOX } from './levels';
+import { LEVELS, roomOf, TOY_BOX, type Room } from './levels';
 import { Sim } from './sim/sim';
 import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from './sim/types';
 import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow } from './render/draw';
@@ -26,14 +26,41 @@ const STICKER = `<svg class="sticker" viewBox="0 0 52 52"><circle cx="26" cy="26
 <circle cx="19" cy="22" r="2.5" style="fill:${PAPER.ink};stroke:none"/><circle cx="33" cy="22" r="2.5" style="fill:${PAPER.ink};stroke:none"/>
 <path d="M17 30q9 9 18 0" style="stroke:${PAPER.ink};stroke-width:3.5"/></svg>`;
 
-function thumb(level: Level, toy = false, withSolution = false): HTMLCanvasElement {
+/** Blend two #rrggbb colours: t=0 gives a, t=1 gives b. */
+function mix(a: string, b: string, t: number) {
+  const pa = [1, 3, 5].map((k) => parseInt(a.slice(k, k + 2), 16));
+  const pb = [1, 3, 5].map((k) => parseInt(b.slice(k, k + 2), 16));
+  return '#' + pa.map((v, k) => Math.round(v + (pb[k] - v) * t).toString(16).padStart(2, '0')).join('');
+}
+
+/** Little paper-cut pictures for each room's banner (no words). */
+const ROOM_ICONS: Record<string, string> = {
+  workshop: '<path d="M14 34 30 18" stroke-width="5"/><rect x="26" y="9" width="16" height="9" rx="2" transform="rotate(45 34 13.5)" class="accent"/>',
+  garden: '<circle cx="38" cy="10" r="5" class="petal" stroke-width="2"/><path d="M22 42V26"/><path d="M22 36c-6 0-9-3-10-7 5 0 9 2 10 7z" class="leaf" stroke-width="2"/><g stroke-width="2"><circle cx="22" cy="12" r="5.5" class="pink"/><circle cx="15" cy="19" r="5.5" class="pink"/><circle cx="29" cy="19" r="5.5" class="pink"/><circle cx="22" cy="26" r="5.5" class="pink"/><circle cx="22" cy="19" r="4.5" class="petal"/></g>',
+  kitchen: '<path d="M9 22h24v9a7 7 0 0 1-7 7H16a7 7 0 0 1-7-7z" class="accent"/><path d="M33 25h8" /><path d="M15 16c0-3 3-3 3-6M22 16c0-3 3-3 3-6" />',
+  playroom: '<rect x="8" y="26" width="14" height="14" rx="2" class="accent"/><rect x="24" y="26" width="14" height="14" rx="2" class="petal"/><rect x="16" y="11" width="14" height="14" rx="2" class="leaf"/>',
+  attic: '<path d="M30 9a13 13 0 1 0 9 22A11 11 0 0 1 30 9z" class="accent"/><path d="M13 11l1.5 3 3.2.5-2.3 2.2.6 3.2-3-1.6-2.9 1.6.6-3.2-2.3-2.2 3.2-.5z" class="petal"/>',
+};
+
+function roomBanner(room: Room): HTMLElement {
+  const el = document.createElement('div');
+  el.className = 'room-banner';
+  el.setAttribute('role', 'img');
+  el.setAttribute('aria-label', room.name);
+  el.style.setProperty('--accent', room.accent);
+  el.style.setProperty('--paper', room.paper);
+  el.innerHTML = `<span class="tape"></span><svg viewBox="0 0 48 48">${ROOM_ICONS[room.id] ?? ''}</svg><span class="tape"></span>`;
+  return el;
+}
+
+function thumb(level: Level, toy = false, withSolution = false, paper?: string): HTMLCanvasElement {
   const c = document.createElement('canvas');
   const s = 22;
   c.width = WORLD_W * s;
   c.height = WORLD_H * s;
   const ctx = c.getContext('2d')!;
   ctx.scale(s, s);
-  drawTable(ctx, WORLD_W, WORLD_H);
+  drawTable(ctx, WORLD_W, WORLD_H, paper);
   setPaperShadow(ctx, 1.5);
   if (toy) {
     const kinds: [PartKind, number, number][] = [['seesaw', 4, 6.5], ['ball', 2.6, 5.4], ['balloon', 12, 3], ['domino', 8, 8.75], ['domino', 9, 8.75], ['fan', 13.5, 9], ['heavyball', 5.5, 2.5], ['star', 9.5, 2.5]];
@@ -60,10 +87,13 @@ function showMap() {
   const box = $('levels');
   box.innerHTML = '';
   LEVELS.forEach((lv, i) => {
+    const room = roomOf(i);
+    if (room && room.first === i) box.append(roomBanner(room));
     const b = document.createElement('button');
     b.className = 'card';
     b.setAttribute('aria-label', `Level ${i + 1}`);
-    b.append(thumb(lv));
+    if (room) b.style.background = mix(room.paper, '#ffffff', 0.45);
+    b.append(thumb(lv, false, false, room?.paper));
     if (done.has(lv.id)) b.insertAdjacentHTML('beforeend', STICKER);
     b.onclick = () => startLevel(i);
     box.append(b);
@@ -118,7 +148,8 @@ function talkCard(level: Level, n: string, index: number, toy = false): HTMLElem
   const t = TALK[level.id];
   const card = document.createElement('section');
   card.className = 'talk';
-  const pic = thumb(level, toy);
+  const paper = index >= 0 ? roomOf(index)?.paper : undefined;
+  const pic = thumb(level, toy, false, paper);
   pic.className = 'talk-pic';
   const play = document.createElement('button');
   play.className = 'text-btn';
@@ -144,7 +175,7 @@ function talkCard(level: Level, n: string, index: number, toy = false): HTMLElem
     let showing = false;
     ans.onclick = () => {
       showing = !showing;
-      const next = thumb(level, toy, showing);
+      const next = thumb(level, toy, showing, paper);
       next.className = 'talk-pic';
       side.firstElementChild!.replaceWith(next);
       ans.textContent = showing ? 'Hide the answer' : 'Show the answer';
@@ -383,6 +414,8 @@ function startLevel(i: number, custom?: Level) {
   $('won').classList.add('hidden');
   const slow = game?.slow ?? false;
   game = new Game($<HTMLCanvasElement>('stage'), level);
+  const room = custom || i < 0 ? undefined : roomOf(i);
+  if (room) game.paper = room.paper;
   game.slow = slow;
   game.onChange = syncButtons;
   game.onWin = () => {

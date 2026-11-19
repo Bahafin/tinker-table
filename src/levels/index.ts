@@ -33,6 +33,20 @@ import { TOY_PARTS } from '../sim/parts';
 
 export const LEVELS = [l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21, l22, l23, l24, l25, l26, l27, l28, l29, l30] as Level[];
 
+/**
+ * Rooms on the map: six levels each, in order. Each room has its own paper tint
+ * (cards and the table) and an accent colour for its banner.
+ */
+export interface Room { id: string; name: string; first: number; count: number; paper: string; accent: string }
+export const ROOMS: Room[] = [
+  { id: 'workshop', name: 'Workshop', first: 0, count: 6, paper: '#f4ecdc', accent: '#c79a5b' },
+  { id: 'garden', name: 'Garden', first: 6, count: 6, paper: '#edf1dc', accent: '#7cae4e' },
+  { id: 'kitchen', name: 'Kitchen', first: 12, count: 6, paper: '#f7e7dc', accent: '#e5583f' },
+  { id: 'playroom', name: 'Playroom', first: 18, count: 6, paper: '#e6eef5', accent: '#5aa2d6' },
+  { id: 'attic', name: 'Attic', first: 24, count: 6, paper: '#ece7f1', accent: '#3d4a73' },
+];
+export const roomOf = (levelIndex: number) => ROOMS.find((r) => levelIndex >= r.first && levelIndex < r.first + r.count);
+
 export const TOY_BOX: Level = {
   id: 'toybox',
   voice: 'The toy box! Build anything you like.',

@@ -50,3 +50,12 @@ describe.each(LEVELS.map((l) => [l.id, l] as const))('level %s', (_id, level) =>
     expect(run()).toBe(run());
   });
 });
+
+describe('rooms', () => {
+  test('cover every level exactly once, in order', async () => {
+    const { ROOMS } = await import('../src/levels');
+    let next = 0;
+    for (const r of ROOMS) { expect(r.first).toBe(next); next += r.count; }
+    expect(next).toBe(LEVELS.length);
+  });
+});
