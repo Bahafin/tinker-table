@@ -1,8 +1,8 @@
 import './style.css';
-import { LEVELS, roomOf, TOY_BOX, type Room } from './levels';
+import { LEVELS, ROOMS, roomOf, roomVoice, TOY_BOX, type Room } from './levels';
 import { Sim } from './sim/sim';
 import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from './sim/types';
-import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow } from './render/draw';
+import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow, setSkin } from './render/draw';
 import { Game, drawIcon } from './ui/game';
 import { sfx, speak, unlockAudio } from './ui/audio';
 import { INTRO, MADE_TALK, MAKER_HOW, ROUTINE, SKILLS, TALK, TIPS } from './parents/content';
@@ -42,6 +42,9 @@ const ROOM_ICONS: Record<string, string> = {
   attic: '<path d="M30 9a13 13 0 1 0 9 22A11 11 0 0 1 30 9z" class="accent"/><path d="M13 11l1.5 3 3.2.5-2.3 2.2.6 3.2-3-1.6-2.9 1.6.6-3.2-2.3-2.2 3.2-.5z" class="petal"/>',
 };
 
+/** The toy box's picture: an open box with a ball and a star popping out. */
+const TOY_ICON = '<path d="M8 22h32l-3 18H11z" class="accent"/><path d="M8 22l-3-7 13 2M40 22l3-7-13 2"/><circle cx="20" cy="15" r="5" class="pink"/><path d="M31 6l1.6 3.3 3.6.5-2.6 2.5.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.5 3.6-.5z" class="petal" stroke-width="2"/>';
+
 function roomBanner(room: Room): HTMLElement {
   const el = document.createElement('div');
   el.className = 'room-banner';
@@ -53,27 +56,55 @@ function roomBanner(room: Room): HTMLElement {
   return el;
 }
 
-function thumb(level: Level, toy = false, withSolution = false, paper?: string): HTMLCanvasElement {
+function thumb(level: Level, toy = false, withSolution = false, room?: Room): HTMLCanvasElement {
   const c = document.createElement('canvas');
   const s = 22;
   c.width = WORLD_W * s;
   c.height = WORLD_H * s;
   const ctx = c.getContext('2d')!;
   ctx.scale(s, s);
-  drawTable(ctx, WORLD_W, WORLD_H, paper);
+  drawTable(ctx, WORLD_W, WORLD_H, room?.paper);
   setPaperShadow(ctx, 1.5);
   if (toy) {
+    setSkin('');
     const kinds: [PartKind, number, number][] = [['seesaw', 4, 6.5], ['ball', 2.6, 5.4], ['balloon', 12, 3], ['domino', 8, 8.75], ['domino', 9, 8.75], ['fan', 13.5, 9], ['heavyball', 5.5, 2.5], ['star', 9.5, 2.5]];
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     for (const [k, x, y] of kinds) drawIcon(ctx, k, x * s, y * s, k === 'seesaw' ? 4.4 * s : 1.6 * s);
     return c;
   }
+  setSkin(room?.id ?? '');
   const parts: Placement[] = level.fixed.map((p) => ({ ...p, fixed: true }));
   if (withSolution) parts.push(...(level.solution ?? []));
   const sim = new Sim(parts, level.goal);
   for (const rp of sim.parts) { drawPart(ctx, rp, 0); drawFixedPin(ctx, rp); }
+  setSkin('');
   return c;
 }
+
+/** A room's front-page picture: its own things laid out on its own paper. */
+function roomScene(room: Room): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  const s = 22;
+  c.width = WORLD_W * s;
+  c.height = WORLD_H * s;
+  const ctx = c.getContext('2d')!;
+  ctx.scale(s, s);
+  drawTable(ctx, WORLD_W, WORLD_H, room.paper);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  setSkin(room.id);
+  const things: [PartKind, number, number, number][] = [
+    ['ramp', 6.6, 4.3, 6.4], ['ball', 5.2, 2.5, 3], ['pin', 10.4, 3.6, 3], ['star', 13.2, 2.6, 4],
+    ['block', 2.8, 7.8, 3.4], ['domino', 6.4, 7.5, 4.4], ['domino', 7.8, 7.5, 4.4], ['basket', 12.4, 7.7, 5.6],
+  ];
+  for (const [k, x, y, size] of things) drawIcon(ctx, k, x * s, y * s, size * s);
+  setSkin('');
+  return c;
+}
+
+const BACK_ICON = '<svg viewBox="0 0 48 48"><path d="M38 24H12M22 13 11 24l11 11" /></svg>';
+
+/** null: the front page of rooms; otherwise the room being looked at ('toybox' included). */
+let mapRoom: string | null = null;
 
 function showMap() {
   game?.destroy();
@@ -83,21 +114,101 @@ function showMap() {
   try { speechSynthesis.cancel(); } catch { /* none */ }
   $('play').classList.add('hidden');
   $('map').classList.remove('hidden');
-  const done = loadDone();
   const box = $('levels');
   box.innerHTML = '';
-  LEVELS.forEach((lv, i) => {
-    const room = roomOf(i);
-    if (room && room.first === i) box.append(roomBanner(room));
+  box.className = mapRoom ? 'in-room' : 'rooms';
+  $('map').classList.toggle('in-room', !!mapRoom);
+  if (!mapRoom) showRooms(box);
+  else if (mapRoom === 'toybox') showToyRoom(box);
+  else showRoom(box, ROOMS.find((r) => r.id === mapRoom)!);
+  $('map').scrollTop = 0;
+  if (justMade) {
+    box.querySelector('.fresh')?.scrollIntoView({ block: 'center' });
+    justMade = '';
+  }
+}
+
+function openRoom(id: string | null) {
+  mapRoom = id;
+  showMap();
+}
+
+/** The front page: one big tile per room, then the toy box as a room of its own. */
+function showRooms(box: HTMLElement) {
+  const done = loadDone();
+  for (const room of ROOMS) {
+    const t = document.createElement('button');
+    t.className = 'card room-tile';
+    t.setAttribute('aria-label', room.name);
+    t.style.setProperty('--accent', room.accent);
+    t.style.setProperty('--paper', room.paper);
+    t.style.background = mix(room.paper, '#ffffff', 0.45);
+    t.append(roomScene(room));
+    t.insertAdjacentHTML('beforeend', `<svg class="room-pic" viewBox="0 0 48 48">${ROOM_ICONS[room.id] ?? ''}</svg>`);
+    // One dot per level, filled in when it's done: progress without numbers.
+    const dots = document.createElement('span');
+    dots.className = 'dots';
+    for (let i = room.first; i < room.first + room.count; i++) {
+      const d = document.createElement('i');
+      if (done.has(LEVELS[i].id)) d.className = 'on';
+      dots.append(d);
+    }
+    t.append(dots);
+    if (LEVELS.slice(room.first, room.first + room.count).every((l) => done.has(l.id))) t.insertAdjacentHTML('beforeend', STICKER);
+    t.onclick = () => openRoom(room.id);
+    box.append(t);
+  }
+  const t = document.createElement('button');
+  t.className = 'card room-tile toybox';
+  t.setAttribute('aria-label', 'Toy box');
+  t.style.setProperty('--accent', PAPER.teal);
+  t.style.setProperty('--paper', '#eef7f3');
+  t.style.background = '#f4faf7';
+  t.append(thumb(TOY_BOX, true));
+  t.insertAdjacentHTML('beforeend', `<svg class="room-pic" viewBox="0 0 48 48">${TOY_ICON}</svg>`);
+  if (loadMine().length) t.insertAdjacentHTML('beforeend', MADE_BADGE);
+  t.onclick = () => openRoom('toybox');
+  box.append(t);
+}
+
+/** A row along the top of a room: back to the rooms, and the room's picture. */
+function roomHeader(box: HTMLElement, banner: HTMLElement) {
+  const back = document.createElement('button');
+  back.className = 'icon back';
+  back.setAttribute('aria-label', 'Back to the rooms');
+  back.innerHTML = BACK_ICON;
+  back.onclick = () => openRoom(null);
+  banner.prepend(back);
+  box.append(banner);
+}
+
+function showRoom(box: HTMLElement, room: Room) {
+  const done = loadDone();
+  roomHeader(box, roomBanner(room));
+  for (let i = room.first; i < room.first + room.count; i++) {
+    const lv = LEVELS[i];
     const b = document.createElement('button');
     b.className = 'card';
     b.setAttribute('aria-label', `Level ${i + 1}`);
-    if (room) b.style.background = mix(room.paper, '#ffffff', 0.45);
-    b.append(thumb(lv, false, false, room?.paper));
+    b.style.background = mix(room.paper, '#ffffff', 0.45);
+    b.append(thumb(lv, false, false, room));
     if (done.has(lv.id)) b.insertAdjacentHTML('beforeend', STICKER);
     b.onclick = () => startLevel(i);
     box.append(b);
-  });
+  }
+}
+
+/** The toy box room: build anything, plus the puzzles made here on this device. */
+function showToyRoom(box: HTMLElement) {
+  const done = loadDone();
+  const banner = document.createElement('div');
+  banner.className = 'room-banner';
+  banner.setAttribute('role', 'img');
+  banner.setAttribute('aria-label', 'Toy box');
+  banner.style.setProperty('--accent', PAPER.teal);
+  banner.style.setProperty('--paper', '#eef7f3');
+  banner.innerHTML = `<span class="tape"></span><svg viewBox="0 0 48 48">${TOY_ICON}</svg><span class="tape"></span>`;
+  roomHeader(box, banner);
   const t = document.createElement('button');
   t.className = 'card toybox';
   t.setAttribute('aria-label', 'Toy box');
@@ -118,10 +229,6 @@ function showMap() {
     b.onclick = () => startLevel(-2, lv);
     box.append(b);
   });
-  if (justMade) {
-    box.querySelector('.fresh')?.scrollIntoView({ block: 'center' });
-    justMade = '';
-  }
 }
 
 // ---------- made puzzles (kept on this device) ----------
@@ -148,8 +255,8 @@ function talkCard(level: Level, n: string, index: number, toy = false): HTMLElem
   const t = TALK[level.id];
   const card = document.createElement('section');
   card.className = 'talk';
-  const paper = index >= 0 ? roomOf(index)?.paper : undefined;
-  const pic = thumb(level, toy, false, paper);
+  const room = index >= 0 ? roomOf(index) : undefined;
+  const pic = thumb(level, toy, false, room);
   pic.className = 'talk-pic';
   const play = document.createElement('button');
   play.className = 'text-btn';
@@ -175,7 +282,7 @@ function talkCard(level: Level, n: string, index: number, toy = false): HTMLElem
     let showing = false;
     ans.onclick = () => {
       showing = !showing;
-      const next = thumb(level, toy, showing, paper);
+      const next = thumb(level, toy, showing, room);
       next.className = 'talk-pic';
       side.firstElementChild!.replaceWith(next);
       ans.textContent = showing ? 'Hide the answer' : 'Show the answer';
@@ -403,6 +510,8 @@ function syncButtons() {
 }
 
 let madeGoalShown = false;
+/** The current level's spoken goal, in its room's words. */
+let voice = '';
 
 /** i: a level number, -1 for the toy box, or -2 with a made or shared puzzle. */
 function startLevel(i: number, custom?: Level) {
@@ -415,7 +524,11 @@ function startLevel(i: number, custom?: Level) {
   const slow = game?.slow ?? false;
   game = new Game($<HTMLCanvasElement>('stage'), level);
   const room = custom || i < 0 ? undefined : roomOf(i);
-  if (room) game.paper = room.paper;
+  if (room) { game.paper = room.paper; game.skin = room.id; }
+  // Home goes back to the room this level is in (made and shared puzzles live in the toy box).
+  mapRoom = room?.id ?? 'toybox';
+  voice = roomVoice(room?.id, level.voice);
+  setSkin(room?.id ?? '');
   game.slow = slow;
   game.onChange = syncButtons;
   game.onWin = () => {
@@ -425,7 +538,7 @@ function startLevel(i: number, custom?: Level) {
   };
   syncButtons();
   drawGoalPic(level);
-  speak(level.voice);
+  speak(voice);
 }
 
 // ---------- wiring ----------
@@ -435,7 +548,7 @@ $('btn-gu-close').onclick = hideGrownups;
 $('btn-gu-print').onclick = () => window.print();
 $('btn-home').onclick = showMap;
 $('btn-home2').onclick = showMap;
-$('btn-goal').onclick = () => game && speak(game.level.voice);
+$('btn-goal').onclick = () => game && speak(voice);
 $('btn-go').onclick = () => game?.go();
 $('btn-stop').onclick = () => game?.reset();
 $('btn-hint').onclick = () => { if (game?.showHint()) sfx.place(); };

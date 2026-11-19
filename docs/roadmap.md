@@ -44,7 +44,20 @@ The current game: 30 levels, the toy box, the grown-ups' corner, offline play, a
 - **Kid UX:**
   - The map has five rooms of six levels: Workshop, Garden, Kitchen, Playroom, Attic.
   - Each room has a picture banner (no words) and its own paper tint, which carries on to the table in play.
-  - After the rooms come the toy box and "my puzzles".
+  - (Reworked in Milestone 4.5: the front page now shows rooms, not levels.)
+
+## Milestone 4.5: rooms that feel like rooms (in progress)
+- **Why:** a different background alone made rooms feel thin. Each room should have its own things to play with.
+- **Done:**
+  - The front page shows the rooms as big tiles, with the Toy box (and the puzzle maker) as the sixth room.
+  - Each room draws the parts as its own things (an apple and a flower pot in the garden, a screw and a toolbox in the workshop), and the voice uses the same words. See [design.md](design.md).
+- **Next: one new part per room**, each with its own physics and 2–3 new levels in its room:
+  - **Playroom:** a toy car that drives along and pushes things (first, as it's the easiest to recognise).
+  - **Workshop:** a hammer on a hinge that swings down when knocked.
+  - **Kitchen:** a toaster that pops things straight up.
+  - **Garden:** a watering can that tips over and lets a ball roll out.
+  - **Attic:** a rope and scissors: a ball hangs until something cuts the rope.
+- This replaces the "new parts" list in Milestone 6 (musical parts stay there).
 
 ## Milestone 5: thinking out loud
 - **Guess the path:**
@@ -62,10 +75,8 @@ The current game: 30 levels, the toy box, the grown-ups' corner, offline play, a
   - Bells, xylophone bars and a drum play a note when something hits them.
   - In the toy box, machines become songs.
   - A room of musical levels.
-- **Rope and scissors:**
-  - A ball hangs on a rope until something cuts it.
-  - This gives "cut it, pop it, drop it" a natural reason.
-- **Later parts:** a magnet, gears, a toy car.
+- **Room parts** (rope and scissors, toy car and the others) moved to Milestone 4.5.
+- **Later parts:** a magnet, gears.
 - **A second character:** a friend for the hamster, to give levels little stories (the "why?" lesson from the first playtest).
 
 ## Later

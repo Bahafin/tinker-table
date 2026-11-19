@@ -58,4 +58,13 @@ describe('rooms', () => {
     for (const r of ROOMS) { expect(r.first).toBe(next); next += r.count; }
     expect(next).toBe(LEVELS.length);
   });
+
+  test("speak each goal in the room's own words", async () => {
+    const { roomVoice } = await import('../src/levels');
+    expect(roomVoice('garden', 'Help the ball roll into the basket!')).toBe('Help the apple roll into the flower pot!');
+    expect(roomVoice('kitchen', 'Drop the big ball, then a ball')).toBe('Drop the melon, then an orange');
+    // "ball" inside "balloon" is left alone.
+    expect(roomVoice('attic', 'the ball or the balloon')).toBe('the marble or the balloon');
+    expect(roomVoice(undefined, 'the ball')).toBe('the ball');
+  });
 });

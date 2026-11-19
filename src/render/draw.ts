@@ -1,79 +1,10 @@
-import type { Body } from 'planck';
 import type { RuntimePart } from '../sim/parts';
+import { PAPER, line, noShadow, paper, plank, rrect, star, withBody, type Ctx } from './kit';
+import { balloonIn, skinFor } from './skins';
 
-/** Flat paper colours. */
-export const PAPER = {
-  table: '#f4ecdc',
-  dot: '#e2d6bf',
-  tomato: '#e5583f',
-  mustard: '#e9b23c',
-  teal: '#2f9c95',
-  sky: '#6db3e0',
-  kraft: '#b98a5a',
-  kraftDark: '#8f6640',
-  navy: '#34406b',
-  cream: '#fbf6ea',
-  ink: '#3b2f2a',
-  leaf: '#7cb45a',
-  grey: '#9aa1a6',
-  brass: '#c9a24a',
-};
+export { setSkin } from './skins';
 
-type Ctx = CanvasRenderingContext2D;
-
-function withBody(ctx: Ctx, b: Body, fn: () => void) {
-  const p = b.getPosition();
-  ctx.save();
-  ctx.translate(p.x, p.y);
-  ctx.rotate(b.getAngle());
-  fn();
-  ctx.restore();
-}
-
-function rrect(ctx: Ctx, x: number, y: number, w: number, h: number, r: number) {
-  ctx.beginPath();
-  ctx.roundRect(x, y, w, h, Math.min(r, w / 2, h / 2));
-}
-
-function paper(ctx: Ctx, fill: string) {
-  ctx.fillStyle = fill;
-  ctx.fill();
-}
-
-function noShadow(ctx: Ctx, fn: () => void) {
-  ctx.save();
-  ctx.shadowColor = 'transparent';
-  fn();
-  ctx.restore();
-}
-
-function line(ctx: Ctx, x0: number, y0: number, x1: number, y1: number, color: string, w: number) {
-  ctx.beginPath();
-  ctx.moveTo(x0, y0);
-  ctx.lineTo(x1, y1);
-  ctx.strokeStyle = color;
-  ctx.lineWidth = w;
-  ctx.lineCap = 'round';
-  ctx.stroke();
-}
-
-function plank(ctx: Ctx, hw: number) {
-  rrect(ctx, -hw, -0.125, hw * 2, 0.25, 0.06);
-  paper(ctx, PAPER.kraft);
-  noShadow(ctx, () => {
-    line(ctx, -hw + 0.15, 0, hw - 0.15, 0, PAPER.kraftDark, 0.03);
-  });
-}
-
-function star(ctx: Ctx, r: number) {
-  ctx.beginPath();
-  for (let i = 0; i < 10; i++) {
-    const a = -Math.PI / 2 + (i * Math.PI) / 5;
-    const rr = i % 2 ? r * 0.45 : r;
-    ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr);
-  }
-  ctx.closePath();
-}
+export { PAPER };
 
 const DRAW: Record<string, (ctx: Ctx, rp: RuntimePart, t: number) => void> = {
   ball(ctx, rp) {
@@ -145,19 +76,7 @@ const DRAW: Record<string, (ctx: Ctx, rp: RuntimePart, t: number) => void> = {
       noShadow(ctx, () => { ctx.beginPath(); ctx.arc(0, 0, 0.07, 0, Math.PI * 2); paper(ctx, PAPER.brass); });
     });
   },
-  balloon(ctx, rp, t) {
-    if (rp.state.popped) return;
-    withBody(ctx, rp.bodies[0], () => {
-      noShadow(ctx, () => {
-        ctx.beginPath(); ctx.moveTo(0, 0.5);
-        ctx.bezierCurveTo(0.15 * Math.sin(t * 3), 0.7, -0.15, 0.85, 0.05 * Math.sin(t * 2), 1.05);
-        ctx.strokeStyle = PAPER.ink; ctx.lineWidth = 0.025; ctx.stroke();
-      });
-      ctx.beginPath(); ctx.ellipse(0, 0, 0.42, 0.5, 0, 0, Math.PI * 2); paper(ctx, PAPER.tomato);
-      ctx.beginPath(); ctx.moveTo(-0.07, 0.56); ctx.lineTo(0.07, 0.56); ctx.lineTo(0, 0.46); paper(ctx, PAPER.tomato);
-      noShadow(ctx, () => { ctx.beginPath(); ctx.ellipse(-0.15, -0.2, 0.07, 0.13, 0.5, 0, Math.PI * 2); paper(ctx, '#f39a87'); });
-    });
-  },
+  balloon: balloonIn(PAPER.tomato, '#f39a87'),
   pin(ctx, rp) {
     withBody(ctx, rp.bodies[0], () => {
       ctx.beginPath(); ctx.moveTo(0, -0.35); ctx.lineTo(0.12, 0.3); ctx.lineTo(-0.12, 0.3); ctx.closePath(); paper(ctx, PAPER.grey);
@@ -304,8 +223,9 @@ const DRAW: Record<string, (ctx: Ctx, rp: RuntimePart, t: number) => void> = {
   },
 };
 
+/** Draw a part, in the current room's look when the room has one for it. */
 export function drawPart(ctx: Ctx, rp: RuntimePart, t: number) {
-  DRAW[rp.kind](ctx, rp, t);
+  (skinFor(rp.kind) ?? DRAW[rp.kind])(ctx, rp, t);
 }
 
 /** Small brass pin shown on parts that came with the level and can't be moved. */

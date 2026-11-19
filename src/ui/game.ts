@@ -2,7 +2,7 @@ import { Sim, DT } from '../sim/sim';
 import { PARTS, type RuntimePart } from '../sim/parts';
 import { clampToWorld, hitTest, overlapsAny } from '../sim/placement';
 import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from '../sim/types';
-import { drawFixedPin, drawPart, drawTable, PAPER, paperGrain, setPaperShadow } from '../render/draw';
+import { drawFixedPin, drawPart, drawTable, PAPER, paperGrain, setPaperShadow, setSkin } from '../render/draw';
 import { sfx } from './audio';
 import { nextHint } from './hints';
 import { GOAL_OBJECTS, GOAL_TARGETS, MADE_VOICE } from '../levels/share';
@@ -92,6 +92,8 @@ export class Game {
   misses = 0;
   /** Table paper colour (each room on the map has its own tint). */
   paper: string = PAPER.table;
+  /** Room look for the parts ('' for the plain look). */
+  skin = '';
   /** Set while making a puzzle in the toy box. */
   making: Making | null = null;
   private hint: { rp: RuntimePart; from: number } | null = null;
@@ -537,6 +539,7 @@ export class Game {
   }
 
   private render() {
+    setSkin(this.skin);
     const ctx = this.canvas.getContext('2d')!;
     const L = this.L;
     ctx.setTransform(L.dpr, 0, 0, L.dpr, 0, 0);

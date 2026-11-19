@@ -117,7 +117,23 @@ Levels 20–30 go further. Each brings a new idea or a new pairing of parts:
 
 Tried and dropped: a fan blowing a ball uphill (its reach is too short to climb a real slope), and a falling domino used as a bridge (too chaotic: random placements won).
 
-The map groups levels into five **rooms** of six (Workshop, Garden, Kitchen, Playroom, Attic). Each room has a picture banner and its own paper tint.
+The front page shows six big tiles: five **rooms** of six levels (Workshop, Garden, Kitchen, Playroom, Attic) and the **Toy box** as a sixth room. Each tile shows the room's own things and one dot per level, which fills in when the level is done. Tapping a tile opens the room, with a back button. The puzzle maker and the puzzles made on this device live in the Toy box room.
+
+Each room draws the same parts as its own things (`src/render/skins.ts`). The physics, size and outline never change, so a slope always looks like a slope and a target is always an open container:
+
+| Part | Workshop | Garden | Kitchen | Playroom | Attic |
+|---|---|---|---|---|---|
+| Ball | steel ball | apple | orange | beach ball | marble |
+| Heavy ball | (plain) | pumpkin | melon | bowling ball | globe |
+| Ramp | nailed plank | branch | cutting board | toy track | floorboard |
+| Block | wooden crate | hay bale | toast | toy block | cardboard box |
+| Basket | toolbox | flower pot | cooking pot | toy chest | trunk |
+| Star | gear | flower | star cookie | star | moon |
+| Pin | screw | cactus | fork | drawing pin | needle |
+| Domino | wooden slat | fence picket | cereal box | crayon | book |
+| Balloon | red | yellow | pink | blue | purple |
+
+The spoken goal uses the room's words too (`roomVoice` in `src/levels/index.ts`), so in the garden "the ball" becomes "the apple". The hamster, cheese, fan, belt, spring, see-saw and pulley look the same everywhere.
 
 Plus the **toy box**: every part except the goal-only star and cheese, unlimited, no goal.
 

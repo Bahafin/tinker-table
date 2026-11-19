@@ -45,7 +45,39 @@ export const ROOMS: Room[] = [
   { id: 'playroom', name: 'Playroom', first: 18, count: 6, paper: '#e6eef5', accent: '#5aa2d6' },
   { id: 'attic', name: 'Attic', first: 24, count: 6, paper: '#ece7f1', accent: '#3d4a73' },
 ];
-export const roomOf = (levelIndex: number) => ROOMS.find((r) => levelIndex >= r.first && levelIndex < r.first + r.count);
+/**
+ * Each room draws some parts as its own things (see render/skins.ts), so the spoken goal
+ * uses the same words. Applied in order; longer phrases come first.
+ */
+const WORDS: Record<string, [RegExp, string][]> = {
+  workshop: [[/\bbasket\b/g, 'toolbox'], [/\bstar\b/g, 'gear'], [/\bpins\b/g, 'screws'], [/\bpin\b/g, 'screw']],
+  garden: [
+    [/\b(big|heavy) ball\b/g, 'pumpkin'], [/\ba ball\b/g, 'an apple'], [/\bballs\b/g, 'apples'], [/\bball\b/g, 'apple'],
+    [/\bbasket\b/g, 'flower pot'], [/\bstar\b/g, 'flower'], [/\bdominoes\b/g, 'fence posts'],
+    [/\bpins\b/g, 'cactuses'], [/\bpin\b/g, 'cactus'], [/\bMake a ramp\b/g, 'Lay a branch'], [/\ba ramp\b/g, 'a branch'], [/\bramps\b/g, 'branches'], [/\bramp\b/g, 'branch'],
+  ],
+  kitchen: [
+    [/\b(big|heavy) ball\b/g, 'melon'], [/\ba ball\b/g, 'an orange'], [/\bballs\b/g, 'oranges'], [/\bball\b/g, 'orange'],
+    [/\bbasket\b/g, 'pot'], [/\bstar\b/g, 'cookie'], [/\bdominoes\b/g, 'cereal boxes'],
+    [/\bpins\b/g, 'forks'], [/\bpin\b/g, 'fork'], [/\bramps\b/g, 'cutting boards'], [/\bramp\b/g, 'cutting board'],
+  ],
+  playroom: [
+    [/\b(big|heavy) ball\b/g, 'bowling ball'], [/\bbasket\b/g, 'toy chest'], [/\bdominoes\b/g, 'crayons'],
+    [/\bpins\b/g, 'drawing pins'], [/\bpin\b/g, 'drawing pin'], [/\bramps\b/g, 'tracks'], [/\bramp\b/g, 'track'],
+  ],
+  attic: [
+    [/\b(big|heavy) ball\b/g, 'globe'], [/\bballs\b/g, 'marbles'], [/\bball\b/g, 'marble'],
+    [/\bbasket\b/g, 'trunk'], [/\bstar\b/g, 'moon'], [/\bdominoes\b/g, 'books'], [/\bDominoes\b/g, 'Books'],
+    [/\bpins\b/g, 'needles'], [/\bpin\b/g, 'needle'], [/\bramps\b/g, 'floorboards'], [/\bramp\b/g, 'floorboard'],
+  ],
+};
+/** A level's spoken goal in its room's words ("ball" becomes "apple" in the garden). */
+export function roomVoice(roomId: string | undefined, voice: string) {
+  for (const [re, to] of WORDS[roomId ?? ''] ?? []) voice = voice.replace(re, to);
+  return voice;
+}
+
+export const roomOf =(levelIndex: number) => ROOMS.find((r) => levelIndex >= r.first && levelIndex < r.first + r.count);
 
 export const TOY_BOX: Level = {
   id: 'toybox',
