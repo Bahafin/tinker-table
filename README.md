@@ -20,6 +20,10 @@ The game picks the most natural English voice the device has. To get a much bett
 
 To see which voice was chosen, run `tinkerVoices()` in the browser console.
 
+## What's next
+
+Hints, a puzzle maker with share links, and rooms on the map come next. The full plan is in [docs/roadmap.md](docs/roadmap.md).
+
 ## Run it
 
 Install and start the game:

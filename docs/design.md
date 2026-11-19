@@ -1,4 +1,4 @@
-# Tinker Table — design doc (Milestone 1)
+# Tinker Table — design doc
 
 *Working title. Check the name before any release.*
 
@@ -20,6 +20,8 @@ A calm chain-reaction puzzle game for ages 4–7, played with a parent on a tabl
 8. **Success = confetti, a chime and a slow replay.** Then three big icons appear: replay, next and home.
 9. **A slow-motion toggle** (snail button) is always available.
 10. **One voice line per level,** and the speaker button replays it.
+11. **Hints are ghosts, not words.** After two missed runs a hint button pulses. Each tap shows a faint ghost of one missing part, in place and at its angle, for a few seconds.
+12. **Making puzzles uses taps, not menus.** In the toy box: tap what travels, tap where it goes, tap parts to pin them, then tap the tick. A puzzle that doesn't check out gets a wiggle and a hmm.
 
 ## World and physics
 - **The world is 16 × 10 cells,** and 1 cell = 1 physics unit (metre). The screen's y axis points down, and gravity is +10 in y.
@@ -115,6 +117,8 @@ Levels 20–30 go further. Each brings a new idea or a new pairing of parts:
 
 Tried and dropped: a fan blowing a ball uphill (its reach is too short to climb a real slope), and a falling domino used as a bridge (too chaotic: random placements won).
 
+The map groups levels into five **rooms** of six (Workshop, Garden, Kitchen, Playroom, Attic). Each room has a picture banner and its own paper tint.
+
 Plus the **toy box**: every part except the goal-only star and cheese, unlimited, no goal.
 
 ## Look: paper craft
@@ -153,16 +157,20 @@ Plus the **toy box**: every part except the goal-only star and cheese, unlimited
 - A service worker (`public/sw.js`) saves the game's files on the first online visit, so it then plays offline. This only works over HTTPS or on localhost, so it needs proper hosting to help on the iPad.
 - `node scripts/make-icons.mjs` redraws the icon PNGs.
 
+## Share links
+- A made puzzle is a level: fixed parts, tray, goal and a reference solution. It is packed into compact JSON with short keys, base64url-encoded and put after  in the link. The part after  never reaches the server.
+- Opening a link decodes and **validates** it before anything is drawn:
+  - the part kinds must be known;
+  - positions must be on the half-cell grid and inside the table;
+  - angles must be in 15° steps;
+  - at most 40 parts, and a size limit on the code;
+  - the goal must point at real parts of the right kinds.
+  Anything wrong is ignored and the map opens instead.
+- A link holds only the puzzle. Nothing about the person who made it is in it.
+
 ## Roadmap
 **Done in Milestone 2:** hamster and conveyor parts, levels 6–8, the paper-grain pass, home-screen install and offline play.
 
-**Done in Milestone 3:** GitHub Pages hosting, rotate buttons, nicer voice choice, grown-ups' corner, logo, levels 9–14 (every part is now used in at least one level).
+**Done in Milestone 3:** GitHub Pages hosting, rotate buttons, nicer voice choice, grown-ups' corner, logo, levels 9–30 (every part is now used), a scrolling map.
 
-**Next:**
-- Playtest with your son, then tune from what you see.
-- Recorded narration.
-- More parts: magnet, scissors that cut a rope.
-- Hand-drawn sprites.
-- Rooms or worlds.
-- Tilt puzzles using the iPad's sensors.
-- Deciding whether a native App Store build is worth it.
+**Next:** see [roadmap.md](roadmap.md). Milestone 4 is hints, the puzzle maker with share links, and rooms.
