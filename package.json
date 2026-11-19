@@ -7,7 +7,8 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview --host",
-    "test": "vitest run"
+    "test": "vitest run",
+    "search": "vitest run scripts/level-search"
   },
   "dependencies": {
     "planck": "^1.5.1"
