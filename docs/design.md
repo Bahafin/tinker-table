@@ -173,4 +173,6 @@ Plus the **toy box**: every part except the goal-only star and cheese, unlimited
 
 **Done in Milestone 3:** GitHub Pages hosting, rotate buttons, nicer voice choice, grown-ups' corner, logo, levels 9–30 (every part is now used), a scrolling map.
 
-**Next:** see [roadmap.md](roadmap.md). Milestone 4 is hints, the puzzle maker with share links, and rooms.
+**Done in Milestone 4:** hints, the puzzle maker with share links, rooms on the map.
+
+**Next:** see [roadmap.md](roadmap.md). Milestone 5 is guess the path, the film strip and the sticker book.

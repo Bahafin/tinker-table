@@ -22,7 +22,7 @@ To see which voice was chosen, run `tinkerVoices()` in the browser console.
 
 ## What's next
 
-Hints, a puzzle maker with share links, and rooms on the map come next. The full plan is in [docs/roadmap.md](docs/roadmap.md).
+Next up: guess the path, a film strip of each run, and a sticker book. The full plan is in [docs/roadmap.md](docs/roadmap.md).
 
 ## Run it
 

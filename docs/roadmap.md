@@ -14,7 +14,7 @@ The current game: 30 levels, the toy box, the grown-ups' corner, offline play, a
 - **Sharing puts the puzzle itself in the link.** No server stores it.
 - **Sharing is a grown-up action,** so it sits behind the press-and-hold gate.
 
-## Milestone 4: help, make and organise
+## Milestone 4: help, make and organise (done)
 
 ### Hints
 - **Why:** the first playtest showed that later levels need help, and a stuck child gives up.
