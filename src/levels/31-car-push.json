@@ -1,0 +1,13 @@
+{
+  "id": "31-car-push",
+  "voice": "Here's a toy car! It drives by itself when you press go. Put it on the shelf, so it pushes the ball into the basket.",
+  "goal": { "type": "reach", "object": "ball1", "target": "basket1" },
+  "fixed": [
+    { "part": "ramp", "x": 3.5, "y": 6, "rot": 0 },
+    { "part": "ramp", "x": 6.5, "y": 6, "rot": 0 },
+    { "part": "ball", "id": "ball1", "x": 7, "y": 5.5 },
+    { "part": "basket", "id": "basket1", "x": 10.5, "y": 9.4 }
+  ],
+  "tray": [{ "part": "car", "count": 1 }],
+  "solution": [{ "part": "car", "x": 3, "y": 5.5, "rot": 0 }]
+}

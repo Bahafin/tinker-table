@@ -2,6 +2,9 @@ import { World, Body, Box, Circle, Polygon, RevoluteJoint, PulleyJoint, Vec2 } f
 import type { PartKind, Placement } from './types';
 
 const DEG = Math.PI / 180;
+/** Toy car wheel speed (rad/s) and motor strength. */
+export const CAR_SPIN = 12;
+export const CAR_TORQUE = 0.6;
 
 /** A part as it exists inside a physics world. */
 export interface RuntimePart {
@@ -199,6 +202,31 @@ export const PARTS: Record<PartKind, PartDef> = {
       rp.state.dir = Math.abs(p.rot ?? 0) === 180 ? -1 : 1;
     },
   },
+  car: {
+    // A wind-up toy truck. It drives the way it faces as soon as the machine starts,
+    // pushes what's in front of it, and can carry a ball on its back.
+    // Wheels reach 0.37 below the centre, so on the half-cell grid it sits on a plank like a ball does.
+    hit: { w: 0.6, h: 0.4 },
+    rotatable: true,
+    rotStep: 180,
+    build(world, p, rp) {
+      const dir = Math.abs(p.rot ?? 0) === 180 ? -1 : 1;
+      const c = world.createBody({ type: 'dynamic', position: new Vec2(p.x, p.y) });
+      c.createFixture(new Box(0.55, 0.07, new Vec2(0, 0.02)), { density: 2, friction: 0.6 });
+      // The cab at the front and a tailgate at the back hold a ball on the flat bed between them.
+      c.createFixture(new Box(0.15, 0.15, new Vec2(0.4 * dir, -0.2)), { density: 1, friction: 0.5 });
+      c.createFixture(new Box(0.04, 0.1, new Vec2(-0.51 * dir, -0.15)), { density: 1, friction: 0.5 });
+      rp.bodies.push(c);
+      for (const wx of [-0.42, 0.42]) {
+        const w = world.createBody({ type: 'dynamic', position: new Vec2(p.x + wx, p.y + 0.15) });
+        w.createFixture(new Circle(0.22), { density: 0.7, friction: 1, restitution: 0 });
+        world.createJoint(new RevoluteJoint({ enableMotor: true, motorSpeed: CAR_SPIN * dir, maxMotorTorque: CAR_TORQUE }, c, w, w.getPosition()));
+        rp.bodies.push(w);
+      }
+      rp.state.dir = dir;
+      rp.state.on = true;
+    },
+  },
   cheese: {
     hit: { w: 0.5, h: 0.4 },
     rotatable: false,
@@ -213,7 +241,7 @@ export const PARTS: Record<PartKind, PartDef> = {
 
 export const ALL_PARTS: PartKind[] = [
   'ball', 'heavyball', 'ramp', 'shortramp', 'block', 'domino', 'seesaw',
-  'balloon', 'pin', 'fan', 'spring', 'conveyor', 'hamster', 'pulley', 'basket', 'star', 'cheese',
+  'balloon', 'pin', 'fan', 'spring', 'conveyor', 'hamster', 'car', 'pulley', 'basket', 'star', 'cheese',
 ];
 
 /** Parts offered in the toy box (goal-only parts like the star and cheese are left out). */

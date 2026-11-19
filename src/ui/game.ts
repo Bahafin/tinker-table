@@ -127,6 +127,7 @@ export class Game {
     this.endTimer = 0;
     this.mode = 'run';
     sfx.go();
+    if (this.sim.parts.some((p) => p.kind === 'car')) setTimeout(sfx.vroom, 150);
     this.onChange();
   }
 

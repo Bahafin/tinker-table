@@ -96,6 +96,8 @@ function roomScene(room: Room): HTMLCanvasElement {
     ['ramp', 6.6, 4.3, 6.4], ['ball', 5.2, 2.5, 3], ['pin', 10.4, 3.6, 3], ['star', 13.2, 2.6, 4],
     ['block', 2.8, 7.8, 3.4], ['domino', 6.4, 7.5, 4.4], ['domino', 7.8, 7.5, 4.4], ['basket', 12.4, 7.7, 5.6],
   ];
+  // The playroom's own toy, the car, takes the pin's spot.
+  if (room.id === 'playroom') things[2] = ['car', 10.2, 3.8, 3.2];
   for (const [k, x, y, size] of things) drawIcon(ctx, k, x * s, y * s, size * s);
   setSkin('');
   return c;
@@ -117,6 +119,7 @@ function showMap() {
   const box = $('levels');
   box.innerHTML = '';
   box.className = mapRoom ? 'in-room' : 'rooms';
+  box.style.width = '';
   $('map').classList.toggle('in-room', !!mapRoom);
   if (!mapRoom) showRooms(box);
   else if (mapRoom === 'toybox') showToyRoom(box);
@@ -185,6 +188,9 @@ function roomHeader(box: HTMLElement, banner: HTMLElement) {
 function showRoom(box: HTMLElement, room: Room) {
   const done = loadDone();
   roomHeader(box, roomBanner(room));
+  // Shrink the cards a little when a room has more rows than fit on the screen.
+  const rows = Math.ceil(room.count / 3);
+  if (rows > 2) box.style.width = `min(1120px, 100%, calc((100dvh - 170px) / ${rows} * 4.6))`;
   for (let i = room.first; i < room.first + room.count; i++) {
     const lv = LEVELS[i];
     const b = document.createElement('button');

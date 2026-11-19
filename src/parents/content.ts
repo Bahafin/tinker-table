@@ -258,6 +258,27 @@ export const TALK: Record<string, TalkCard> = {
     words: ['machine', 'plan', 'step', 'chain', 'test', 'fix'],
     tryAtHome: 'Build a real chain-reaction machine with toys: a car down a ramp into dominoes into a ball into a cup. It\'s fine if it takes many tries.',
   },
+  '31-car-push': {
+    idea: 'A new part: the toy car has its own motor. It starts as soon as you press go and drives the way it faces, pushing whatever is in front of it.',
+    before: ['Where should the car start, so it bumps the ball?', 'Which way is the car facing? Tap it to turn it around.'],
+    after: ['What did the car do to the ball?', 'What happens if the car faces the other way?'],
+    words: ['motor', 'drive', 'push', 'facing', 'by itself'],
+    tryAtHome: 'Wind up or push a toy car towards a ball on the floor. Can you aim it so the ball rolls into a box?',
+  },
+  '32-car-ride': {
+    idea: 'A ball can\'t roll uphill on its own, but something with a motor can carry it up. Your child builds a road, and the road has to join up with no gaps.',
+    before: ['Can the ball get up to the star by itself?', 'Where does the road need to start and end?'],
+    after: ['How did the ball get up there?', 'What happened when there was a gap in the road?'],
+    words: ['carry', 'uphill', 'road', 'join up', 'gap'],
+    tryAtHome: 'Put a small toy on a toy truck and drive it up a book ramp. What happens if the ramp is very steep?',
+  },
+  '33-car-catapult': {
+    idea: 'A strong motor can move something heavy. The car pushes the heavy ball, the heavy ball drops on the see-saw, and the see-saw flings the little ball: three steps, one after another.',
+    before: ['Which ball is heavy, and which is light?', 'Where will the heavy ball fall when the car pushes it off?'],
+    after: ['Tell me the story: first the car... then...?', 'Why does the heavy ball fling the little one so high?'],
+    words: ['heavy', 'light', 'push', 'fling', 'one after another'],
+    tryAtHome: 'Make a see-saw with a ruler over a pencil. Put a coin on one end and tap the other end hard. Where does the coin go?',
+  },
   toybox: {
     idea: 'Free play with every part and no goal. This is where children invent, test their own ideas and show you what they\'ve learned.',
     before: ['What would you like to make happen?', 'Can you build something that goes boing and then pop?'],

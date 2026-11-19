@@ -207,6 +207,36 @@ const DRAW: Record<string, (ctx: Ctx, rp: RuntimePart, t: number) => void> = {
       });
     });
   },
+  car(ctx, rp, t) {
+    const [c, ...wheels] = rp.bodies;
+    const dir = rp.state.dir ?? 1;
+    withBody(ctx, c, () => {
+      ctx.scale(dir, 1);
+      ctx.translate(0, -0.06);
+      // Bed and body.
+      rrect(ctx, -0.56, -0.02, 1.12, 0.2, 0.06); paper(ctx, PAPER.tomato);
+      rrect(ctx, -0.55, -0.24, 0.08, 0.26, 0.03); paper(ctx, PAPER.tomato);
+      // Cab, with a window and a little headlight.
+      ctx.beginPath(); ctx.moveTo(0.22, 0); ctx.lineTo(0.22, -0.3); ctx.quadraticCurveTo(0.24, -0.36, 0.32, -0.36);
+      ctx.lineTo(0.48, -0.36); ctx.quadraticCurveTo(0.56, -0.34, 0.56, -0.2); ctx.lineTo(0.58, 0); ctx.closePath(); paper(ctx, PAPER.mustard);
+      noShadow(ctx, () => {
+        rrect(ctx, 0.3, -0.3, 0.2, 0.13, 0.03); paper(ctx, '#cfe8f6');
+        ctx.beginPath(); ctx.arc(0.55, 0.06, 0.04, 0, Math.PI * 2); paper(ctx, PAPER.cream);
+        // The wind-up key on the back turns while it drives.
+        ctx.save(); ctx.translate(-0.2, -0.06); ctx.rotate(t * 6);
+        line(ctx, -0.1, 0, 0.1, 0, PAPER.brass, 0.05); ctx.restore();
+      });
+    });
+    for (const w of wheels) {
+      withBody(ctx, w, () => {
+        ctx.beginPath(); ctx.arc(0, 0, 0.22, 0, Math.PI * 2); paper(ctx, PAPER.ink);
+        noShadow(ctx, () => {
+          ctx.beginPath(); ctx.arc(0, 0, 0.09, 0, Math.PI * 2); paper(ctx, PAPER.grey);
+          line(ctx, -0.16, 0, 0.16, 0, PAPER.grey, 0.035);
+        });
+      });
+    }
+  },
   cheese(ctx, rp, t) {
     withBody(ctx, rp.bodies[0], () => {
       ctx.rotate(Math.sin(t * 2) * 0.04);
