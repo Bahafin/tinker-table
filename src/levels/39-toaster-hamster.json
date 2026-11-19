@@ -1,6 +1,7 @@
 {
   "id": "39-toaster-hamster",
   "voice": "The cheese is up on the shelf! Wake the hamster, and catch him in the toaster. Ding! Up he goes.",
+  "difficulty": 5.05,
   "goal": { "type": "reach", "object": "hamster1", "target": "cheese1" },
   "fixed": [
     { "part": "ramp", "x": 3, "y": 6, "rot": 0 },

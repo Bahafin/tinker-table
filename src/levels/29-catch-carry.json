@@ -1,6 +1,7 @@
 {
   "id": "29-catch-carry",
   "voice": "Drop the heavy ball to fling the little one up high, and catch it with the belt!",
+  "difficulty": 5.60,
   "goal": {
     "type": "reach",
     "object": "ball1",

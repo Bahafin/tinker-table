@@ -1,6 +1,7 @@
 {
   "id": "24-under-belt",
   "voice": "Belts work upside down too! Catch the balloon under the belts, and carry it past the pins to the star.",
+  "difficulty": 4.16,
   "goal": {
     "type": "reach",
     "object": "balloon1",

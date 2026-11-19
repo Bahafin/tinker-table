@@ -1,6 +1,7 @@
 {
   "id": "15-bank-shot",
   "voice": "The ball flies too far! Stand the spring up like a wall, so the ball bounces back into the basket.",
+  "difficulty": 3.86,
   "goal": {
     "type": "reach",
     "object": "ball1",

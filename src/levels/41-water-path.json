@@ -1,6 +1,7 @@
 {
   "id": "41-water-path",
   "voice": "Water runs downhill! Build a path with the ramps, so the water runs all the way to the flower on the shelf.",
+  "difficulty": 4.07,
   "goal": {
     "type": "reach",
     "object": "can1",

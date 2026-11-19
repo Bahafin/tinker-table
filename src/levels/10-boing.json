@@ -1,6 +1,7 @@
 {
   "id": "10-boing",
   "voice": "The wall is too tall! Put the bouncy spring where the ball lands, and boing it over the wall.",
+  "difficulty": 2.89,
   "goal": {
     "type": "reach",
     "object": "ball1",

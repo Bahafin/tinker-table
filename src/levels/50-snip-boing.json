@@ -1,0 +1,15 @@
+{
+  "id": "50-snip-boing",
+  "voice": "Snip the rope, and put the spring where the ball lands. Boing! Over the wall and into the basket.",
+  "difficulty": 4.74,
+  "goal": { "type": "reach", "object": "rope1", "target": "basket1" },
+  "fixed": [
+    { "part": "rope", "id": "rope1", "x": 3, "y": 1, "rot": 0 },
+    { "part": "block", "x": 6.5, "y": 9.5 },
+    { "part": "block", "x": 6.5, "y": 8.5 },
+    { "part": "block", "x": 6.5, "y": 7.5 },
+    { "part": "basket", "id": "basket1", "x": 9, "y": 9.4 }
+  ],
+  "tray": [{ "part": "scissors", "count": 1 }, { "part": "spring", "count": 1 }],
+  "solution": [{ "part": "scissors", "x": 3, "y": 2, "rot": 0 }, { "part": "spring", "x": 3, "y": 9.5, "rot": 15 }]
+}

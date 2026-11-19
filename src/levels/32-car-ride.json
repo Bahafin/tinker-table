@@ -1,6 +1,7 @@
 {
   "id": "32-car-ride",
   "voice": "The ball can't roll uphill, but the car can carry it! Build a road up to the star.",
+  "difficulty": 3.64,
   "goal": { "type": "reach", "object": "ball1", "target": "star1" },
   "fixed": [
     { "part": "ramp", "x": 2, "y": 8, "rot": 0 },

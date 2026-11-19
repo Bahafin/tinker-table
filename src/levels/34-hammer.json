@@ -1,6 +1,7 @@
 {
   "id": "34-hammer",
   "voice": "Here's a hammer! When something bumps it, it swings down with a big whack. Drop a ball on the hammer, and whack the other ball into the basket.",
+  "difficulty": 2.13,
   "goal": { "type": "reach", "object": "ball1", "target": "basket1" },
   "fixed": [
     { "part": "hammer", "id": "hammer1", "x": 6.5, "y": 9.5, "rot": 0 },

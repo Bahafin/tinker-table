@@ -28,6 +28,8 @@ export interface Level {
   fixed: Placement[];
   tray: { part: PartKind; count: number }[];
   solution?: Placement[];
+  /** How hard the level is (higher is harder), from scripts/level-stats. Built-in levels only. */
+  difficulty?: number;
 }
 
 export type SimEvent =

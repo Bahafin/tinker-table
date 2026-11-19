@@ -59,6 +59,34 @@ describe('rooms', () => {
     expect(next).toBe(LEVELS.length);
   });
 
+  test('have at least ten levels each', async () => {
+    const { ROOMS } = await import('../src/levels');
+    for (const r of ROOMS) expect(r.count, r.name).toBeGreaterThanOrEqual(10);
+  });
+
+  test('never repeat a level, in the same room or another one', () => {
+    expect(new Set(LEVELS.map((l) => l.id)).size).toBe(LEVELS.length);
+    // Two levels with the same layout and tray would be the same puzzle under another name.
+    const key = (l: Level) => JSON.stringify([l.fixed, l.tray]);
+    expect(new Set(LEVELS.map(key)).size).toBe(LEVELS.length);
+  });
+
+  test('get harder along each room, and from room to room', async () => {
+    const { ROOMS } = await import('../src/levels');
+    const d = (i: number) => LEVELS[i].difficulty!;
+    for (const lv of LEVELS) expect(lv.difficulty, lv.id).toBeTypeOf('number');
+    ROOMS.forEach((r, k) => {
+      for (let i = 1; i < r.count; i++) {
+        expect(d(r.first + i), `${r.name} level ${i + 1} is harder than level ${i}`).toBeGreaterThan(d(r.first + i - 1));
+      }
+      if (k === 0) return;
+      const prev = ROOMS[k - 1];
+      for (let i = 0; i < Math.min(r.count, prev.count); i++) {
+        expect(d(r.first + i), `${r.name} level ${i + 1} is harder than ${prev.name} level ${i + 1}`).toBeGreaterThan(d(prev.first + i));
+      }
+    });
+  });
+
   test("speak each goal in the room's own words", async () => {
     const { roomVoice } = await import('../src/levels');
     expect(roomVoice('garden', 'Help the ball roll into the basket!')).toBe('Help the apple roll into the flower pot!');

@@ -1,6 +1,7 @@
 {
   "id": "06-hamster",
   "voice": "Shh, the hamster is sleeping. Wake him up, so he rolls to the cheese!",
+  "difficulty": 1.53,
   "goal": { "type": "reach", "object": "hamster1", "target": "cheese1" },
   "fixed": [
     { "part": "hamster", "id": "hamster1", "x": 2.5, "y": 9.5 },

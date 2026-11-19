@@ -1,6 +1,7 @@
 {
   "id": "30-grand-finale",
   "voice": "The biggest machine of all! Dominoes, fan, balloon, pin and hamster. Can you get him to the cheese?",
+  "difficulty": 7.81,
   "goal": {
     "type": "reach",
     "object": "hamster1",

@@ -45,6 +45,8 @@ export const TIPS: string[] = [
   'Praise the thinking and the trying ("You moved the ramp to see what happens, good idea!") rather than saying "clever".',
   'Stop while it\'s still fun. Ten to fifteen minutes is plenty. Finishing with the toy box is a nice way to wind down.',
   'At the end, ask your child to tell you how their machine worked. Explaining it is where a lot of the learning happens.',
+  'Try the pencil button before pressing Go: your child draws where they think the ball will go, and after the run the real path shows as dots next to it. "Where was your guess different? Why?"',
+  'After a win, the little photos tell the machine\'s story in order. Ask your child to tell it: "First... then... and then...". Tapping a photo plays it again.',
 ];
 
 export const TALK: Record<string, TalkCard> = {
@@ -285,6 +287,41 @@ export const TALK: Record<string, TalkCard> = {
     after: ['Where did the ball go after the snip?', 'Where else on the rope could the scissors go?'],
     words: ['rope', 'cut', 'snip', 'hold up', 'let go', 'fall'],
     tryAtHome: 'Hang a small toy on a string from a chair and let your child cut or untie it over a box. Where does it land?',
+  },
+  '46-belt-hammer': {
+    idea: 'A chain of three: the belt carries the falling ball, the ball bumps the hammer, and the hammer whacks the other ball. Your child has to see where the first ball needs to go before anything else can happen.',
+    before: ['Where does the ball land if we do nothing?', 'How can the belt get it over to the hammer?'],
+    after: ['Which way did the belt carry the ball?', 'Tell me the story: drop, then...?'],
+    words: ['carry', 'bump', 'whack', 'first', 'then', 'chain'],
+    tryAtHome: 'Roll a ball along a tray you tilt by hand, so it bumps a row of standing blocks at the far end.',
+  },
+  '47-boing-can': {
+    idea: 'A spring bounces things back the way it faces. Tilting it changes where the ball goes, so your child aims the bounce at the watering can.',
+    before: ['Where will the ball fall?', 'Which way should the spring lean to send the ball to the can?'],
+    after: ['What happened when the spring was flat? Tilted the other way?', 'Why did the can tip over?'],
+    words: ['bounce', 'aim', 'tilt', 'lean', 'tip', 'pour'],
+    tryAtHome: 'Bounce a ball off the floor at a slant, and try to hit a cushion with it. How do you have to throw it?',
+  },
+  '48-toaster-belt': {
+    idea: 'What goes up comes down again. The toaster throws the ball up, and the belt has to be where the ball comes down, not where it goes up.',
+    before: ['How high does the toaster throw the ball? Where does it come down?', 'Where can the belt catch it?'],
+    after: ['What happened when the belt was too low? Too high?', 'Which way did the belt need to go?'],
+    words: ['up', 'down', 'high', 'catch', 'carry', 'over'],
+    tryAtHome: 'Toss a soft ball straight up and catch it in a bowl. Then try tossing it a little forward. Where do you need to hold the bowl?',
+  },
+  '49-car-jump': {
+    idea: 'A car that is moving fast enough can jump a gap. A ramp tilted up at the edge turns going along into going up a little, so the car lands on the other side.',
+    before: ['What happens if the car drives off the edge?', 'Should the ramp be flat or tilted?'],
+    after: ['What happened when the ramp was flat? Tilted up?', 'Why did the car fly across?'],
+    words: ['gap', 'jump', 'fast', 'tilt', 'across', 'land'],
+    tryAtHome: 'Make a gap between two books and roll a toy car off a little ramp to jump it. Move the books apart: when is the gap too wide?',
+  },
+  '50-snip-boing': {
+    idea: 'Two steps in order: the snip lets the ball fall, and the spring turns the fall into a bounce over the wall. The fall comes first, so your child has to picture where the ball will land before placing the spring.',
+    before: ['Where will the ball fall when the rope is cut?', 'How can it get over the wall?'],
+    after: ['What happened with only the scissors?', 'Which way did the spring send the ball?'],
+    words: ['snip', 'fall', 'bounce', 'over', 'first', 'then'],
+    tryAtHome: 'Hold a ball on a string over a pillow, cut the string (or let go), and watch it bounce. Tilt the pillow: where does the ball go now?',
   },
   '45-car-snip': {
     idea: 'Two things working together: the snip drops the ball onto the shelf, and the car pushes it along to the basket. Neither part can do the job alone.',

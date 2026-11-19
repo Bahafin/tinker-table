@@ -1,6 +1,7 @@
 {
   "id": "17-safe-balloon",
   "voice": "Watch out for the pins! Make a path with the ramps, so the balloon floats safely to the star.",
+  "difficulty": 3.55,
   "goal": {
     "type": "reach",
     "object": "balloon1",

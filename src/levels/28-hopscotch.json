@@ -1,6 +1,7 @@
 {
   "id": "28-hopscotch",
   "voice": "Hopscotch! Bounce the ball over both holes, so it rolls into the basket.",
+  "difficulty": 4.46,
   "goal": {
     "type": "reach",
     "object": "ball1",

@@ -1,6 +1,7 @@
 {
   "id": "44-swing-snip",
   "voice": "Swing and snip! The ball swings on its rope. Put the scissors where the rope should be cut, and the ball flies into the basket.",
+  "difficulty": 3.32,
   "goal": {
     "type": "reach",
     "object": "rope1",

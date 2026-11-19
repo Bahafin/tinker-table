@@ -1,6 +1,7 @@
 {
   "id": "42-water-wake",
   "voice": "Splash! A bit of water will wake the sleepy hamster. Put the watering can where the ball drops, pointing at the hamster.",
+  "difficulty": 2.89,
   "goal": {
     "type": "reach",
     "object": "hamster1",

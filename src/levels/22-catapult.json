@@ -1,6 +1,7 @@
 {
   "id": "22-catapult",
   "voice": "Build the catapult! Put the see-saw where both balls will land, and fling the little ball into the basket.",
+  "difficulty": 3.70,
   "goal": {
     "type": "reach",
     "object": "ball1",

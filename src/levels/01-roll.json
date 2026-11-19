@@ -1,6 +1,7 @@
 {
   "id": "01-roll",
   "voice": "Help the ball roll into the basket!",
+  "difficulty": 2.42,
   "goal": { "type": "reach", "object": "ball1", "target": "basket1" },
   "fixed": [
     { "part": "ball", "id": "ball1", "x": 1.5, "y": 1 },

@@ -122,39 +122,58 @@ Levels 20–30 go further. Each brings a new idea or a new pairing of parts:
 29. **Catch and carry:** drop the heavy ball on the see-saw to fling the little one, and catch it in the air with a belt that carries it into a basket on a tower.
 30. **Grand finale:** dominoes, fan, balloon, pin, hamster, ramp. Four placements in one long chain.
 
-The hammer levels come after the six Workshop tutorials:
+The Workshop's hammer levels:
 
-34. **Hammer** (7th in the Workshop): the hammer is already there. Drop a ball on it, and it whacks the other ball off a low shelf into the toolbox. Teaches "bump it and it whacks".
+34. **Hammer:** the hammer is already there. Drop a ball on it, and it whacks the other ball off a low shelf into the toolbox. Teaches "bump it and it whacks".
 35. **Face the hammer:** a ball rolls in from the right. Place the hammer in its path, turned to face the ball on the shelf.
 36. **Hammer dominoes:** a falling domino starts the line; add two dominoes so the line reaches the hammer, which whacks the ball across the room.
 
-The rope and scissors levels come after the Attic's first six:
+The Attic's rope and scissors levels:
 
 43. **Snip!:** cut the hanging rope; the ball drops onto a ramp that rolls it into the trunk.
 45. **Car snip:** snip the ball down onto the shelf and send the car to push it off the end into the trunk. Both parts are needed.
 44. **Swing and snip:** the ball swings from a raised start. Where the scissors meet the rope decides when it's cut, and so where the ball flies.
 
-The watering can levels come after the Garden's first six:
+The Garden's watering can levels:
 
 40. **Watering can:** bump the can with a ball, and it waters the thirsty flower below.
 41. **Water path:** water runs downhill. Join two ramps into a path that carries the water to the flower on a shelf.
 42. **Water wake:** place the can under a falling ball, spout pointing at the sleeping hamster; the splash wakes him and he rolls to the cheese.
 
-The toaster levels come after the Kitchen's first six:
+The Kitchen's toaster levels:
 
 37. **Toaster:** a ball falls from the top. Put the toaster under it, facing the counter, and it pops the ball into the pot.
 38. **Over the wall:** a belt drops the ball by a tall wall. The toaster has to face away from the belt to pop it over into the pot.
 39. **Toaster hamster:** drop a ball to wake the hamster; he rolls off his shelf into the toaster, which pops him up to the cheese.
 
-The toy car levels sit in the Playroom (its first level and its last two), so the map order differs from the file numbers:
+The Playroom's toy car levels:
 
-31. **Car push** (first in the Playroom): place the car on the shelf facing the ball; it pushes the ball off into the basket. Introduces the car and its facing.
+31. **Car push:** place the car on the shelf facing the ball; it pushes the ball off into the basket. Introduces the car and its facing.
 32. **Car ride:** the ball rides on the car's back. Build a ramp road from the low shelf up to the star's shelf; the ball can't climb, but the car can carry it.
 33. **Car catapult:** place the car and the see-saw. The car pushes the heavy ball off its shelf onto the see-saw, which flings the little ball into the basket.
 
-Tried and dropped: a fan blowing a ball uphill (its reach is too short to climb a real slope), and a falling domino used as a bridge (too chaotic: random placements won).
+Added with the move to ten levels a room, one more for each room's own part:
 
-The front page shows six big tiles: five **rooms** of six levels (Workshop, Garden, Kitchen, Playroom, Attic) and the **Toy box** as a sixth room. Each tile shows the room's own things and one dot per level, which fills in when the level is done. Tapping a tile opens the room, with a back button. The puzzle maker and the puzzles made on this device live in the Toy box room.
+46. **Belt and hammer** (Workshop): a ball falls far from the hammer. A belt carries it over to bump the hammer, which whacks the other ball into the toolbox.
+47. **Boing the can** (Garden): the can is up on a shelf. A tilted spring bounces the falling apple sideways into it, and the water falls on the flower.
+48. **Toaster and belt** (Kitchen): the toaster pops the orange up high, and a belt placed where it comes down carries it over a wall into the pot.
+49. **Car jump** (Playroom): a gap wider than one plank. A ramp tilted up at the edge lets the car jump across to the star.
+50. **Snip and boing** (Attic): snip the rope, and a spring where the marble lands bounces it over a wall into the trunk. Both parts are needed.
+
+Tried and dropped: a fan blowing a ball uphill (its reach is too short to climb a real slope), a falling domino used as a bridge (too chaotic: random placements won), the hammer knocking a ball uphill (a whacked ball rolls fast but climbs less than one cell), and a car stopping suddenly to throw its ball forward (the cab holds the ball in).
+
+### Difficulty order
+Every level has a `difficulty` score in its file. It adds two things:
+- **How many ideas the child has to put together** (rated by hand, 1–4): one step like "a ramp guides the ball" scores 1, a chain of three or four cause-and-effect steps scores 3–4, and a turn or flip that has to be worked out adds a little.
+- **How exact the answer is**, measured by `scripts/level-stats.test.ts`. Each part of the solution is moved over the whole table at every angle, with the other parts left in place, and the share of spots that still work is counted. Fewer working spots means harder. Spare parts in the tray and more kinds of things on the table add a little too.
+
+The score is the first number plus half the second. The rooms are then laid out so that, checked by a test, each room's levels get harder from first to last, and each room's Nth level is harder than the previous room's Nth level. That needed the room order Workshop, Playroom, Attic, Kitchen, Garden: the toy car's first level is so easy that the Playroom has to come second. The scores are a guide, not a promise; playtests should move levels that feel out of place.
+
+```bash
+STATS=46-belt-hammer,49-car-jump npx vitest run scripts/level-stats
+```
+
+The front page shows six big tiles: five **rooms** of ten levels (Workshop, Playroom, Attic, Kitchen, Garden) and the **Toy box** as a sixth room. Each tile shows the room's own things and one dot per level, which fills in when the level is done. Tapping a tile opens the room, with a back button. The puzzle maker and the puzzles made on this device live in the Toy box room.
 
 Each room draws the same parts as its own things (`src/render/skins.ts`). The physics, size and outline never change, so a slope always looks like a slope and a target is always an open container:
 
@@ -211,7 +230,7 @@ Plus the **toy box**: every part except the goal-only star and cheese, unlimited
 - `node scripts/make-icons.mjs` redraws the icon PNGs.
 
 ## Share links
-- A made puzzle is a level: fixed parts, tray, goal and a reference solution. It is packed into compact JSON with short keys, base64url-encoded and put after  in the link. The part after  never reaches the server.
+- A made puzzle is a level: fixed parts, tray, goal and a reference solution. It is packed into compact JSON with short keys, base64url-encoded and put after `#p=` in the link. The part after `#` never reaches the server.
 - Opening a link decodes and **validates** it before anything is drawn:
   - the part kinds must be known;
   - positions must be on the half-cell grid and inside the table;

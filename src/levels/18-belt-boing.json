@@ -1,6 +1,7 @@
 {
   "id": "18-belt-boing",
   "voice": "Use the belt to carry the ball, then the spring to bounce it up into the basket!",
+  "difficulty": 5.69,
   "goal": {
     "type": "reach",
     "object": "ball1",

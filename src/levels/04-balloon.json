@@ -1,6 +1,7 @@
 {
   "id": "04-balloon",
   "voice": "The balloon wants to reach the star. Can you help it float there?",
+  "difficulty": 2.64,
   "goal": { "type": "reach", "object": "balloon1", "target": "star1" },
   "fixed": [
     { "part": "balloon", "id": "balloon1", "x": 3, "y": 9 },

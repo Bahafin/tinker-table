@@ -1,6 +1,7 @@
 {
   "id": "45-car-snip",
   "voice": "Snip the rope to drop the ball on the shelf, then send the car to push it all the way into the basket!",
+  "difficulty": 4.69,
   "goal": { "type": "reach", "object": "rope1", "target": "basket1" },
   "fixed": [
     { "part": "ramp", "x": 3.5, "y": 8, "rot": 0 },

@@ -1,6 +1,7 @@
 {
   "id": "27-domino-stairs",
   "voice": "Can the dominoes climb the stairs? Knock the ball off the top step into the basket!",
+  "difficulty": 4.19,
   "goal": {
     "type": "reach",
     "object": "ball1",

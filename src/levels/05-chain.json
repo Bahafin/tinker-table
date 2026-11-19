@@ -1,6 +1,7 @@
 {
   "id": "05-chain",
   "voice": "Bump the fan with the ball, so it blows the balloon up to the star!",
+  "difficulty": 3.00,
   "goal": { "type": "reach", "object": "balloon1", "target": "star1" },
   "fixed": [
     { "part": "ball", "id": "ball1", "x": 1.5, "y": 1 },

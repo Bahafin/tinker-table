@@ -1,6 +1,7 @@
 {
   "id": "14-lift",
   "voice": "Stop the ball, so it drops into the bucket. Down goes the bucket, and up goes the weight, to the star!",
+  "difficulty": 3.73,
   "goal": {
     "type": "reach",
     "object": "lift1",

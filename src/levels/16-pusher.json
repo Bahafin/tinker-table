@@ -1,6 +1,7 @@
 {
   "id": "16-pusher",
   "voice": "The ball needs a push. Put the hamster where the other ball lands, and point him the right way!",
+  "difficulty": 2.99,
   "goal": {
     "type": "reach",
     "object": "ball1",

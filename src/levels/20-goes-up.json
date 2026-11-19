@@ -1,6 +1,7 @@
 {
   "id": "20-goes-up",
   "voice": "The fan is up high. Which one can float up and switch it on, the ball or the balloon?",
+  "difficulty": 3.20,
   "goal": {
     "type": "reach",
     "object": "ball1",

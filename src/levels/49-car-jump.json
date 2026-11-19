@@ -1,0 +1,16 @@
+{
+  "id": "49-car-jump",
+  "voice": "There's a gap in the road! Build a jump with the ramp, so the car can get across to the star.",
+  "difficulty": 3.37,
+  "goal": { "type": "reach", "object": "car1", "target": "star1" },
+  "fixed": [
+    { "part": "ramp", "x": 1.5, "y": 7, "rot": 0 },
+    { "part": "ramp", "x": 4.5, "y": 7, "rot": 0 },
+    { "part": "car", "id": "car1", "x": 1, "y": 6.5, "rot": 0 },
+    { "part": "ramp", "x": 11.5, "y": 7, "rot": 0 },
+    { "part": "ramp", "x": 14.5, "y": 7, "rot": 0 },
+    { "part": "star", "id": "star1", "x": 14.5, "y": 6 }
+  ],
+  "tray": [{ "part": "ramp", "count": 1 }],
+  "solution": [{ "part": "ramp", "x": 8, "y": 7, "rot": -15 }]
+}

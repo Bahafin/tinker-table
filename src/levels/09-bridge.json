@@ -1,6 +1,7 @@
 {
   "id": "09-bridge",
   "voice": "Oh no, a gap! Build a bridge, so the ball can roll across to the basket.",
+  "difficulty": 2.65,
   "goal": {
     "type": "reach",
     "object": "ball1",

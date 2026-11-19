@@ -1,6 +1,7 @@
 {
   "id": "36-hammer-dominoes",
   "voice": "Make a domino line that reaches the hammer. When the hammer gets bumped, whack! Into the basket goes the ball.",
+  "difficulty": 3.17,
   "goal": { "type": "reach", "object": "ball1", "target": "basket1" },
   "fixed": [
     { "part": "ramp", "x": 2.5, "y": 6, "rot": 0 },

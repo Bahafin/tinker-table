@@ -1,6 +1,7 @@
 {
   "id": "02-dominoes",
   "voice": "Line up the dominoes, so they knock the ball into the basket!",
+  "difficulty": 3.10,
   "goal": {
     "type": "reach",
     "object": "ball1",

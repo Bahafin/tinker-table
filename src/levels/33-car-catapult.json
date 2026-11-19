@@ -1,6 +1,7 @@
 {
   "id": "33-car-catapult",
   "voice": "The car is strong enough to push the heavy ball! Push it off the shelf onto the see-saw, and fling the little ball into the basket.",
+  "difficulty": 5.64,
   "goal": { "type": "reach", "object": "ball1", "target": "basket1" },
   "fixed": [
     { "part": "ramp", "x": 5, "y": 3, "rot": 0 },

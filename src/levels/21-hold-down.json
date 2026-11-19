@@ -1,6 +1,7 @@
 {
   "id": "21-hold-down",
   "voice": "The balloon wants to float away! Point the fan down, to keep it in the basket.",
+  "difficulty": 4.15,
   "goal": {
     "type": "reach",
     "object": "balloon1",

@@ -1,6 +1,7 @@
 {
   "id": "23-domino-switch",
   "voice": "Line up the dominoes, so the last one bumps the fan on. Then the fan blows the ball into the basket!",
+  "difficulty": 3.99,
   "goal": {
     "type": "reach",
     "object": "ball1",

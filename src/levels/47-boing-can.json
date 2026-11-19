@@ -1,0 +1,14 @@
+{
+  "id": "47-boing-can",
+  "voice": "The watering can is up on a shelf. Put the spring where the ball falls, and boing it into the can, so it waters the flower!",
+  "difficulty": 3.17,
+  "goal": { "type": "reach", "object": "can1", "target": "flower1" },
+  "fixed": [
+    { "part": "ball", "x": 1.5, "y": 1 },
+    { "part": "shortramp", "x": 5, "y": 6, "rot": 0 },
+    { "part": "can", "id": "can1", "x": 5, "y": 5.5, "rot": 0 },
+    { "part": "flower", "id": "flower1", "x": 7.5, "y": 9.4 }
+  ],
+  "tray": [{ "part": "spring", "count": 1 }],
+  "solution": [{ "part": "spring", "x": 2, "y": 9.5, "rot": 30 }]
+}

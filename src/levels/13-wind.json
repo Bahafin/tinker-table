@@ -1,6 +1,7 @@
 {
   "id": "13-wind",
   "voice": "Drop the ball on the fan to switch it on. Point the fan at the other ball, and blow it into the basket!",
+  "difficulty": 2.98,
   "goal": {
     "type": "reach",
     "object": "ball1",

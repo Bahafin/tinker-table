@@ -1,6 +1,7 @@
 {
   "id": "19-big-machine",
   "voice": "A big machine! Use the belt, the fan and the ramp to get the balloon all the way to the star.",
+  "difficulty": 6.53,
   "goal": {
     "type": "reach",
     "object": "balloon1",

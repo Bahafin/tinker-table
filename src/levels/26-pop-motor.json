@@ -1,6 +1,7 @@
 {
   "id": "26-pop-motor",
   "voice": "Pop the balloon to wake the hamster, so he pushes the ball into the basket!",
+  "difficulty": 4.83,
   "goal": {
     "type": "reach",
     "object": "ball1",

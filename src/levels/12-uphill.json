@@ -1,6 +1,7 @@
 {
   "id": "12-uphill",
   "voice": "The cheese is up on the shelf. Make a ramp, so the hamster can climb up to it!",
+  "difficulty": 3.32,
   "goal": {
     "type": "reach",
     "object": "hamster1",
