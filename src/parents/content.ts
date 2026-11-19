@@ -258,6 +258,27 @@ export const TALK: Record<string, TalkCard> = {
     words: ['machine', 'plan', 'step', 'chain', 'test', 'fix'],
     tryAtHome: 'Build a real chain-reaction machine with toys: a car down a ramp into dominoes into a ball into a cup. It\'s fine if it takes many tries.',
   },
+  '34-hammer': {
+    idea: 'A new part: the hammer stands still until something bumps it, then swings down hard. A small bump starts a big hit: one thing sets off the next.',
+    before: ['What will make the hammer swing?', 'Which ball will the hammer hit?'],
+    after: ['What bumped the hammer?', 'What did the hammer do to the ball?'],
+    words: ['bump', 'swing', 'whack', 'start', 'hit'],
+    tryAtHome: 'Stand a ruler up on its end and gently tap the top. Which way does it fall? Can you make it knock over a paper cup?',
+  },
+  '35-hammer-face': {
+    idea: 'The hammer swings the way it faces, so your child has to plan two things: where the rolling ball will bump it, and which way it should swing.',
+    before: ['Where will the rolling ball go?', 'Which way should the hammer swing to hit the other ball?'],
+    after: ['What happened when the hammer faced the other way?', 'Where else could the hammer go?'],
+    words: ['facing', 'left', 'right', 'in the way', 'plan'],
+    tryAtHome: 'Roll a ball across the floor and ask your child to put a toy where the ball will bump it. Then try it from the other side.',
+  },
+  '36-hammer-dominoes': {
+    idea: 'A chain reaction: dominoes fall one after another, the last one bumps the hammer, and the hammer whacks the ball. Each step has to reach the next one.',
+    before: ['How far apart should the dominoes stand?', 'Will the last domino reach the hammer?'],
+    after: ['Tell me the story: first the domino... then...?', 'What happened when there was a gap?'],
+    words: ['chain', 'one after another', 'gap', 'reach', 'next'],
+    tryAtHome: 'Line up books or blocks on the floor and knock over the first one. How far apart can they be and still all fall?',
+  },
   '31-car-push': {
     idea: 'A new part: the toy car has its own motor. It starts as soon as you press go and drives the way it faces, pushing whatever is in front of it.',
     before: ['Where should the car start, so it bumps the ball?', 'Which way is the car facing? Tap it to turn it around.'],

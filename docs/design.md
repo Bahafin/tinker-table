@@ -51,8 +51,9 @@ A calm chain-reaction puzzle game for ages 4–7, played with a parent on a tabl
 | Conveyor belt | 3 × 0.4 | static | Carries things along its top at 2.5 cells/s. A tap flips its direction. |
 | Cheese | 1 × 0.7 | sensor | Goal: the hamster reaches it. |
 | Toy car | 1.2 × 0.75 | dynamic, two motor wheels | A wind-up pickup truck. Drives the way it faces from the moment Go is pressed, pushes what's in front (even the heavy ball) and carries a ball on its flat back. Climbs gentle (15°) ramps; its wheels slip on 30°. A tap flips its facing. The Playroom's own part. |
+| Hammer | 0.8 × 2.1 | dynamic head on a hinge, static base | Stands upright, held still, until anything bumps it. Then it's spring-loaded: it snaps down the way it faces (up to a little past flat) and whacks what's in its arc. The head reaches about 1.6–1.9 cells from the hinge, so a ball to whack should sit a bit above the hinge, not level with it (level with it, the head lands on top of the ball). A tap flips its facing. The Workshop's own part. |
 
-Parts that only face left or right (hamster, conveyor, car) get one ↔ flip button instead of the two turn buttons.
+Parts that only face left or right (hamster, conveyor, car, hammer) get one ↔ flip button instead of the two turn buttons.
 
 A run also ends when nothing has moved for 1.5 s, because a hamster or a fan can keep pushing something against a wall forever.
 
@@ -115,6 +116,12 @@ Levels 20–30 go further. Each brings a new idea or a new pairing of parts:
 28. **Hopscotch:** two holes in the floor, with a spring in each to hop over them.
 29. **Catch and carry:** drop the heavy ball on the see-saw to fling the little one, and catch it in the air with a belt that carries it into a basket on a tower.
 30. **Grand finale:** dominoes, fan, balloon, pin, hamster, ramp. Four placements in one long chain.
+
+The hammer levels come after the six Workshop tutorials:
+
+34. **Hammer** (7th in the Workshop): the hammer is already there. Drop a ball on it, and it whacks the other ball off a low shelf into the toolbox. Teaches "bump it and it whacks".
+35. **Face the hammer:** a ball rolls in from the right. Place the hammer in its path, turned to face the ball on the shelf.
+36. **Hammer dominoes:** a falling domino starts the line; add two dominoes so the line reaches the hammer, which whacks the ball across the room.
 
 The toy car levels sit in the Playroom (its first level and its last two), so the map order differs from the file numbers:
 

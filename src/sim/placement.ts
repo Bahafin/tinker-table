@@ -21,14 +21,23 @@ const SOLID: Record<PartKind, { w: number; h: number; dy?: number }> = {
   conveyor: { w: 1.5, h: 0.2 },
   cheese: { w: 0.5, h: 0.35 },
   car: { w: 0.62, h: 0.37 },
+  hammer: { w: 0.4, h: 1.1, dy: -0.85 },
 };
 
 const SHRINK = 0.03;
 
 interface Obb { cx: number; cy: number; w: number; h: number; a: number }
 
+/**
+ * How far a placed part is turned, in radians. Parts that only flip left/right
+ * (rot 0 or 180) aren't turned at all: they just face the other way.
+ */
+export function turnOf(p: Placement): number {
+  return PARTS[p.part].rotStep === 180 ? 0 : ((p.rot ?? 0) * Math.PI) / 180;
+}
+
 function obb(p: Placement, ext: { w: number; h: number; dy?: number }, pad = 0): Obb {
-  const a = ((p.rot ?? 0) * Math.PI) / 180;
+  const a = turnOf(p);
   const dy = ext.dy ?? 0;
   // dy is in the part's local frame.
   return { cx: p.x - Math.sin(a) * dy, cy: p.y + Math.cos(a) * dy, w: ext.w + pad, h: ext.h + pad, a };

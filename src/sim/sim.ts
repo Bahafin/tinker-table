@@ -9,6 +9,9 @@ const FAN_REACH = 4.5;
 const FAN_FORCE = 14;
 export const CONVEYOR_SPEED = 2.5;
 const HAMSTER_SPIN = 5;
+/** A released hammer's swing speed (rad/s) and strength. */
+const HAMMER_SPEED = 7;
+const HAMMER_TORQUE = 150;
 
 type Tag = { rp: RuntimePart };
 
@@ -26,6 +29,7 @@ export class Sim {
   private goalHeld = 0;
   private stillFor = 0;
   private toDestroy: RuntimePart[] = [];
+  private releaseQueue: RuntimePart[] = [];
 
   private goal?: Goal;
 
@@ -70,6 +74,8 @@ export class Sim {
         this.events.push({ type: 'whoosh' });
       }
       if (x?.kind === 'spring' && yb.isDynamic()) this.events.push({ type: 'boing' });
+      // A bump lets the hammer go: the brake comes off and it tips over the way it faces.
+      if (x?.kind === 'hammer' && !x.state.on && yb.isDynamic() && yb !== x.bodies[0]) this.releaseQueue.push(x);
       if (x?.kind === 'hamster' && !x.state.on && yb.isDynamic()) {
         x.state.on = true;
         this.events.push({ type: 'squeak' });
@@ -138,6 +144,16 @@ export class Sim {
     this.applyHamsters();
     this.world.step(DT, 8, 3);
     for (const rp of this.toDestroy) for (const b of rp.bodies) this.world.destroyBody(b);
+    for (const h of this.releaseQueue) {
+      if (h.state.on) continue;
+      h.state.on = true;
+      // It's spring-loaded: once let go, it snaps down hard.
+      h.brake!.setMotorSpeed(h.state.dir! * HAMMER_SPEED);
+      h.brake!.setMaxMotorTorque(HAMMER_TORQUE);
+      h.bodies[0].setAwake(true);
+      this.events.push({ type: 'clack', strength: 0.6 });
+    }
+    this.releaseQueue = [];
     this.toDestroy = [];
     this.time += DT;
 

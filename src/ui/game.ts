@@ -1,6 +1,6 @@
 import { Sim, DT } from '../sim/sim';
 import { PARTS, type RuntimePart } from '../sim/parts';
-import { clampToWorld, hitTest, overlapsAny } from '../sim/placement';
+import { clampToWorld, hitTest, overlapsAny, turnOf } from '../sim/placement';
 import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from '../sim/types';
 import { drawFixedPin, drawPart, drawTable, PAPER, paperGrain, setPaperShadow, setSkin } from '../render/draw';
 import { sfx } from './audio';
@@ -423,7 +423,7 @@ export class Game {
     if (!p) return [];
     const L = this.L;
     const def = PARTS[p.part];
-    const a = ((p.rot ?? 0) * Math.PI) / 180;
+    const a = turnOf(p);
     const hw = def.hit.w, hh = def.hit.h, dy = def.hit.dy ?? 0;
     // Screen-space half size of the turned hit box.
     const ex = (Math.abs(Math.cos(a)) * hw + Math.abs(Math.sin(a)) * hh) * L.scale;
@@ -643,7 +643,7 @@ export class Game {
     drawPart(ctx, h.rp, this.t);
     ctx.globalAlpha = env;
     ctx.translate(p.x, p.y);
-    ctx.rotate(((p.rot ?? 0) * Math.PI) / 180);
+    ctx.rotate(turnOf(p));
     ctx.setLineDash([0.18, 0.14]);
     ctx.lineDashOffset = -this.t * 0.5;
     ctx.strokeStyle = PAPER.teal;
@@ -664,7 +664,7 @@ export class Game {
     // A dashed ring round the selected part, so it's clear which one the buttons turn.
     ctx.save();
     ctx.translate(L.ox + p.x * L.scale, L.oy + p.y * L.scale);
-    ctx.rotate(((p.rot ?? 0) * Math.PI) / 180);
+    ctx.rotate(turnOf(p));
     ctx.setLineDash([7, 6]);
     ctx.lineDashOffset = -this.t * 20;
     ctx.strokeStyle = 'rgba(60,45,30,0.45)';

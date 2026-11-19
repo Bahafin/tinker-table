@@ -237,6 +237,30 @@ const DRAW: Record<string, (ctx: Ctx, rp: RuntimePart, t: number) => void> = {
       });
     }
   },
+  hammer(ctx, rp) {
+    const [h, base] = rp.bodies;
+    withBody(ctx, base, () => {
+      rrect(ctx, -0.35, 0, 0.7, 0.3, 0.05); paper(ctx, PAPER.kraftDark);
+    });
+    withBody(ctx, h, () => {
+      ctx.scale(rp.state.dir ?? 1, 1);
+      rrect(ctx, -0.07, -1.45, 0.14, 1.45, 0.05); paper(ctx, '#d2a36b');
+      noShadow(ctx, () => {
+        line(ctx, 0, -1.3, 0, -0.15, '#a97a45', 0.025);
+        rrect(ctx, -0.08, -0.5, 0.16, 0.4, 0.04); paper(ctx, PAPER.tomato);
+      });
+      // Steel head: a flat face on the side it swings to, a claw on the back.
+      ctx.beginPath();
+      ctx.moveTo(-0.22, -1.8); ctx.lineTo(0.38, -1.8); ctx.lineTo(0.38, -1.4); ctx.lineTo(-0.22, -1.4);
+      ctx.quadraticCurveTo(-0.34, -1.4, -0.4, -1.3); ctx.lineTo(-0.38, -1.52); ctx.quadraticCurveTo(-0.34, -1.66, -0.22, -1.8);
+      paper(ctx, '#8d969c');
+      noShadow(ctx, () => { rrect(ctx, 0.28, -1.8, 0.1, 0.4, 0.02); paper(ctx, '#b7bec4'); line(ctx, -0.18, -1.74, 0.24, -1.74, '#c3c9ce', 0.03); });
+    });
+    noShadow(ctx, () => {
+      const p = base.getPosition();
+      ctx.beginPath(); ctx.arc(p.x, p.y, 0.07, 0, Math.PI * 2); paper(ctx, PAPER.brass);
+    });
+  },
   cheese(ctx, rp, t) {
     withBody(ctx, rp.bodies[0], () => {
       ctx.rotate(Math.sin(t * 2) * 0.04);

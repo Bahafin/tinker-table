@@ -1,0 +1,14 @@
+{
+  "id": "35-hammer-face",
+  "voice": "A ball is rolling in! Put the hammer in its way, and turn it to face the other ball. Whack it into the basket!",
+  "goal": { "type": "reach", "object": "ball1", "target": "basket1" },
+  "fixed": [
+    { "part": "ball", "id": "roll1", "x": 15, "y": 5.5 },
+    { "part": "ramp", "x": 14, "y": 7, "rot": -30 },
+    { "part": "ramp", "x": 5, "y": 9, "rot": 0 },
+    { "part": "ball", "id": "ball1", "x": 6, "y": 8.5 },
+    { "part": "basket", "id": "basket1", "x": 2, "y": 9.4 }
+  ],
+  "tray": [{ "part": "hammer", "count": 1 }],
+  "solution": [{ "part": "hammer", "x": 7.5, "y": 9.5, "rot": 180 }]
+}

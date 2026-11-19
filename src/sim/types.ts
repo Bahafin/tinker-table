@@ -1,7 +1,7 @@
 export type PartKind =
   | 'ball' | 'heavyball' | 'ramp' | 'shortramp' | 'block' | 'basket' | 'star'
   | 'domino' | 'seesaw' | 'balloon' | 'pin' | 'fan' | 'spring' | 'pulley'
-  | 'hamster' | 'conveyor' | 'cheese' | 'car';
+  | 'hamster' | 'conveyor' | 'cheese' | 'car' | 'hammer';
 
 /** A part placed on the table, in cell coordinates (centre), rot in degrees clockwise. */
 export interface Placement {

@@ -5,6 +5,8 @@ const DEG = Math.PI / 180;
 /** Toy car wheel speed (rad/s) and motor strength. */
 export const CAR_SPIN = 12;
 export const CAR_TORQUE = 0.6;
+/** How far the hammer can swing from upright (a little past flat). */
+const HAMMER_SWING = 100 * DEG;
 
 /** A part as it exists inside a physics world. */
 export interface RuntimePart {
@@ -15,6 +17,8 @@ export interface RuntimePart {
   zone?: { x0: number; y0: number; x1: number; y1: number };
   /** on: fan blowing / hamster awake. dir: +1 right, -1 left (conveyor, hamster). */
   state: { on?: boolean; popped?: boolean; dir?: number };
+  /** The hammer's hinge, held still until something bumps the hammer. */
+  brake?: RevoluteJoint;
 }
 
 export interface PartDef {
@@ -227,6 +231,29 @@ export const PARTS: Record<PartKind, PartDef> = {
       rp.state.on = true;
     },
   },
+  hammer: {
+    // A hammer standing up on a hinge. It stays put until something bumps it,
+    // then swings down the way it faces and whacks whatever is in the way.
+    // Placement point is the hinge, on top of a little wooden base.
+    hit: { w: 0.4, h: 1.15, dy: -0.85 },
+    rotatable: true,
+    rotStep: 180,
+    build(world, p, rp) {
+      const dir = Math.abs(p.rot ?? 0) === 180 ? -1 : 1;
+      const hinge = new Vec2(p.x, p.y);
+      const base = world.createBody({ type: 'static', position: hinge });
+      base.createFixture(new Box(0.35, 0.15, new Vec2(0, 0.15)), { friction: 0.5 });
+      const h = world.createBody({ type: 'dynamic', position: hinge, angularDamping: 0.2 });
+      h.createFixture(new Box(0.07, 0.7, new Vec2(0, -0.75)), { density: 1, friction: 0.5 });
+      h.createFixture(new Box(0.38, 0.2, new Vec2(0, -1.6)), { density: 5, friction: 0.5, restitution: 0.1 });
+      // Swings at most a little past flat, the way it faces.
+      const lim = dir > 0 ? { lowerAngle: 0, upperAngle: HAMMER_SWING } : { lowerAngle: -HAMMER_SWING, upperAngle: 0 };
+      rp.brake = world.createJoint(new RevoluteJoint({ enableLimit: true, ...lim, enableMotor: true, motorSpeed: 0, maxMotorTorque: 1000 }, base, h, hinge)) ?? undefined;
+      rp.bodies.push(h, base);
+      rp.state.dir = dir;
+      rp.state.on = false;
+    },
+  },
   cheese: {
     hit: { w: 0.5, h: 0.4 },
     rotatable: false,
@@ -241,7 +268,7 @@ export const PARTS: Record<PartKind, PartDef> = {
 
 export const ALL_PARTS: PartKind[] = [
   'ball', 'heavyball', 'ramp', 'shortramp', 'block', 'domino', 'seesaw',
-  'balloon', 'pin', 'fan', 'spring', 'conveyor', 'hamster', 'car', 'pulley', 'basket', 'star', 'cheese',
+  'balloon', 'pin', 'fan', 'spring', 'conveyor', 'hamster', 'car', 'hammer', 'pulley', 'basket', 'star', 'cheese',
 ];
 
 /** Parts offered in the toy box (goal-only parts like the star and cheese are left out). */

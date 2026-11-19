@@ -53,7 +53,7 @@ The current game: 30 levels, the toy box, the grown-ups' corner, offline play, a
   - Each room draws the parts as its own things (an apple and a flower pot in the garden, a screw and a toolbox in the workshop), and the voice uses the same words. See [design.md](design.md).
 - **Next: one new part per room**, each with its own physics and 2–3 new levels in its room:
   - **Playroom: done.** The toy car drives as soon as Go is pressed, pushes things and carries a ball. Three new levels: the first of the Playroom and its last two (the room now has nine).
-  - **Workshop:** a hammer on a hinge that swings down when knocked.
+  - **Workshop: done.** A spring-loaded hammer on a hinge that whacks when bumped. Three new levels after the six Workshop tutorials (the room now has nine).
   - **Kitchen:** a toaster that pops things straight up.
   - **Garden:** a watering can that tips over and lets a ball roll out.
   - **Attic:** a rope and scissors: a ball hangs until something cuts the rope.
