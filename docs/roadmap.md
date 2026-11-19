@@ -1,11 +1,11 @@
 # Tinker Table roadmap
 
 What we plan to build next, in order. Every feature has to keep three rules:
-- **No text for the child.** Pictures, icons and the voice only.
+- **No text the child needs to read.** Pictures, icons and the voice carry everything. Simple word labels (room names) may sit next to pictures, and they are read aloud when tapped.
 - **No fail state.** Nothing scores, times or tells the child off.
 - **Free to run.** No servers, no accounts and no analytics. Everything stays on the device or inside a link.
 
-The current game: 50 levels in five rooms of ten, the toy box, guess the path, the film strip, the sticker book, the grown-ups' corner, offline play, and the web version on GitHub Pages. See [design.md](design.md).
+The current game (ages 5–8): 50 levels in five rooms of ten, a front page you swipe along, the toy box, guess the path, the film strip, the sticker book, the grown-ups' corner, offline play, and the web version on GitHub Pages. See [design.md](design.md).
 
 ## Decisions so far
 - **The web version stays the main home.** A store app later wraps the same code with Capacitor.
@@ -77,6 +77,11 @@ The current game: 50 levels in five rooms of ten, the toy box, guess the path, t
   - A book button on the front page. Each finished level gives a sticker: the most special part in that level, drawn in its room's look on a round backing in the room's colours.
   - Drag stickers from the strip onto the page, anywhere. Drag one off the page to put it back. A red dot on the book means there are stickers waiting.
   - It rewards finishing without scoring how well the child did. Kept on the device.
+
+## Milestone 5.5: a front page to swipe, and first words (done)
+- The rooms are now a row you swipe along (or move with big arrows), in order of difficulty, with the next room peeking in. It opens on the room the child is working on.
+- Room names appear as word labels next to their pictures, and the voice says them when a room comes to the middle or the name is tapped.
+- The target age is now **5–8**, with younger children welcome alongside a grown-up.
 
 ## Milestone 6: new things to play with
 - **Musical parts:**

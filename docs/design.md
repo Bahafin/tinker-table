@@ -3,14 +3,16 @@
 *Working title. Check the name before any release.*
 
 ## The game in one paragraph
-A calm chain-reaction puzzle game for ages 4–7, played with a parent on a tablet. Each level shows a little scene on a paper craft table and a goal shown as a picture ("ball → basket"), which a voice reads out. The child drags a few big paper parts from the tray, presses the big green **Go** button and watches the machine run. If it misses, everything gently resets to where the parts were placed, with no fail screen. If it works, there is confetti, a happy sound and a slow-motion replay. A **toy box** with every part and no goal is open from day one.
+A calm chain-reaction puzzle game for ages 5–8 (younger children with a grown-up), played with a parent on a tablet. Each level shows a little scene on a paper craft table and a goal shown as a picture ("ball → basket"), which a voice reads out. The child drags a few big paper parts from the tray, presses the big green **Go** button and watches the machine run. If it misses, everything gently resets to where the parts were placed, with no fail screen. If it works, there is confetti, a happy sound and a slow-motion replay. A **toy box** with every part and no goal is open from day one.
 
 ## Who it's for
-- **The child (4–7):** cannot read, has imprecise fingers and a short attention span. They love watching things fall over.
+- **The child (5–8):** may not read yet, or is just starting to recognise words. Has imprecise fingers and a short attention span, and loves watching things fall over.
+  - The first room suits a 4-year-old playing with a grown-up. The later rooms need several parts in a chain, which most children manage from about 5–7.
+  - Older than about 8, the look will probably feel too young.
 - **The parent:** grew up with 90s contraption games and wants to share the feeling. Plays next to the child and sometimes "helps".
 
 ## Kid-UX rules (enforced in code)
-1. **No text anywhere in the game.** Goals are pictures and a voice. Buttons are icons.
+1. **No text you need to read.** Goals are pictures and a voice, and buttons are icons. Simple words may appear as **labels next to a picture** (the room names), never as the only way to understand something. Tapping a label reads it aloud, so early readers can match the word to its sound.
 2. **Touch targets at least 64 px.** A part can be grabbed anywhere on it plus a generous margin around it.
 3. **Snap everything.** Positions snap to a half-cell grid, and angles to 15° steps.
 4. **Rotate with big arrow buttons.** Placing a part, or tapping it, selects it: a dashed outline appears round it, and two round 64 px buttons pop up above it. ↺ turns it 15° anticlockwise and ↻ turns it 15° clockwise, so a wrong turn is one tap to undo. Tapping the part itself never turns it. Tapping empty table hides the buttons. Parts whose angle doesn't matter (ball, block) give a little wiggle and show no buttons. A finger may slide up to 22 px and still count as a tap.
@@ -173,7 +175,14 @@ The score is the first number plus half the second. The rooms are then laid out 
 STATS=46-belt-hammer,49-car-jump npx vitest run scripts/level-stats
 ```
 
-The front page shows six big tiles: five **rooms** of ten levels (Workshop, Playroom, Attic, Kitchen, Garden) and the **Toy box** as a sixth room. Each tile shows the room's own things and one dot per level, which fills in when the level is done. Tapping a tile opens the room, with a back button. The puzzle maker and the puzzles made on this device live in the Toy box room.
+The front page is a **row of rooms you swipe along**, left to right in order of difficulty: five **rooms** of ten levels (Workshop, Playroom, Attic, Kitchen, Garden), then the **Toy box** at the end.
+- One room sits big in the middle and the next one peeks in from the side, so a child can see there is more. Big round arrows on both sides do the same as a swipe.
+- Each room shows its own things, one dot per level (filled in when the level is done) and its **name as a word label**. When a room comes to rest in the middle the voice says its name, and tapping the name says it again.
+- Tapping the room in the middle opens it; tapping a peeking room brings it to the middle first.
+- The row opens on the room the child was last in, or else on the first room with levels still to do.
+- The row stays clear of the screen's edges, where a swipe can mean "go back" in Safari.
+
+Inside a room, the banner shows the room's picture and name, with a back button. The puzzle maker and the puzzles made on this device live in the Toy box room.
 
 Each room draws the same parts as its own things (`src/render/skins.ts`). The physics, size and outline never change, so a slope always looks like a slope and a target is always an open container:
 

@@ -16,7 +16,7 @@ export interface TalkCard {
 }
 
 export const INTRO =
-  'Tinker Table is a calm puzzle game for children aged about 4 to 7. Each level is a small machine with one piece missing. ' +
+  'Tinker Table is a calm puzzle game for children aged about 5 to 8 (younger ones can play the first room with you). Each level is a small machine with one piece missing. ' +
   'Your child adds parts, presses Go and watches what happens. Nothing ever "fails": if the machine misses, it simply resets, ' +
   'and they can change something and try again. The game works best with you sitting beside them, talking about what you both see.';
 
@@ -47,6 +47,7 @@ export const TIPS: string[] = [
   'At the end, ask your child to tell you how their machine worked. Explaining it is where a lot of the learning happens.',
   'Try the pencil button before pressing Go: your child draws where they think the ball will go, and after the run the real path shows as dots next to it. "Where was your guess different? Why?"',
   'After a win, the little photos tell the machine\'s story in order. Ask your child to tell it: "First... then... and then...". Tapping a photo plays it again.',
+  'Each room has its name written under its picture, and the voice says it. If your child is starting to read, point at the word together, or tap it and listen: "Kit-chen".',
 ];
 
 export const TALK: Record<string, TalkCard> = {

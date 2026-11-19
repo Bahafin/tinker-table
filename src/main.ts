@@ -34,7 +34,7 @@ function mix(a: string, b: string, t: number) {
   return '#' + pa.map((v, k) => Math.round(v + (pb[k] - v) * t).toString(16).padStart(2, '0')).join('');
 }
 
-/** Little paper-cut pictures for each room's banner (no words). */
+/** Little paper-cut pictures for each room's banner (the name sits beside it). */
 const ROOM_ICONS: Record<string, string> = {
   workshop: '<path d="M14 34 30 18" stroke-width="5"/><rect x="26" y="9" width="16" height="9" rx="2" transform="rotate(45 34 13.5)" class="accent"/>',
   garden: '<circle cx="38" cy="10" r="5" class="petal" stroke-width="2"/><path d="M22 42V26"/><path d="M22 36c-6 0-9-3-10-7 5 0 9 2 10 7z" class="leaf" stroke-width="2"/><g stroke-width="2"><circle cx="22" cy="12" r="5.5" class="pink"/><circle cx="15" cy="19" r="5.5" class="pink"/><circle cx="29" cy="19" r="5.5" class="pink"/><circle cx="22" cy="26" r="5.5" class="pink"/><circle cx="22" cy="19" r="4.5" class="petal"/></g>',
@@ -49,11 +49,11 @@ const TOY_ICON = '<path d="M8 22h32l-3 18H11z" class="accent"/><path d="M8 22l-3
 function roomBanner(room: Room): HTMLElement {
   const el = document.createElement('div');
   el.className = 'room-banner';
-  el.setAttribute('role', 'img');
-  el.setAttribute('aria-label', room.name);
   el.style.setProperty('--accent', room.accent);
   el.style.setProperty('--paper', room.paper);
-  el.innerHTML = `<span class="tape"></span><svg viewBox="0 0 48 48">${ROOM_ICONS[room.id] ?? ''}</svg><span class="tape"></span>`;
+  el.innerHTML = `<span class="tape"></span><svg viewBox="0 0 48 48" aria-hidden="true">${ROOM_ICONS[room.id] ?? ''}</svg>`;
+  el.append(nameTag(room.name, room.accent));
+  el.insertAdjacentHTML('beforeend', '<span class="tape"></span>');
   return el;
 }
 
@@ -112,6 +112,8 @@ const BACK_ICON = '<svg viewBox="0 0 48 48"><path d="M38 24H12M22 13 11 24l11 11
 
 /** null: the front page of rooms; otherwise the room being looked at ('toybox' included). */
 let mapRoom: string | null = null;
+/** Which stop on the front page's row of rooms was last in the middle (-1: not yet). */
+let shownRoom = -1;
 
 function showMap() {
   game?.destroy();
@@ -143,18 +145,53 @@ function openRoom(id: string | null) {
   showMap();
 }
 
-/** The front page: one big tile per room, then the toy box as a room of its own. */
+/** A room's name as a word to look at: tapping it reads it aloud. */
+function nameTag(name: string, accent: string): HTMLButtonElement {
+  const b = document.createElement('button');
+  b.className = 'room-name';
+  b.textContent = name;
+  b.style.setProperty('--accent', accent);
+  b.onclick = (e) => { e.stopPropagation(); unlockAudio(); speak(name); };
+  return b;
+}
+
+const ARROW = (d: string) => `<svg viewBox="0 0 48 48"><path d="${d}" /></svg>`;
+
+/**
+ * The front page: the rooms in a row, easiest on the left, then the toy box at the end.
+ * One room sits in the middle and the next peeks in from the side; swipe or tap the arrows to move.
+ */
 function showRooms(box: HTMLElement) {
   const done = loadDone();
-  for (const room of ROOMS) {
+  const path = document.createElement('div');
+  path.className = 'path';
+  const stops: { el: HTMLElement; name: string }[] = [];
+  let here = -1;
+
+  const addStop = (id: string, name: string, accent: string, paper: string, bg: string, pic: HTMLCanvasElement, icon: string) => {
+    const stop = document.createElement('div');
+    stop.className = 'stop';
     const t = document.createElement('button');
-    t.className = 'card room-tile';
-    t.setAttribute('aria-label', room.name);
-    t.style.setProperty('--accent', room.accent);
-    t.style.setProperty('--paper', room.paper);
-    t.style.background = mix(room.paper, '#ffffff', 0.45);
-    t.append(roomScene(room));
-    t.insertAdjacentHTML('beforeend', `<svg class="room-pic" viewBox="0 0 48 48">${ROOM_ICONS[room.id] ?? ''}</svg>`);
+    t.className = 'card room-tile' + (id === 'toybox' ? ' toybox' : '');
+    t.setAttribute('aria-label', name);
+    t.style.setProperty('--accent', accent);
+    t.style.setProperty('--paper', paper);
+    t.style.background = bg;
+    t.append(pic);
+    t.insertAdjacentHTML('beforeend', `<svg class="room-pic" viewBox="0 0 48 48">${icon}</svg>`);
+    const k = stops.length;
+    // A peeking room comes to the middle first; the one in the middle opens.
+    t.onclick = () => (k === here ? openRoom(id) : centre(k, true));
+    const tag = nameTag(name, accent);
+    tag.addEventListener('click', () => { if (k !== here) { quietUntilSettled = true; centre(k, true); } });
+    stop.append(t, tag);
+    path.append(stop);
+    stops.push({ el: stop, name });
+    return t;
+  };
+
+  for (const room of ROOMS) {
+    const t = addStop(room.id, room.name, room.accent, room.paper, mix(room.paper, '#ffffff', 0.45), roomScene(room), ROOM_ICONS[room.id] ?? '');
     // One dot per level, filled in when it's done: progress without numbers.
     const dots = document.createElement('span');
     dots.className = 'dots';
@@ -165,20 +202,67 @@ function showRooms(box: HTMLElement) {
     }
     t.append(dots);
     if (LEVELS.slice(room.first, room.first + room.count).every((l) => done.has(l.id))) t.insertAdjacentHTML('beforeend', STICKER);
-    t.onclick = () => openRoom(room.id);
-    box.append(t);
   }
-  const t = document.createElement('button');
-  t.className = 'card room-tile toybox';
-  t.setAttribute('aria-label', 'Toy box');
-  t.style.setProperty('--accent', PAPER.teal);
-  t.style.setProperty('--paper', '#eef7f3');
-  t.style.background = '#f4faf7';
-  t.append(thumb(TOY_BOX, true));
-  t.insertAdjacentHTML('beforeend', `<svg class="room-pic" viewBox="0 0 48 48">${TOY_ICON}</svg>`);
-  if (loadMine().length) t.insertAdjacentHTML('beforeend', MADE_BADGE);
-  t.onclick = () => openRoom('toybox');
-  box.append(t);
+  const toy = addStop('toybox', 'Toy box', PAPER.teal, '#eef7f3', '#f4faf7', thumb(TOY_BOX, true), TOY_ICON);
+  if (loadMine().length) toy.insertAdjacentHTML('beforeend', MADE_BADGE);
+
+  const prev = document.createElement('button');
+  prev.className = 'icon path-arrow prev';
+  prev.setAttribute('aria-label', 'Previous room');
+  prev.innerHTML = ARROW('M30 11 17 24l13 13');
+  const next = document.createElement('button');
+  next.className = 'icon path-arrow next';
+  next.setAttribute('aria-label', 'Next room');
+  next.innerHTML = ARROW('M18 11l13 13-13 13');
+  prev.onclick = () => centre(Math.max(0, here - 1), true);
+  next.onclick = () => centre(Math.min(stops.length - 1, here + 1), true);
+  box.append(prev, path, next);
+
+  function centre(k: number, smooth: boolean) {
+    const s = stops[k].el;
+    path.scrollTo({ left: s.offsetLeft + s.offsetWidth / 2 - path.clientWidth / 2, behavior: smooth ? 'smooth' : 'auto' });
+  }
+  // Which room is in the middle; say its name once the row comes to rest after the child moved it.
+  let quiet = true;
+  let quietUntilSettled = false;
+  let settle = 0;
+  const mark = () => {
+    const mid = path.scrollLeft + path.clientWidth / 2;
+    let best = 0;
+    stops.forEach((s, k) => {
+      const d = Math.abs(s.el.offsetLeft + s.el.offsetWidth / 2 - mid);
+      if (d < Math.abs(stops[best].el.offsetLeft + stops[best].el.offsetWidth / 2 - mid)) best = k;
+    });
+    if (best !== here) {
+      here = best;
+      stops.forEach((s, k) => s.el.classList.toggle('here', k === here));
+      prev.classList.toggle('gone', here === 0);
+      next.classList.toggle('gone', here === stops.length - 1);
+      shownRoom = here;
+      if (!quiet && !quietUntilSettled) {
+        clearTimeout(settle);
+        settle = window.setTimeout(() => { if (here === best) speak(stops[here].name); }, 350);
+      }
+    }
+  };
+  path.addEventListener('scroll', () => {
+    mark();
+    clearTimeout(settleQuiet);
+    settleQuiet = window.setTimeout(() => { quiet = false; quietUntilSettled = false; }, 200);
+  }, { passive: true });
+  let settleQuiet = 0;
+
+  // Open on the room the child was just in, or else the first room with levels still to do.
+  let start = shownRoom;
+  if (start < 0 || start >= stops.length) {
+    start = ROOMS.findIndex((r) => LEVELS.slice(r.first, r.first + r.count).some((l) => !done.has(l.id)));
+    if (start < 0) start = ROOMS.length - 1;
+  }
+  // Now, and again once the page has laid out (fonts and sizes can still shift on first load).
+  const place = () => { centre(start, false); mark(); };
+  place();
+  requestAnimationFrame(place);
+  settleQuiet = window.setTimeout(() => { quiet = false; }, 300);
 }
 
 /** A row along the top of a room: back to the rooms, and the room's picture. */
@@ -216,11 +300,11 @@ function showToyRoom(box: HTMLElement) {
   const done = loadDone();
   const banner = document.createElement('div');
   banner.className = 'room-banner';
-  banner.setAttribute('role', 'img');
-  banner.setAttribute('aria-label', 'Toy box');
   banner.style.setProperty('--accent', PAPER.teal);
   banner.style.setProperty('--paper', '#eef7f3');
-  banner.innerHTML = `<span class="tape"></span><svg viewBox="0 0 48 48">${TOY_ICON}</svg><span class="tape"></span>`;
+  banner.innerHTML = `<span class="tape"></span><svg viewBox="0 0 48 48" aria-hidden="true">${TOY_ICON}</svg>`;
+  banner.append(nameTag('Toy box', PAPER.teal));
+  banner.insertAdjacentHTML('beforeend', '<span class="tape"></span>');
   roomHeader(box, banner);
   const t = document.createElement('button');
   t.className = 'card toybox';

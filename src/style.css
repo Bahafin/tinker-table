@@ -362,9 +362,75 @@ svg .fill { fill: currentColor; stroke: none; }
 
 .room-banner .pink { fill: #f29bb0; }
 .room-banner .back { flex-shrink: 0; }
+.room-banner .room-name { flex-shrink: 0; }
 
-/* ---------- front page: one tile per room ---------- */
-#levels.rooms { width: min(1080px, 100%); }
+/* ---------- front page: the rooms in a row you swipe along ---------- */
+/* Kept in from the screen edges, where a swipe can mean "go back" to the browser. */
+#levels.rooms { display: block; position: relative; width: min(1400px, calc(100% - 24px)); margin-block: auto; }
+/* Upright tablet: more height to spare, so bigger rooms. */
+@media (orientation: portrait) and (min-width: 701px) { .path { --tile: min(74vw, 680px); } }
+.path {
+  --tile: min(66vw, calc((100dvh - 250px) * 1.45), 680px);
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(12px, 3vw, 40px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x pan-y;
+  scrollbar-width: none;
+  position: relative;
+  /* Room for the first and last stop to sit in the middle. */
+  padding: 22px calc(50% - var(--tile) / 2) 16px;
+}
+.path::-webkit-scrollbar { display: none; }
+.stop {
+  flex: 0 0 var(--tile);
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  transform: scale(0.84);
+  opacity: 0.75;
+  transition: transform 0.25s, opacity 0.25s;
+}
+.stop.here { transform: none; opacity: 1; }
+.stop .room-tile { width: 100%; }
+.room-name {
+  border: none;
+  border-bottom: 5px solid var(--accent);
+  border-radius: 18px;
+  padding: 4px 22px 2px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  font-size: clamp(24px, 3.6vw, 36px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transform: rotate(-1.5deg);
+}
+.room-name:active { transform: rotate(-1.5deg) scale(0.95); }
+.path-arrow {
+  position: absolute;
+  top: calc(22px + var(--arrow-y, 34%));
+  z-index: 2;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  transition: opacity 0.2s;
+}
+.path-arrow:active { transform: translateY(calc(-50% + 3px)); }
+.path-arrow.prev { left: 0; }
+.path-arrow.next { right: 0; }
+.path-arrow.gone { opacity: 0; visibility: hidden; }
+@media (max-width: 700px) {
+  .path { --tile: min(70vw, 420px); }
+  .path-arrow { width: 56px; height: 56px; }
+  .path-arrow svg { width: 30px; height: 30px; }
+}
 .room-tile { padding: 10px 10px 12px; }
 .room-tile canvas { border: 3px solid var(--accent); }
 .room-tile .room-pic {
