@@ -1,10 +1,10 @@
 import './style.css';
 import { LEVELS, TOY_BOX } from './levels';
 import { Sim } from './sim/sim';
-import { WORLD_H, WORLD_W, type Level, type PartKind } from './sim/types';
+import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from './sim/types';
 import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow } from './render/draw';
 import { Game, drawIcon } from './ui/game';
-import { speak, unlockAudio } from './ui/audio';
+import { sfx, speak, unlockAudio } from './ui/audio';
 import { INTRO, ROUTINE, SKILLS, TALK, TIPS } from './parents/content';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -25,7 +25,7 @@ const STICKER = `<svg class="sticker" viewBox="0 0 52 52"><circle cx="26" cy="26
 <circle cx="19" cy="22" r="2.5" style="fill:${PAPER.ink};stroke:none"/><circle cx="33" cy="22" r="2.5" style="fill:${PAPER.ink};stroke:none"/>
 <path d="M17 30q9 9 18 0" style="stroke:${PAPER.ink};stroke-width:3.5"/></svg>`;
 
-function thumb(level: Level, toy = false): HTMLCanvasElement {
+function thumb(level: Level, toy = false, withSolution = false): HTMLCanvasElement {
   const c = document.createElement('canvas');
   const s = 22;
   c.width = WORLD_W * s;
@@ -40,7 +40,9 @@ function thumb(level: Level, toy = false): HTMLCanvasElement {
     for (const [k, x, y] of kinds) drawIcon(ctx, k, x * s, y * s, k === 'seesaw' ? 4.4 * s : 1.6 * s);
     return c;
   }
-  const sim = new Sim(level.fixed.map((p) => ({ ...p, fixed: true })), level.goal);
+  const parts: Placement[] = level.fixed.map((p) => ({ ...p, fixed: true }));
+  if (withSolution) parts.push(...(level.solution ?? []));
+  const sim = new Sim(parts, level.goal);
   for (const rp of sim.parts) { drawPart(ctx, rp, 0); drawFixedPin(ctx, rp); }
   return c;
 }
@@ -96,6 +98,21 @@ function talkCard(level: Level, n: string, index: number, toy = false): HTMLElem
   const side = document.createElement('div');
   side.className = 'talk-side';
   side.append(pic, play);
+  if (level.solution) {
+    // For coaching: swap the picture between the puzzle and its answer.
+    const ans = document.createElement('button');
+    ans.className = 'text-btn';
+    ans.textContent = 'Show the answer';
+    let showing = false;
+    ans.onclick = () => {
+      showing = !showing;
+      const next = thumb(level, toy, showing);
+      next.className = 'talk-pic';
+      side.firstElementChild!.replaceWith(next);
+      ans.textContent = showing ? 'Hide the answer' : 'Show the answer';
+    };
+    side.append(ans);
+  }
   card.prepend(side);
   return card;
 }
@@ -202,6 +219,9 @@ function syncButtons() {
   $('btn-go').classList.toggle('hidden', run);
   $('btn-stop').classList.toggle('hidden', !run || game.mode === 'won');
   $('btn-slow').setAttribute('aria-pressed', String(game.slow));
+  const hint = $('btn-hint');
+  hint.classList.toggle('hidden', !game.hintReady);
+  hint.classList.toggle('ready', game.hintReady);
   if (game.mode !== 'won') {
     $('won').classList.add('hidden');
     clearTimeout(wonTimer);
@@ -239,6 +259,7 @@ $('btn-home2').onclick = showMap;
 $('btn-goal').onclick = () => game && speak(game.level.voice);
 $('btn-go').onclick = () => game?.go();
 $('btn-stop').onclick = () => game?.reset();
+$('btn-hint').onclick = () => { if (game?.showHint()) sfx.place(); };
 $('btn-slow').onclick = () => { if (game) { game.slow = !game.slow; syncButtons(); } };
 $('btn-replay').onclick = () => { $('won').classList.add('hidden'); game?.replay(); };
 $('btn-next').onclick = () => startLevel(current + 1 < LEVELS.length ? current + 1 : -1);

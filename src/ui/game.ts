@@ -4,6 +4,7 @@ import { clampToWorld, hitTest, overlapsAny } from '../sim/placement';
 import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from '../sim/types';
 import { drawFixedPin, drawPart, drawTable, PAPER, paperGrain, setPaperShadow } from '../render/draw';
 import { sfx } from './audio';
+import { nextHint } from './hints';
 
 export type Mode = 'build' | 'run' | 'won';
 
@@ -30,6 +31,11 @@ const TAP_SLOP = { mouse: 8, touch: 22 };
 
 /** A round rotate button beside the selected part. dir -1 turns left, +1 turns right, 0 flips. */
 interface Handle { dir: -1 | 0 | 1; px: number; py: number }
+
+/** Missed runs before the hint button appears. */
+const MISSES_BEFORE_HINT = 2;
+/** How long a hint ghost stays (seconds). */
+const HINT_SECONDS = 3.2;
 
 const iconCache = new Map<PartKind, RuntimePart>();
 export function partIcon(kind: PartKind): RuntimePart {
@@ -78,6 +84,9 @@ export class Game {
   private selectedAt = 0;
   private turnFlash: { dir: number; until: number } | null = null;
   private raf = 0;
+  /** Runs that ended without reaching the goal, for the hint button. */
+  misses = 0;
+  private hint: { rp: RuntimePart; from: number } | null = null;
   private L = { scale: 1, ox: 0, oy: 0, trayTop: 0, trayH: 0, item: 0, itemX0: 0, cw: 0, ch: 0, dpr: 1 };
 
   constructor(private canvas: HTMLCanvasElement, readonly level: Level) {
@@ -128,6 +137,20 @@ export class Game {
     this.replaySlowRestore = wasSlow;
   }
   private replaySlowRestore: boolean | null = null;
+
+  /** True once the child has missed a few times and there is a solution to hint from. */
+  get hintReady() {
+    return this.mode === 'build' && this.misses >= MISSES_BEFORE_HINT && !!this.level.solution;
+  }
+
+  /** Show a faint ghost of the next missing part. Returns false if nothing is missing. */
+  showHint(): boolean {
+    const p = nextHint(this.level.solution, this.placements);
+    if (!p) return false;
+    this.selected = null;
+    this.hint = { rp: new Sim([p]).parts[0], from: this.t };
+    return true;
+  }
 
   private remaining(kind: PartKind) {
     const t = this.level.tray.find((x) => x.part === kind);
@@ -370,6 +393,7 @@ export class Game {
         this.endTimer += dt;
         if (this.endTimer > 0.9) {
           sfx.hmm();
+          this.misses++;
           this.restoreSlow();
           this.reset();
         }
@@ -456,6 +480,7 @@ export class Game {
       ctx.restore();
     }
 
+    this.renderHint(ctx);
     ctx.shadowColor = 'transparent';
     this.drawGrain(ctx);
     for (const c of this.confetti) {
@@ -465,6 +490,32 @@ export class Game {
 
     this.renderTray(ctx);
     this.renderHandles(ctx);
+  }
+
+  /** The hint ghost: fades in, glows a little, fades out. Drawn in world units. */
+  private renderHint(ctx: CanvasRenderingContext2D) {
+    const h = this.hint;
+    if (!h) return;
+    const age = this.t - h.from;
+    if (age > HINT_SECONDS || this.mode !== 'build') { this.hint = null; return; }
+    const env = Math.min(1, age / 0.4, (HINT_SECONDS - age) / 0.6);
+    const p = h.rp.placement;
+    const def = PARTS[p.part];
+    ctx.save();
+    ctx.shadowColor = 'transparent';
+    ctx.globalAlpha = env * (0.5 + 0.12 * Math.sin(age * 6));
+    drawPart(ctx, h.rp, this.t);
+    ctx.globalAlpha = env;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(((p.rot ?? 0) * Math.PI) / 180);
+    ctx.setLineDash([0.18, 0.14]);
+    ctx.lineDashOffset = -this.t * 0.5;
+    ctx.strokeStyle = PAPER.teal;
+    ctx.lineWidth = 0.06;
+    ctx.beginPath();
+    ctx.roundRect(-def.hit.w - 0.12, -def.hit.h + (def.hit.dy ?? 0) - 0.12, def.hit.w * 2 + 0.24, def.hit.h * 2 + 0.24, 0.15);
+    ctx.stroke();
+    ctx.restore();
   }
 
   private renderHandles(ctx: CanvasRenderingContext2D) {

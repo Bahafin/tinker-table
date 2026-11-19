@@ -263,3 +263,16 @@ svg .fill { fill: currentColor; stroke: none; }
 @media (max-width: 700px) {
   .grownups-btn { position: static; order: -1; align-self: flex-end; }
 }
+
+/* ---------- hint button ---------- */
+.hint .bulb { fill: #ffe9a8; }
+.hint .rays { stroke: var(--teal); opacity: 0; }
+.hint.ready { animation: hint-pulse 1.6s ease-in-out infinite; }
+.hint.ready .rays { opacity: 1; }
+@keyframes hint-pulse {
+  0%, 100% { transform: scale(1); box-shadow: var(--shadow); }
+  50% { transform: scale(1.08); box-shadow: var(--shadow), 0 0 0 8px rgba(47, 156, 149, 0.18); }
+}
+
+/* ---------- grown-ups: show the answer ---------- */
+.talk-side .text-btn + .text-btn { margin-top: 6px; }
