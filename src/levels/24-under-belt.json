@@ -1,0 +1,73 @@
+{
+  "id": "24-under-belt",
+  "voice": "Belts work upside down too! Catch the balloon under the belts, and carry it past the pins to the star.",
+  "goal": {
+    "type": "reach",
+    "object": "balloon1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "balloon",
+      "id": "balloon1",
+      "x": 3,
+      "y": 9.5
+    },
+    {
+      "part": "pin",
+      "x": 3,
+      "y": 0.5,
+      "rot": 180
+    },
+    {
+      "part": "pin",
+      "x": 4,
+      "y": 0.5,
+      "rot": 180
+    },
+    {
+      "part": "pin",
+      "x": 5,
+      "y": 0.5,
+      "rot": 180
+    },
+    {
+      "part": "pin",
+      "x": 6,
+      "y": 0.5,
+      "rot": 180
+    },
+    {
+      "part": "pin",
+      "x": 7,
+      "y": 0.5,
+      "rot": 180
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 9,
+      "y": 1
+    }
+  ],
+  "tray": [
+    {
+      "part": "conveyor",
+      "count": 2
+    }
+  ],
+  "solution": [
+    {
+      "part": "conveyor",
+      "x": 3.5,
+      "y": 5,
+      "rot": 180
+    },
+    {
+      "part": "conveyor",
+      "x": 6.5,
+      "y": 5,
+      "rot": 180
+    }
+  ]
+}

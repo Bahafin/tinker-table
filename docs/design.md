@@ -99,6 +99,22 @@ Added after the first playtest: a 5-year-old finished 13 levels in about 10 minu
 18. **Belt and boing:** the ball starts only a little above a low shelf, so a spring alone has nothing to work with. The belt carries it off the edge, and then the spring bounces it up into the basket.
 19. **Big machine:** belt, fan and ramp. The ball rides the belt onto the fan and switches it on, the fan blows the balloon out from under a shelf, and the ramp steers it past the pins to the star.
 
+Levels 20–30 go further. Each brings a new idea or a new pairing of parts:
+
+20. **Goes up:** the fan hangs under the ceiling, and the tray has a ball and a balloon. Only the balloon can reach the fan, and it has to go above a slanted plank.
+21. **Hold it down:** point the fan *down* so the wind keeps a floating balloon in its basket.
+22. **Catapult:** the child places the see-saw so a heavy ball and a little ball land on opposite ends.
+23. **Domino switch:** a domino chain switches on a fan, and the fan blows the ball off a shelf. Roofs stop anyone dropping things onto the fan or the ball.
+24. **Under the belt:** a balloon floats up against the underside of belts, which carry it the *opposite* way to their arrows. Two belts, both turned around, take it past the pins.
+25. **Ski jump:** a steep ramp for speed and a short upturned plank to launch the ball over a wall.
+26. **Pop motor:** pin, then pop, then the hamster wakes and pushes a ball off a shelf. The child places both the pin and the hamster.
+27. **Domino stairs:** the chain climbs three steps, one domino at a time, and nudges a ball off the top step.
+28. **Hopscotch:** two holes in the floor, with a spring in each to hop over them.
+29. **Catch and carry:** drop the heavy ball on the see-saw to fling the little one, and catch it in the air with a belt that carries it into a basket on a tower.
+30. **Grand finale:** dominoes, fan, balloon, pin, hamster, ramp. Four placements in one long chain.
+
+Tried and dropped: a fan blowing a ball uphill (its reach is too short to climb a real slope), and a falling domino used as a bridge (too chaotic: random placements won).
+
 Plus the **toy box**: every part except the goal-only star and cheese, unlimited, no goal.
 
 ## Look: paper craft

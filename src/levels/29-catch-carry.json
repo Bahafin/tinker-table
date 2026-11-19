@@ -1,0 +1,72 @@
+{
+  "id": "29-catch-carry",
+  "voice": "Drop the heavy ball to fling the little one up high, and catch it with the belt!",
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "seesaw",
+      "x": 8,
+      "y": 8.6,
+      "rot": -25
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 6.25,
+      "y": 7.9
+    },
+    {
+      "part": "block",
+      "x": 15,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 15,
+      "y": 8.5
+    },
+    {
+      "part": "block",
+      "x": 15,
+      "y": 7.5
+    },
+    {
+      "part": "block",
+      "x": 15,
+      "y": 6.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 15,
+      "y": 5.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "heavyball",
+      "count": 1
+    },
+    {
+      "part": "conveyor",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "heavyball",
+      "x": 9,
+      "y": 2.5
+    },
+    {
+      "part": "conveyor",
+      "x": 12.5,
+      "y": 4.5,
+      "rot": 0
+    }
+  ]
+}

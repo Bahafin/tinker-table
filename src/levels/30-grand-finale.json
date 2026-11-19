@@ -1,0 +1,123 @@
+{
+  "id": "30-grand-finale",
+  "voice": "The biggest machine of all! Dominoes, fan, balloon, pin and hamster. Can you get him to the cheese?",
+  "goal": {
+    "type": "reach",
+    "object": "hamster1",
+    "target": "cheese1"
+  },
+  "fixed": [
+    {
+      "part": "ramp",
+      "x": 3.5,
+      "y": 3,
+      "rot": 0
+    },
+    {
+      "part": "domino",
+      "x": 2.5,
+      "y": 2.125,
+      "rot": 15
+    },
+    {
+      "part": "ramp",
+      "x": 6.5,
+      "y": 1,
+      "rot": 0
+    },
+    {
+      "part": "fan",
+      "x": 6,
+      "y": 2.5,
+      "rot": 0
+    },
+    {
+      "part": "ramp",
+      "x": 9,
+      "y": 1.5,
+      "rot": 0
+    },
+    {
+      "part": "balloon",
+      "id": "balloon1",
+      "x": 8.5,
+      "y": 2.1
+    },
+    {
+      "part": "hamster",
+      "id": "hamster1",
+      "x": 6,
+      "y": 9.5
+    },
+    {
+      "part": "ramp",
+      "x": 6,
+      "y": 8.5,
+      "rot": 0
+    },
+    {
+      "part": "block",
+      "x": 12,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 13,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 14,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 15,
+      "y": 9.5
+    },
+    {
+      "part": "cheese",
+      "id": "cheese1",
+      "x": 14.5,
+      "y": 8.6
+    }
+  ],
+  "tray": [
+    {
+      "part": "domino",
+      "count": 2
+    },
+    {
+      "part": "pin",
+      "count": 1
+    },
+    {
+      "part": "ramp",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "domino",
+      "x": 3.5,
+      "y": 2
+    },
+    {
+      "part": "domino",
+      "x": 4.5,
+      "y": 2
+    },
+    {
+      "part": "pin",
+      "x": 11,
+      "y": 1,
+      "rot": 0
+    },
+    {
+      "part": "ramp",
+      "x": 10,
+      "y": 9.5,
+      "rot": -15
+    }
+  ]
+}

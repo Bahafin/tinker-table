@@ -1,0 +1,37 @@
+{
+  "id": "21-hold-down",
+  "voice": "The balloon wants to float away! Point the fan down, to keep it in the basket.",
+  "goal": {
+    "type": "reach",
+    "object": "balloon1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 8,
+      "y": 9.4
+    },
+    {
+      "part": "balloon",
+      "id": "balloon1",
+      "x": 8,
+      "y": 8.9
+    }
+  ],
+  "tray": [
+    {
+      "part": "fan",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "fan",
+      "x": 8,
+      "y": 6.5,
+      "rot": 90
+    }
+  ]
+}
