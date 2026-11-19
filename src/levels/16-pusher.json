@@ -1,0 +1,55 @@
+{
+  "id": "16-pusher",
+  "voice": "The ball needs a push. Put the hamster where the other ball lands, and point him the right way!",
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball2",
+      "x": 7,
+      "y": 1
+    },
+    {
+      "part": "ramp",
+      "x": 8,
+      "y": 5,
+      "rot": 0
+    },
+    {
+      "part": "ramp",
+      "x": 9.5,
+      "y": 3.25,
+      "rot": 0
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 9.2,
+      "y": 4.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 11,
+      "y": 9.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "hamster",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "hamster",
+      "x": 7,
+      "y": 4,
+      "rot": 0
+    }
+  ]
+}

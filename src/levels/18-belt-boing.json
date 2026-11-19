@@ -1,0 +1,58 @@
+{
+  "id": "18-belt-boing",
+  "voice": "Use the belt to carry the ball, then the spring to bounce it up into the basket!",
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 2,
+      "y": 4.5
+    },
+    {
+      "part": "ramp",
+      "x": 2,
+      "y": 6,
+      "rot": 0
+    },
+    {
+      "part": "block",
+      "x": 9.5,
+      "y": 9.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 9.5,
+      "y": 8.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "conveyor",
+      "count": 1
+    },
+    {
+      "part": "spring",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "conveyor",
+      "x": 3,
+      "y": 5.5,
+      "rot": 0
+    },
+    {
+      "part": "spring",
+      "x": 5,
+      "y": 8,
+      "rot": 15
+    }
+  ]
+}

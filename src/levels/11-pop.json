@@ -1,9 +1,10 @@
 {
   "id": "11-pop",
-  "voice": "Where will the balloon float? Put the pin in its way, and pop!",
+  "voice": "Shh, the hamster is fast asleep. A loud pop will wake him up! Put the pin where the balloon floats.",
   "goal": {
-    "type": "pop",
-    "object": "balloon1"
+    "type": "reach",
+    "object": "hamster1",
+    "target": "cheese1"
   },
   "fixed": [
     {
@@ -23,6 +24,18 @@
       "x": 5.5,
       "y": 3.5,
       "rot": -15
+    },
+    {
+      "part": "hamster",
+      "id": "hamster1",
+      "x": 9.5,
+      "y": 9.5
+    },
+    {
+      "part": "cheese",
+      "id": "cheese1",
+      "x": 15,
+      "y": 9.4
     }
   ],
   "tray": [

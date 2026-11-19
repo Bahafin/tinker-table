@@ -56,6 +56,14 @@ export class Sim {
         x.state.popped = true;
         this.toDestroy.push(x);
         this.events.push({ type: 'pop' });
+        // The bang wakes every sleeping hamster.
+        for (const h of this.parts) {
+          if (h.kind === 'hamster' && !h.state.on) {
+            h.state.on = true;
+            h.bodies[0].setAwake(true);
+            this.events.push({ type: 'squeak' });
+          }
+        }
       }
       if (x?.kind === 'fan' && !x.state.on && yb.isDynamic()) {
         x.state.on = true;
@@ -102,8 +110,7 @@ export class Sim {
   goalReached(): boolean {
     if (!this.goal) return false;
     const obj = this.byId(this.goal.object);
-    if (this.goal.type === 'pop') return !!obj?.state.popped;
-    const target = this.goal.target ? this.byId(this.goal.target) : undefined;
+    const target = this.byId(this.goal.target);
     if (!obj || !target?.zone || obj.state.popped) return false;
     const local = target.bodies[0].getLocalPoint(Sim.goalBody(obj).getPosition());
     const z = target.zone;
@@ -136,8 +143,7 @@ export class Sim {
 
     if (this.goalReached()) {
       this.goalHeld += DT;
-      // A pop is over in an instant (and leaves nothing moving), so it counts straight away.
-      if (this.goalHeld >= GOAL_HOLD || this.goal?.type === 'pop') this.success = true;
+      if (this.goalHeld >= GOAL_HOLD) this.success = true;
     } else this.goalHeld = 0;
 
     if (this.time > 1 && !this.success) {

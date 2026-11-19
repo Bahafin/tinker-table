@@ -35,7 +35,18 @@ html, body {
 .hidden { display: none !important; }
 
 /* ---------- map ---------- */
-#map { align-items: center; justify-content: center; gap: 3vh; padding-inline: 16px; }
+/* The map scrolls: there are more levels than fit on one screen. */
+#map {
+  align-items: center;
+  justify-content: flex-start;
+  gap: 3vh;
+  padding-inline: 16px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 40px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+#map .logo { margin-top: 18px; }
 .logo {
   margin: 0;
   font-size: clamp(28px, 6vw, 56px);
@@ -46,9 +57,10 @@ html, body {
 }
 #levels {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 230px));
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
   gap: clamp(12px, 2.5vw, 28px);
-  max-width: 100%;
+  width: min(1120px, 100%);
+  flex-shrink: 0;
 }
 .card {
   position: relative;

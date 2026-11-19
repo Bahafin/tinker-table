@@ -15,6 +15,15 @@ describe.each(LEVELS.map((l) => [l.id, l] as const))('level %s', (_id, level) =>
     expect(new Sim([...fixedOf(level), ...level.solution!], level.goal).runHeadless()).toBe(true);
   });
 
+  test('every part of the solution is needed', () => {
+    const sol = level.solution!;
+    if (sol.length < 2) return;
+    for (let i = 0; i < sol.length; i++) {
+      const without = sol.filter((_, j) => j !== i);
+      expect(new Sim([...fixedOf(level), ...without], level.goal).runHeadless(), `solved without ${sol[i].part} #${i}`).toBe(false);
+    }
+  });
+
   test('solution only uses parts from the tray', () => {
     for (const t of level.tray) {
       expect(level.solution!.filter((p) => p.part === t.part).length).toBeLessThanOrEqual(t.count);

@@ -1,0 +1,87 @@
+{
+  "id": "19-big-machine",
+  "voice": "A big machine! Use the belt, the fan and the ramp to get the balloon all the way to the star.",
+  "goal": {
+    "type": "reach",
+    "object": "balloon1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 2,
+      "y": 1
+    },
+    {
+      "part": "ramp",
+      "x": 7.5,
+      "y": 5.5,
+      "rot": 0
+    },
+    {
+      "part": "balloon",
+      "id": "balloon1",
+      "x": 7.5,
+      "y": 6.2
+    },
+    {
+      "part": "pin",
+      "x": 9.5,
+      "y": 0.5,
+      "rot": 180
+    },
+    {
+      "part": "pin",
+      "x": 10.5,
+      "y": 0.5,
+      "rot": 180
+    },
+    {
+      "part": "pin",
+      "x": 11.5,
+      "y": 0.5,
+      "rot": 180
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 13,
+      "y": 1
+    }
+  ],
+  "tray": [
+    {
+      "part": "conveyor",
+      "count": 1
+    },
+    {
+      "part": "fan",
+      "count": 1
+    },
+    {
+      "part": "ramp",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "conveyor",
+      "x": 2.5,
+      "y": 3,
+      "rot": 0
+    },
+    {
+      "part": "fan",
+      "x": 5,
+      "y": 6,
+      "rot": 0
+    },
+    {
+      "part": "ramp",
+      "x": 11,
+      "y": 4,
+      "rot": -30
+    }
+  ]
+}

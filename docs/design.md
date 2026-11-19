@@ -40,12 +40,12 @@ A calm chain-reaction puzzle game for ages 4–7, played with a parent on a tabl
 | Star | Ø 1 | sensor | Goal: something touches it. |
 | Domino | 0.25 × 1.5 | dynamic | Topples and knocks the next one. |
 | See-saw | 4 × 0.2 on a pivot | dynamic plank on a hinge | Tips when weight lands on one side. |
-| Balloon | Ø 0.9 | dynamic, floats | Rises and pops when it touches a pin. |
+| Balloon | Ø 0.9 | dynamic, floats | Rises and pops when it touches a pin. The bang wakes any sleeping hamster. |
 | Pin | 0.6 | static spike | Pops balloons. |
 | Fan | 1 × 1 | static | Starts when anything bumps it, then blows along its facing (4 cells reach). |
 | Spring pad | 1.4 × 0.3 | static, very bouncy | Throws things back up. |
 | Pulley bucket | 3 × 4 | bucket + counterweight on a pulley rope | A ball in the bucket lifts the weight. |
-| Hamster ball | Ø 1 | dynamic | Asleep until something bumps it, then rolls steadily the way it faces. A tap flips its facing. |
+| Hamster ball | Ø 1 | dynamic | Asleep until something bumps it or a balloon pops, then rolls steadily the way it faces. A tap flips its facing. |
 | Conveyor belt | 3 × 0.4 | static | Carries things along its top at 2.5 cells/s. A tap flips its direction. |
 | Cheese | 1 × 0.7 | sensor | Goal: the hamster reaches it. |
 
@@ -67,7 +67,6 @@ A run also ends when nothing has moved for 1.5 s, because a hamster or a fan can
 ```
 - `x` and `y` are cell coordinates of the part's centre, on a 0.5 grid. `rot` is in degrees, clockwise, in 15° steps.
 - **The goal is reached** when the centre of `object` is inside `target`'s goal zone (the inside of the basket, or the star's area). For a pulley, the centre of its weight counts.
-- A `"pop"` goal (`{ "type": "pop", "object": "balloon1" }`) has no target. It is reached the moment that balloon pops.
 - **Every level must pass two automated checks:** its `solution` reaches the goal, and the level with nothing placed does **not**.
 
 ## Milestone 1 levels
@@ -87,10 +86,18 @@ Added in Milestone 3. Each one teaches an idea no earlier level does:
 
 9. **Bridge:** fill the gap between two shelves with a short plank so the ball can roll across.
 10. **Boing:** a wall is too tall to roll past, so put the spring pad where the ball lands and bounce it over.
-11. **Pop:** the balloon floats along two slanted ceilings. Guess its path and put the pin in its way. The goal is the pop itself.
+11. **Pop:** a loud pop wakes the sleeping hamster, who rolls to the cheese. The balloon floats along two slanted ceilings, so guess its path and put the pin in its way. (The first version had popping as the goal itself. In the first playtest the child asked "why?", so now the pop has a job to do.)
 12. **Uphill:** a bump wakes the hamster, and a ramp lets him climb *up* onto the cheese shelf (ramps so far only went down).
 13. **Wind:** place the fan where a falling ball switches it on, and point it at the other ball to blow it off the shelf into the basket.
 14. **Lift:** put a block in the ball's way so it drops into the pulley bucket. The bucket goes down and the weight goes up to the star.
+
+Added after the first playtest: a 5-year-old finished 13 levels in about 10 minutes, so these are harder. Most need two or three parts, and a test checks that removing any one part of the solution makes the level fail.
+
+15. **Bank shot:** the ball flies past the basket. Stand the spring up like a wall so the ball bounces back.
+16. **Pusher:** place the hamster yourself, under a falling ball and facing the right way, so he pushes another ball off a shelf. A low roof stops you dropping things straight onto that ball.
+17. **Safe balloon:** a row of pins hangs from the ceiling. One ramp is too short, so join two ramps into a path under the pins to the star.
+18. **Belt and boing:** the ball starts only a little above a low shelf, so a spring alone has nothing to work with. The belt carries it off the edge, and then the spring bounces it up into the basket.
+19. **Big machine:** belt, fan and ramp. The ball rides the belt onto the fan and switches it on, the fan blows the balloon out from under a shelf, and the ramp steers it past the pins to the star.
 
 Plus the **toy box**: every part except the goal-only star and cheese, unlimited, no goal.
 

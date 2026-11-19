@@ -13,9 +13,14 @@ import l11 from './11-pop.json';
 import l12 from './12-uphill.json';
 import l13 from './13-wind.json';
 import l14 from './14-lift.json';
+import l15 from './15-bank-shot.json';
+import l16 from './16-pusher.json';
+import l17 from './17-safe-balloon.json';
+import l18 from './18-belt-boing.json';
+import l19 from './19-big-machine.json';
 import { TOY_PARTS } from '../sim/parts';
 
-export const LEVELS = [l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14] as Level[];
+export const LEVELS = [l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19] as Level[];
 
 export const TOY_BOX: Level = {
   id: 'toybox',

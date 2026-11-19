@@ -14,14 +14,11 @@ export interface Placement {
   fixed?: boolean;
 }
 
-/**
- * reach: the centre of `object` is inside `target`'s goal zone.
- * pop: the balloon `object` has popped (no target).
- */
+/** The centre of `object` is inside `target`'s goal zone. */
 export interface Goal {
-  type: 'reach' | 'pop';
+  type: 'reach';
   object: string;
-  target?: string;
+  target: string;
 }
 
 export interface Level {
