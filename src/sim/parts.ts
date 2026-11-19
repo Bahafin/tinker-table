@@ -16,7 +16,7 @@ export interface RuntimePart {
   /** Goal zone in the part's local frame (relative to bodies[0]). */
   zone?: { x0: number; y0: number; x1: number; y1: number };
   /** on: fan blowing / hamster awake. dir: +1 right, -1 left (conveyor, hamster). */
-  state: { on?: boolean; popped?: boolean; dir?: number };
+  state: { on?: boolean; popped?: boolean; dir?: number; load?: number };
   /** The hammer's hinge, held still until something bumps the hammer. */
   brake?: RevoluteJoint;
 }
@@ -254,6 +254,25 @@ export const PARTS: Record<PartKind, PartDef> = {
       rp.state.on = false;
     },
   },
+  toaster: {
+    // A toaster with one slot on top. Something that drops into the slot sits there
+    // for a moment, then ding! it pops up about four cells, tossed a little the way
+    // the toaster faces.
+    hit: { w: 0.85, h: 0.5 },
+    rotatable: true,
+    rotStep: 180,
+    build(world, p, rp) {
+      const b = staticBody(world, { ...p, rot: 0 });
+      const opts = { friction: 0.4, restitution: 0 };
+      // A wide, shallow slot, so a ball dropped anywhere over the toaster lands inside.
+      b.createFixture(new Box(0.125, 0.5, new Vec2(-0.725, 0)), opts);
+      b.createFixture(new Box(0.125, 0.5, new Vec2(0.725, 0)), opts);
+      b.createFixture(new Box(0.6, 0.275, new Vec2(0, 0.225)), opts);
+      rp.bodies.push(b);
+      rp.state.dir = Math.abs(p.rot ?? 0) === 180 ? -1 : 1;
+      rp.state.load = 0;
+    },
+  },
   cheese: {
     hit: { w: 0.5, h: 0.4 },
     rotatable: false,
@@ -268,7 +287,7 @@ export const PARTS: Record<PartKind, PartDef> = {
 
 export const ALL_PARTS: PartKind[] = [
   'ball', 'heavyball', 'ramp', 'shortramp', 'block', 'domino', 'seesaw',
-  'balloon', 'pin', 'fan', 'spring', 'conveyor', 'hamster', 'car', 'hammer', 'pulley', 'basket', 'star', 'cheese',
+  'balloon', 'pin', 'fan', 'spring', 'conveyor', 'hamster', 'car', 'hammer', 'toaster', 'pulley', 'basket', 'star', 'cheese',
 ];
 
 /** Parts offered in the toy box (goal-only parts like the star and cheese are left out). */

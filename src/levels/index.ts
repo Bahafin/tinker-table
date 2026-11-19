@@ -35,27 +35,32 @@ import l33 from './33-car-catapult.json';
 import l34 from './34-hammer.json';
 import l35 from './35-hammer-face.json';
 import l36 from './36-hammer-dominoes.json';
+import l37 from './37-toaster.json';
+import l38 from './38-toaster-wall.json';
+import l39 from './39-toaster-hamster.json';
 import { TOY_PARTS } from '../sim/parts';
 
 export const LEVELS = [l1, l2, l3, l4, l5, l6,
   // Workshop: the hammer comes after the first six tutorial levels.
   l34, l35, l36,
   l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18,
+  // Kitchen: the toaster comes after its first six levels.
+  l37, l38, l39,
   // Playroom: the toy car arrives first, then gets used again at the end of the room.
   l31, l19, l20, l21, l22, l23, l24, l32, l33,
   l25, l26, l27, l28, l29, l30] as Level[];
 
 /**
- * Rooms on the map, in order (six levels each, nine in rooms with their own part: the Workshop's hammer, the Playroom's toy car). Each room has its own paper tint
+ * Rooms on the map, in order (six levels each, nine in rooms with their own part: the Workshop's hammer, the Kitchen's toaster, the Playroom's toy car). Each room has its own paper tint
  * (cards and the table) and an accent colour for its banner.
  */
 export interface Room { id: string; name: string; first: number; count: number; paper: string; accent: string }
 export const ROOMS: Room[] = [
   { id: 'workshop', name: 'Workshop', first: 0, count: 9, paper: '#f4ecdc', accent: '#c79a5b' },
   { id: 'garden', name: 'Garden', first: 9, count: 6, paper: '#edf1dc', accent: '#7cae4e' },
-  { id: 'kitchen', name: 'Kitchen', first: 15, count: 6, paper: '#f7e7dc', accent: '#e5583f' },
-  { id: 'playroom', name: 'Playroom', first: 21, count: 9, paper: '#e6eef5', accent: '#5aa2d6' },
-  { id: 'attic', name: 'Attic', first: 30, count: 6, paper: '#ece7f1', accent: '#3d4a73' },
+  { id: 'kitchen', name: 'Kitchen', first: 15, count: 9, paper: '#f7e7dc', accent: '#e5583f' },
+  { id: 'playroom', name: 'Playroom', first: 24, count: 9, paper: '#e6eef5', accent: '#5aa2d6' },
+  { id: 'attic', name: 'Attic', first: 33, count: 6, paper: '#ece7f1', accent: '#3d4a73' },
 ];
 /**
  * Each room draws some parts as its own things (see render/skins.ts), so the spoken goal

@@ -63,6 +63,8 @@ export const sfx = {
   squeak: () => { tone(1500, 0.08, 'sine', 0.15, 0, 2100); tone(1700, 0.1, 'sine', 0.15, 0.1, 2400); },
   /** A wind-up toy car starting off: a quick ratchet of clicks. */
   vroom: () => { for (let i = 0; i < 5; i++) tone(140 + i * 25, 0.05, 'square', 0.05, i * 0.06); },
+  /** The toaster popping: a spring twang and a little bell. */
+  ding: () => { tone(300, 0.12, 'triangle', 0.15, 0, 700); tone(1568, 0.6, 'sine', 0.18, 0.08); },
   hmm: () => { tone(330, 0.25, 'sine', 0.18); tone(262, 0.35, 'sine', 0.18, 0.22); },
 };
 

@@ -22,6 +22,7 @@ const SOLID: Record<PartKind, { w: number; h: number; dy?: number }> = {
   cheese: { w: 0.5, h: 0.35 },
   car: { w: 0.62, h: 0.37 },
   hammer: { w: 0.4, h: 1.1, dy: -0.85 },
+  toaster: { w: 0.85, h: 0.5 },
 };
 
 const SHRINK = 0.03;

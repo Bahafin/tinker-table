@@ -12,6 +12,10 @@ const HAMSTER_SPIN = 5;
 /** A released hammer's swing speed (rad/s) and strength. */
 const HAMMER_SPEED = 7;
 const HAMMER_TORQUE = 150;
+/** Toaster: how long something sits in the slot before it pops, and the pop's speed. */
+const TOAST_WAIT = 0.4;
+const TOAST_UP = 9;
+const TOAST_TOSS = 1.5;
 
 type Tag = { rp: RuntimePart };
 
@@ -104,6 +108,30 @@ export class Sim {
     }
   }
 
+  /** Something resting in a toaster's slot pops out after a moment. */
+  private applyToasters() {
+    for (const t of this.parts) {
+      if (t.kind !== 'toaster') continue;
+      const tb = t.bodies[0];
+      let inSlot: Body | null = null;
+      for (let b: Body | null = this.world.getBodyList(); b; b = b.getNext()) {
+        if (!b.isDynamic()) continue;
+        const lp = tb.getLocalPoint(b.getPosition());
+        if (Math.abs(lp.x) < 0.6 && lp.y > -0.9 && lp.y < 0) { inSlot = b; break; }
+      }
+      if (!inSlot) { t.state.load = 0; t.state.on = false; continue; }
+      t.state.on = true;
+      t.state.load! += DT;
+      if (t.state.load! >= TOAST_WAIT) {
+        inSlot.setLinearVelocity(new Vec2(TOAST_TOSS * t.state.dir!, -TOAST_UP));
+        inSlot.setAngularVelocity(0);
+        inSlot.setAwake(true);
+        t.state.load = 0;
+        this.events.push({ type: 'ding' });
+      }
+    }
+  }
+
   byId(id: string) {
     return this.parts.find((p) => p.placement.id === id);
   }
@@ -141,6 +169,7 @@ export class Sim {
   step() {
     if (this.success || this.settled) return;
     this.applyFans();
+    this.applyToasters();
     this.applyHamsters();
     this.world.step(DT, 8, 3);
     for (const rp of this.toDestroy) for (const b of rp.bodies) this.world.destroyBody(b);

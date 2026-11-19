@@ -261,6 +261,27 @@ const DRAW: Record<string, (ctx: Ctx, rp: RuntimePart, t: number) => void> = {
       ctx.beginPath(); ctx.arc(p.x, p.y, 0.07, 0, Math.PI * 2); paper(ctx, PAPER.brass);
     });
   },
+  toaster(ctx, rp) {
+    withBody(ctx, rp.bodies[0], () => {
+      ctx.scale(rp.state.dir ?? 1, 1);
+      // Body, with the slot cut into the top.
+      ctx.beginPath();
+      ctx.moveTo(-0.85, 0.42); ctx.lineTo(-0.85, -0.38); ctx.quadraticCurveTo(-0.85, -0.5, -0.73, -0.5); ctx.lineTo(-0.6, -0.5);
+      ctx.lineTo(-0.6, -0.05); ctx.lineTo(0.6, -0.05); ctx.lineTo(0.6, -0.5); ctx.lineTo(0.73, -0.5);
+      ctx.quadraticCurveTo(0.85, -0.5, 0.85, -0.38); ctx.lineTo(0.85, 0.42); ctx.closePath();
+      paper(ctx, '#8fcfc4');
+      noShadow(ctx, () => {
+        rrect(ctx, -0.6, -0.5, 1.2, 0.45, 0.04); paper(ctx, 'rgba(59, 47, 42, 0.5)');
+        line(ctx, -0.78, 0.25, 0.78, 0.25, '#fbf6ea', 0.05);
+        // The lever on the back goes down while something is in the slot.
+        const down = rp.state.on ? 0.22 : 0;
+        rrect(ctx, -1.02, -0.25 + down, 0.22, 0.1, 0.04); paper(ctx, PAPER.ink);
+        // A dial and little feet.
+        ctx.beginPath(); ctx.arc(0.62, 0.0, 0.08, 0, Math.PI * 2); paper(ctx, PAPER.tomato);
+        for (const x of [-0.62, 0.62]) { rrect(ctx, x - 0.1, 0.42, 0.2, 0.08, 0.03); paper(ctx, PAPER.ink); }
+      });
+    });
+  },
   cheese(ctx, rp, t) {
     withBody(ctx, rp.bodies[0], () => {
       ctx.rotate(Math.sin(t * 2) * 0.04);

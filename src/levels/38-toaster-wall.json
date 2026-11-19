@@ -1,0 +1,15 @@
+{
+  "id": "38-toaster-wall",
+  "voice": "A wall is in the way! Put the toaster where the ball drops off the belt, and pop it over the wall. Which way should the toaster face?",
+  "goal": { "type": "reach", "object": "ball1", "target": "basket1" },
+  "fixed": [
+    { "part": "conveyor", "x": 11.5, "y": 8, "rot": 180 },
+    { "part": "ball", "id": "ball1", "x": 12.5, "y": 7.5 },
+    { "part": "block", "x": 7, "y": 9.5 },
+    { "part": "block", "x": 7, "y": 8.5 },
+    { "part": "block", "x": 7, "y": 7.5 },
+    { "part": "basket", "id": "basket1", "x": 5, "y": 9.4 }
+  ],
+  "tray": [{ "part": "toaster", "count": 1 }],
+  "solution": [{ "part": "toaster", "x": 8.5, "y": 9.5, "rot": 180 }]
+}

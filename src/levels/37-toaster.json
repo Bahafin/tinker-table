@@ -1,0 +1,12 @@
+{
+  "id": "37-toaster",
+  "voice": "Here's a toaster! Anything that drops in pops up again, ding! Put it where the ball falls, and pop it into the basket on the counter.",
+  "goal": { "type": "reach", "object": "ball1", "target": "basket1" },
+  "fixed": [
+    { "part": "ball", "id": "ball1", "x": 5, "y": 1 },
+    { "part": "ramp", "x": 8.5, "y": 7.5, "rot": 0 },
+    { "part": "basket", "id": "basket1", "x": 7.5, "y": 6.8 }
+  ],
+  "tray": [{ "part": "toaster", "count": 1 }],
+  "solution": [{ "part": "toaster", "x": 5, "y": 9.5, "rot": 0 }]
+}

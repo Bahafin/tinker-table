@@ -52,8 +52,9 @@ A calm chain-reaction puzzle game for ages 4–7, played with a parent on a tabl
 | Cheese | 1 × 0.7 | sensor | Goal: the hamster reaches it. |
 | Toy car | 1.2 × 0.75 | dynamic, two motor wheels | A wind-up pickup truck. Drives the way it faces from the moment Go is pressed, pushes what's in front (even the heavy ball) and carries a ball on its flat back. Climbs gentle (15°) ramps; its wheels slip on 30°. A tap flips its facing. The Playroom's own part. |
 | Hammer | 0.8 × 2.1 | dynamic head on a hinge, static base | Stands upright, held still, until anything bumps it. Then it's spring-loaded: it snaps down the way it faces (up to a little past flat) and whacks what's in its arc. The head reaches about 1.6–1.9 cells from the hinge, so a ball to whack should sit a bit above the hinge, not level with it (level with it, the head lands on top of the ball). A tap flips its facing. The Workshop's own part. |
+| Toaster | 1.7 × 1 | static, wide slot on top | Anything whose centre sits in the slot for 0.4 s pops out with a "ding": straight up about 4 cells and tossed 1.5 cells/s the way the toaster faces (it lands about 2.6 cells away). It's a lift, not a bounce: it pops to the same height however gently things arrive. The slot is wide (1.2) so a ball dropped within ±0.5 of the middle is caught; things rolling along the floor can't get in, they have to drop in. A tap flips its facing. The Kitchen's own part. |
 
-Parts that only face left or right (hamster, conveyor, car, hammer) get one ↔ flip button instead of the two turn buttons.
+Parts that only face left or right (hamster, conveyor, car, hammer, toaster) get one ↔ flip button instead of the two turn buttons.
 
 A run also ends when nothing has moved for 1.5 s, because a hamster or a fan can keep pushing something against a wall forever.
 
@@ -122,6 +123,12 @@ The hammer levels come after the six Workshop tutorials:
 34. **Hammer** (7th in the Workshop): the hammer is already there. Drop a ball on it, and it whacks the other ball off a low shelf into the toolbox. Teaches "bump it and it whacks".
 35. **Face the hammer:** a ball rolls in from the right. Place the hammer in its path, turned to face the ball on the shelf.
 36. **Hammer dominoes:** a falling domino starts the line; add two dominoes so the line reaches the hammer, which whacks the ball across the room.
+
+The toaster levels come after the Kitchen's first six:
+
+37. **Toaster:** a ball falls from the top. Put the toaster under it, facing the counter, and it pops the ball into the pot.
+38. **Over the wall:** a belt drops the ball by a tall wall. The toaster has to face away from the belt to pop it over into the pot.
+39. **Toaster hamster:** drop a ball to wake the hamster; he rolls off his shelf into the toaster, which pops him up to the cheese.
 
 The toy car levels sit in the Playroom (its first level and its last two), so the map order differs from the file numbers:
 

@@ -1,0 +1,13 @@
+{
+  "id": "39-toaster-hamster",
+  "voice": "The cheese is up on the shelf! Wake the hamster, and catch him in the toaster. Ding! Up he goes.",
+  "goal": { "type": "reach", "object": "hamster1", "target": "cheese1" },
+  "fixed": [
+    { "part": "ramp", "x": 3, "y": 6, "rot": 0 },
+    { "part": "hamster", "id": "hamster1", "x": 2.5, "y": 5.5, "rot": 0 },
+    { "part": "ramp", "x": 10, "y": 6.5, "rot": 0 },
+    { "part": "cheese", "id": "cheese1", "x": 11, "y": 5.9 }
+  ],
+  "tray": [{ "part": "toaster", "count": 1 }, { "part": "ball", "count": 1 }],
+  "solution": [{ "part": "toaster", "x": 7, "y": 9.5, "rot": 0 }, { "part": "ball", "x": 2.5, "y": 2 }]
+}

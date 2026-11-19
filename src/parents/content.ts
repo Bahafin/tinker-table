@@ -279,6 +279,27 @@ export const TALK: Record<string, TalkCard> = {
     words: ['chain', 'one after another', 'gap', 'reach', 'next'],
     tryAtHome: 'Line up books or blocks on the floor and knock over the first one. How far apart can they be and still all fall?',
   },
+  '37-toaster': {
+    idea: 'A new part: the toaster. Something dropped into it pops back up, a little to one side. Your child has to guess where the ball will fall, and then where it will go after the pop.',
+    before: ['Where will the ball fall?', 'Where will it go after the toaster pops it up?'],
+    after: ['What did the toaster do?', 'What happened when the toaster faced the other way?'],
+    words: ['drop', 'pop up', 'catch', 'ding', 'side'],
+    tryAtHome: 'Toss a soft ball straight up and catch it. Then toss it up and a little forward: where do you need to stand to catch it?',
+  },
+  '38-toaster-wall': {
+    idea: 'Going up and over: a wall blocks the way, so the ball has to go up before it can go across. The toaster faces the way the ball needs to go.',
+    before: ['Can the ball get through the wall?', 'Which way should the toaster face?'],
+    after: ['How did the ball get over the wall?', 'What happened when the toaster faced the belt?'],
+    words: ['over', 'wall', 'up and across', 'facing', 'drop off'],
+    tryAtHome: 'Build a little wall of books and throw a ball over it into a box. Do you throw it straight or up high?',
+  },
+  '39-toaster-hamster': {
+    idea: 'A three-step story: a ball wakes the hamster, he rolls off his shelf, and the toaster pops him up to the cheese. The toaster can lift anything that fits, not just balls.',
+    before: ['How can we wake the hamster?', 'Where will he fall when he rolls off the shelf?'],
+    after: ['Tell me the story: first... then... then...?', 'What else could the toaster pop up?'],
+    words: ['wake up', 'roll off', 'catch', 'lift', 'story'],
+    tryAtHome: 'Roll a toy off the edge of a table into a box on the floor. Move the box until you catch it every time.',
+  },
   '31-car-push': {
     idea: 'A new part: the toy car has its own motor. It starts as soon as you press go and drives the way it faces, pushing whatever is in front of it.',
     before: ['Where should the car start, so it bumps the ball?', 'Which way is the car facing? Tap it to turn it around.'],
