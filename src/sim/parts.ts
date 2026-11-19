@@ -16,7 +16,8 @@ export interface RuntimePart {
   /** Goal zone in the part's local frame (relative to bodies[0]). */
   zone?: { x0: number; y0: number; x1: number; y1: number };
   /** on: fan blowing / hamster awake. dir: +1 right, -1 left (conveyor, hamster). */
-  state: { on?: boolean; popped?: boolean; dir?: number; load?: number };
+  /** load: toaster wait, watering can pour time, or drops a flower has drunk. drops: drops poured so far. */
+  state: { on?: boolean; popped?: boolean; dir?: number; load?: number; drops?: number };
   /** The hammer's hinge, held still until something bumps the hammer. */
   brake?: RevoluteJoint;
 }
@@ -273,6 +274,33 @@ export const PARTS: Record<PartKind, PartDef> = {
       rp.state.load = 0;
     },
   },
+  can: {
+    // A watering can. Bump it and it tips toward its spout and pours a stream of
+    // water drops (extra bodies added to this part as they're poured).
+    hit: { w: 0.85, h: 0.5 },
+    rotatable: true,
+    rotStep: 180,
+    build(world, p, rp) {
+      const b = staticBody(world, { ...p, rot: 0 });
+      b.createFixture(new Box(0.42, 0.45, new Vec2(-0.03 * (Math.abs(p.rot ?? 0) === 180 ? -1 : 1), 0)), { friction: 0.4 });
+      rp.bodies.push(b);
+      rp.state.dir = Math.abs(p.rot ?? 0) === 180 ? -1 : 1;
+      rp.state.on = false;
+      rp.state.load = 0;
+      rp.state.drops = 0;
+    },
+  },
+  flower: {
+    // A flower in a pot. Water drops that reach it soak in; enough of them and it blooms.
+    hit: { w: 0.5, h: 0.6 },
+    rotatable: false,
+    build(world, p, rp) {
+      const b = staticBody(world, { ...p, rot: 0 });
+      b.createFixture(new Box(0.45, 0.6), { isSensor: true });
+      rp.bodies.push(b);
+      rp.state.load = 0;
+    },
+  },
   cheese: {
     hit: { w: 0.5, h: 0.4 },
     rotatable: false,
@@ -287,7 +315,7 @@ export const PARTS: Record<PartKind, PartDef> = {
 
 export const ALL_PARTS: PartKind[] = [
   'ball', 'heavyball', 'ramp', 'shortramp', 'block', 'domino', 'seesaw',
-  'balloon', 'pin', 'fan', 'spring', 'conveyor', 'hamster', 'car', 'hammer', 'toaster', 'pulley', 'basket', 'star', 'cheese',
+  'balloon', 'pin', 'fan', 'spring', 'conveyor', 'hamster', 'car', 'hammer', 'toaster', 'can', 'pulley', 'basket', 'star', 'cheese', 'flower',
 ];
 
 /** Parts offered in the toy box (goal-only parts like the star and cheese are left out). */

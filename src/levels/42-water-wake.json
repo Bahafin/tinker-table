@@ -1,0 +1,53 @@
+{
+  "id": "42-water-wake",
+  "voice": "Splash! A bit of water will wake the sleepy hamster. Put the watering can where the ball drops, pointing at the hamster.",
+  "goal": {
+    "type": "reach",
+    "object": "hamster1",
+    "target": "cheese1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 3,
+      "y": 0.5
+    },
+    {
+      "part": "block",
+      "x": 4.5,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 4.5,
+      "y": 8.5
+    },
+    {
+      "part": "hamster",
+      "id": "hamster1",
+      "x": 6,
+      "y": 9.5,
+      "rot": 0
+    },
+    {
+      "part": "cheese",
+      "id": "cheese1",
+      "x": 13,
+      "y": 9.6
+    }
+  ],
+  "tray": [
+    {
+      "part": "can",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "can",
+      "x": 2.5,
+      "y": 3.5,
+      "rot": 0
+    }
+  ]
+}

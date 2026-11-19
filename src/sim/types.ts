@@ -1,7 +1,7 @@
 export type PartKind =
   | 'ball' | 'heavyball' | 'ramp' | 'shortramp' | 'block' | 'basket' | 'star'
   | 'domino' | 'seesaw' | 'balloon' | 'pin' | 'fan' | 'spring' | 'pulley'
-  | 'hamster' | 'conveyor' | 'cheese' | 'car' | 'hammer' | 'toaster';
+  | 'hamster' | 'conveyor' | 'cheese' | 'car' | 'hammer' | 'toaster' | 'can' | 'flower';
 
 /** A part placed on the table, in cell coordinates (centre), rot in degrees clockwise. */
 export interface Placement {
@@ -36,7 +36,9 @@ export type SimEvent =
   | { type: 'boing' }
   | { type: 'whoosh' }
   | { type: 'squeak' }
-  | { type: 'ding' };
+  | { type: 'ding' }
+  | { type: 'pour' }
+  | { type: 'drip' };
 
 export const WORLD_W = 16;
 export const WORLD_H = 10;

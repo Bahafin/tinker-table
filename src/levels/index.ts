@@ -38,12 +38,18 @@ import l36 from './36-hammer-dominoes.json';
 import l37 from './37-toaster.json';
 import l38 from './38-toaster-wall.json';
 import l39 from './39-toaster-hamster.json';
+import l40 from './40-watering-can.json';
+import l41 from './41-water-path.json';
+import l42 from './42-water-wake.json';
 import { TOY_PARTS } from '../sim/parts';
 
 export const LEVELS = [l1, l2, l3, l4, l5, l6,
   // Workshop: the hammer comes after the first six tutorial levels.
   l34, l35, l36,
-  l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18,
+  l7, l8, l9, l10, l11, l12,
+  // Garden: the watering can comes after its first six levels.
+  l40, l41, l42,
+  l13, l14, l15, l16, l17, l18,
   // Kitchen: the toaster comes after its first six levels.
   l37, l38, l39,
   // Playroom: the toy car arrives first, then gets used again at the end of the room.
@@ -51,16 +57,16 @@ export const LEVELS = [l1, l2, l3, l4, l5, l6,
   l25, l26, l27, l28, l29, l30] as Level[];
 
 /**
- * Rooms on the map, in order (six levels each, nine in rooms with their own part: the Workshop's hammer, the Kitchen's toaster, the Playroom's toy car). Each room has its own paper tint
+ * Rooms on the map, in order (six levels each, nine in rooms with their own part: the Workshop's hammer, the Garden's watering can, the Kitchen's toaster, the Playroom's toy car). Each room has its own paper tint
  * (cards and the table) and an accent colour for its banner.
  */
 export interface Room { id: string; name: string; first: number; count: number; paper: string; accent: string }
 export const ROOMS: Room[] = [
   { id: 'workshop', name: 'Workshop', first: 0, count: 9, paper: '#f4ecdc', accent: '#c79a5b' },
-  { id: 'garden', name: 'Garden', first: 9, count: 6, paper: '#edf1dc', accent: '#7cae4e' },
-  { id: 'kitchen', name: 'Kitchen', first: 15, count: 9, paper: '#f7e7dc', accent: '#e5583f' },
-  { id: 'playroom', name: 'Playroom', first: 24, count: 9, paper: '#e6eef5', accent: '#5aa2d6' },
-  { id: 'attic', name: 'Attic', first: 33, count: 6, paper: '#ece7f1', accent: '#3d4a73' },
+  { id: 'garden', name: 'Garden', first: 9, count: 9, paper: '#edf1dc', accent: '#7cae4e' },
+  { id: 'kitchen', name: 'Kitchen', first: 18, count: 9, paper: '#f7e7dc', accent: '#e5583f' },
+  { id: 'playroom', name: 'Playroom', first: 27, count: 9, paper: '#e6eef5', accent: '#5aa2d6' },
+  { id: 'attic', name: 'Attic', first: 36, count: 6, paper: '#ece7f1', accent: '#3d4a73' },
 ];
 /**
  * Each room draws some parts as its own things (see render/skins.ts), so the spoken goal
@@ -70,7 +76,7 @@ const WORDS: Record<string, [RegExp, string][]> = {
   workshop: [[/\bbasket\b/g, 'toolbox'], [/\bstar\b/g, 'gear'], [/\bpins\b/g, 'screws'], [/\bpin\b/g, 'screw']],
   garden: [
     [/\b(big|heavy) ball\b/g, 'pumpkin'], [/\ba ball\b/g, 'an apple'], [/\bballs\b/g, 'apples'], [/\bball\b/g, 'apple'],
-    [/\bbasket\b/g, 'flower pot'], [/\bstar\b/g, 'flower'], [/\bdominoes\b/g, 'fence posts'],
+    [/\bbasket\b/g, 'flower pot'], [/\bstar\b/g, 'butterfly'], [/\bdominoes\b/g, 'fence posts'],
     [/\bpins\b/g, 'cactuses'], [/\bpin\b/g, 'cactus'], [/\bMake a ramp\b/g, 'Lay a branch'], [/\ba ramp\b/g, 'a branch'], [/\bramps\b/g, 'branches'], [/\bramp\b/g, 'branch'],
   ],
   kitchen: [

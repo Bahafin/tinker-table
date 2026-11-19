@@ -279,6 +279,27 @@ export const TALK: Record<string, TalkCard> = {
     words: ['chain', 'one after another', 'gap', 'reach', 'next'],
     tryAtHome: 'Line up books or blocks on the floor and knock over the first one. How far apart can they be and still all fall?',
   },
+  '40-watering-can': {
+    idea: 'New parts: the watering can and a thirsty flower. Bump the can and it tips and pours; the flower drinks the water and opens up. Plants need water to grow.',
+    before: ['What does the flower need?', 'How can we tip the watering can over?'],
+    after: ['What happened to the flower when it got water?', 'Where did the water go?'],
+    words: ['water', 'pour', 'tip', 'thirsty', 'grow', 'bloom'],
+    tryAtHome: 'Water a real plant together. Watch where the water goes: does it soak in, or run off?',
+  },
+  '41-water-path': {
+    idea: 'Water always runs downhill. To get it somewhere, you build a path that keeps going down, with each part joining the next, like a gutter or a slide.',
+    before: ['Which way does water run?', 'Where does the water fall off the first ramp?'],
+    after: ['What happened when the ramps didn\'t join up?', 'Why did the water stop on a flat ramp?'],
+    words: ['downhill', 'path', 'flow', 'join up', 'drip'],
+    tryAtHome: 'In the bath or the garden, pour water down a tilted tray or a piece of guttering. Can you make it reach a cup?',
+  },
+  '42-water-wake': {
+    idea: 'Water can be a trigger too: a splash wakes the hamster. Your child decides where the can goes and which way its spout points.',
+    before: ['How could we wake the hamster without touching him?', 'Which way should the spout point?'],
+    after: ['What woke the hamster up?', 'What happened when the spout pointed the other way?'],
+    words: ['splash', 'spout', 'point', 'wake up', 'aim'],
+    tryAtHome: 'With a cup of water outside, try to pour it onto a leaf on the ground. Do you pour from high up or low down?',
+  },
   '37-toaster': {
     idea: 'A new part: the toaster. Something dropped into it pops back up, a little to one side. Your child has to guess where the ball will fall, and then where it will go after the pop.',
     before: ['Where will the ball fall?', 'Where will it go after the toaster pops it up?'],
@@ -332,9 +353,9 @@ export const TALK: Record<string, TalkCard> = {
 
 /** How to make a puzzle, for grown-ups (the toy box itself has no words). */
 export const MAKER_HOW =
-  'In the toy box, build a machine that works, then tap the button with the star. Tap the thing that travels (a ball, balloon, hamster or pulley), ' +
-  'then where it should go (a basket, star or cheese). Tap any other parts that should stay put: they get a brass pin. Everything without a pin goes into the tray ' +
-  'for the solver. Tap the tick: the game checks the machine works, and that it does not work without the tray parts. Good puzzles appear at the end of the map. ' +
+  'In the toy box, build a machine that works, then tap the button with the star. Tap the thing that travels (a ball, balloon, hamster, pulley or car), ' +
+  'then where it should go (a basket, star or cheese). For a watering can, tap the can and then a flower: the goal is to water it. Tap any other parts that should stay put: they get a brass pin. Everything without a pin goes into the tray ' +
+  'for the solver. Tap the tick: the game checks the machine works, and that it does not work without the tray parts. Good puzzles appear in the toy box room. ' +
   'Try swapping roles: you make one for your child, then they make one for you.';
 
 export const MADE_TALK = {

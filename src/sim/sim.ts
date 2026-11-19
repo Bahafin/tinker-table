@@ -1,4 +1,4 @@
-import { World, Vec2, Edge, Body, type Contact } from 'planck';
+import { World, Vec2, Edge, Body, Circle, type Contact } from 'planck';
 import { PARTS, type RuntimePart } from './parts';
 import { WORLD_H, WORLD_W, type Goal, type Placement, type SimEvent } from './types';
 
@@ -16,8 +16,17 @@ const HAMMER_TORQUE = 150;
 const TOAST_WAIT = 0.4;
 const TOAST_UP = 9;
 const TOAST_TOSS = 1.5;
+/** Watering can: how long it takes to tip, how many drops it pours, one every few steps. */
+export const CAN_TIP = 0.35;
+const CAN_DROPS = 18;
+const CAN_EVERY = 4;
+/** Drops a flower needs before it blooms. */
+export const WATER_NEEDED = 6;
+/** The can tips this far (radians) to pour. */
+export const CAN_TILT = Math.PI / 4;
 
-type Tag = { rp: RuntimePart };
+/** drop: a water drop poured by a watering can (rp is that can). */
+type Tag = { rp: RuntimePart; drop?: boolean };
 
 /**
  * One run of a machine. Building it is cheap, so the build screen also creates a
@@ -34,6 +43,11 @@ export class Sim {
   private stillFor = 0;
   private toDestroy: RuntimePart[] = [];
   private releaseQueue: RuntimePart[] = [];
+  private dropsToRemove: Body[] = [];
+  private bounds: Body;
+  /** How long each water drop has been (nearly) still: still drops soak away. */
+  private dropStill = new Map<Body, number>();
+  private stepCount = 0;
 
   private goal?: Goal;
 
@@ -41,6 +55,7 @@ export class Sim {
     this.goal = goal;
     this.world = new World({ gravity: new Vec2(0, 10) });
     const bounds = this.world.createBody();
+    this.bounds = bounds;
     const corners = [new Vec2(0, 0), new Vec2(WORLD_W, 0), new Vec2(WORLD_W, WORLD_H), new Vec2(0, WORLD_H)];
     for (let i = 0; i < 4; i++) bounds.createFixture(new Edge(corners[i], corners[(i + 1) % 4]), { friction: 0.6 });
 
@@ -57,9 +72,29 @@ export class Sim {
   private onContact(c: Contact) {
     const a = c.getFixtureA().getBody();
     const b = c.getFixtureB().getBody();
-    const ra = (a.getUserData() as Tag | null)?.rp;
-    const rb = (b.getUserData() as Tag | null)?.rp;
-    for (const [x, y, yb] of [[ra, rb, b], [rb, ra, a]] as const) {
+    const ta = a.getUserData() as Tag | null, tb = b.getUserData() as Tag | null;
+    const ra = ta?.rp, rb = tb?.rp;
+    for (const [x, y, yb, xt, yt] of [[ra, rb, b, ta, tb], [rb, ra, a, tb, ta]] as const) {
+      // Water that reaches the floor or the table's edge soaks away.
+      if (xt?.drop && yb === this.bounds) {
+        const d = yb === b ? a : b;
+        if (!this.dropsToRemove.includes(d)) this.dropsToRemove.push(d);
+        continue;
+      }
+      // A water drop reaching a flower soaks in.
+      if (xt?.drop && y?.kind === 'flower') {
+        if (!this.dropsToRemove.includes(yb === b ? a : b)) {
+          this.dropsToRemove.push(yb === b ? a : b);
+          y.state.load! += 1;
+          this.events.push({ type: 'drip' });
+        }
+        continue;
+      }
+      // A bump (not its own water) tips the watering can.
+      if (x?.kind === 'can' && !xt?.drop && !x.state.on && yb.isDynamic() && yt?.rp !== x) {
+        x.state.on = true;
+        this.events.push({ type: 'pour' });
+      }
       if (x?.kind === 'balloon' && y?.kind === 'pin' && !x.state.popped) {
         x.state.popped = true;
         this.toDestroy.push(x);
@@ -108,6 +143,38 @@ export class Sim {
     }
   }
 
+  /** Where a tipped can's spout is (world coordinates), for pouring and drawing. */
+  static spoutOf(can: RuntimePart, tilt: number) {
+    const dir = can.state.dir!;
+    const p = can.bodies[0].getPosition();
+    // Tip about the bottom-front corner; the spout tip starts up and out in front.
+    const px = 0.4, py = 0.45, dx = 0.5, dy = -0.9;
+    const x = px + dx * Math.cos(tilt) - dy * Math.sin(tilt);
+    const y = py + dx * Math.sin(tilt) + dy * Math.cos(tilt);
+    return new Vec2(p.x + x * dir, p.y + y);
+  }
+
+  /** A tipped watering can pours a stream of drops from its spout. */
+  private applyCans() {
+    for (const can of this.parts) {
+      if (can.kind !== 'can' || !can.state.on) continue;
+      for (const d of can.bodies.slice(1)) {
+        const still = d.getLinearVelocity().length() < 0.6 ? (this.dropStill.get(d) ?? 0) + DT : 0;
+        this.dropStill.set(d, still);
+        if (still > 0.5 && !this.dropsToRemove.includes(d)) this.dropsToRemove.push(d);
+      }
+      can.state.load! += DT;
+      if (can.state.load! < CAN_TIP || can.state.drops! >= CAN_DROPS || this.stepCount % CAN_EVERY) continue;
+      const at = Sim.spoutOf(can, CAN_TILT);
+      const d = this.world.createBody({ type: 'dynamic', position: at, bullet: true });
+      d.createFixture(new Circle(0.1), { density: 0.5, friction: 0.05, restitution: 0.05 });
+      d.setLinearVelocity(new Vec2(1.6 * can.state.dir!, 1));
+      d.setUserData({ rp: can, drop: true } satisfies Tag);
+      can.bodies.push(d);
+      can.state.drops! += 1;
+    }
+  }
+
   /** Something resting in a toaster's slot pops out after a moment. */
   private applyToasters() {
     for (const t of this.parts) {
@@ -145,6 +212,8 @@ export class Sim {
     if (!this.goal) return false;
     const obj = this.byId(this.goal.object);
     const target = this.byId(this.goal.target);
+    // A flower is reached by watering it, not by getting there.
+    if (target?.kind === 'flower') return target.state.load! >= WATER_NEEDED;
     if (!obj || !target?.zone || obj.state.popped) return false;
     const local = target.bodies[0].getLocalPoint(Sim.goalBody(obj).getPosition());
     const z = target.zone;
@@ -170,6 +239,8 @@ export class Sim {
     if (this.success || this.settled) return;
     this.applyFans();
     this.applyToasters();
+    this.applyCans();
+    this.stepCount++;
     this.applyHamsters();
     this.world.step(DT, 8, 3);
     for (const rp of this.toDestroy) for (const b of rp.bodies) this.world.destroyBody(b);
@@ -183,6 +254,13 @@ export class Sim {
       this.events.push({ type: 'clack', strength: 0.6 });
     }
     this.releaseQueue = [];
+    for (const d of this.dropsToRemove) {
+      const can = (d.getUserData() as Tag).rp;
+      can.bodies = can.bodies.filter((x) => x !== d);
+      this.dropStill.delete(d);
+      this.world.destroyBody(d);
+    }
+    this.dropsToRemove = [];
     this.toDestroy = [];
     this.time += DT;
 

@@ -1,0 +1,61 @@
+{
+  "id": "41-water-path",
+  "voice": "Water runs downhill! Build a path with the ramps, so the water runs all the way to the flower on the shelf.",
+  "goal": {
+    "type": "reach",
+    "object": "can1",
+    "target": "flower1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 2,
+      "y": 0.5
+    },
+    {
+      "part": "ramp",
+      "x": 2,
+      "y": 4,
+      "rot": 0
+    },
+    {
+      "part": "can",
+      "id": "can1",
+      "x": 2,
+      "y": 3.5,
+      "rot": 0
+    },
+    {
+      "part": "ramp",
+      "x": 11.5,
+      "y": 7.5,
+      "rot": 0
+    },
+    {
+      "part": "flower",
+      "id": "flower1",
+      "x": 10.5,
+      "y": 6.9
+    }
+  ],
+  "tray": [
+    {
+      "part": "ramp",
+      "count": 2
+    }
+  ],
+  "solution": [
+    {
+      "part": "ramp",
+      "x": 5,
+      "y": 4.5,
+      "rot": 15
+    },
+    {
+      "part": "ramp",
+      "x": 8,
+      "y": 6,
+      "rot": 15
+    }
+  ]
+}

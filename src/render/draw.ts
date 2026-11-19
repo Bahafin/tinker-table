@@ -1,6 +1,7 @@
 import type { RuntimePart } from '../sim/parts';
 import { PAPER, line, noShadow, paper, plank, rrect, star, withBody, type Ctx } from './kit';
 import { balloonIn, skinFor } from './skins';
+import { CAN_TILT, CAN_TIP, WATER_NEEDED } from '../sim/sim';
 
 export { setSkin } from './skins';
 
@@ -279,6 +280,70 @@ const DRAW: Record<string, (ctx: Ctx, rp: RuntimePart, t: number) => void> = {
         // A dial and little feet.
         ctx.beginPath(); ctx.arc(0.62, 0.0, 0.08, 0, Math.PI * 2); paper(ctx, PAPER.tomato);
         for (const x of [-0.62, 0.62]) { rrect(ctx, x - 0.1, 0.42, 0.2, 0.08, 0.03); paper(ctx, PAPER.ink); }
+      });
+    });
+  },
+  can(ctx, rp) {
+    const [b, ...drops] = rp.bodies;
+    const dir = rp.state.dir ?? 1;
+    const tilt = rp.state.on ? Math.min(1, rp.state.load! / CAN_TIP) * CAN_TILT : 0;
+    withBody(ctx, b, () => {
+      ctx.scale(dir, 1);
+      // Tip about the bottom-front corner.
+      ctx.translate(0.4, 0.45); ctx.rotate(tilt); ctx.translate(-0.4, -0.45);
+      // Spout, with a sprinkler rose on the end.
+      ctx.beginPath(); ctx.moveTo(0.3, 0.05); ctx.lineTo(0.84, -0.4); ctx.lineTo(0.92, -0.32); ctx.lineTo(0.4, 0.22); ctx.closePath(); paper(ctx, PAPER.teal);
+      ctx.beginPath(); ctx.moveTo(0.78, -0.5); ctx.lineTo(1.0, -0.3); ctx.lineTo(0.92, -0.22); ctx.lineTo(0.72, -0.42); ctx.closePath(); paper(ctx, '#23756f');
+      // Handle over the top.
+      noShadow(ctx, () => {
+        ctx.beginPath(); ctx.moveTo(-0.3, -0.38); ctx.bezierCurveTo(-0.3, -0.75, 0.2, -0.75, 0.2, -0.38);
+        ctx.strokeStyle = '#23756f'; ctx.lineWidth = 0.08; ctx.lineCap = 'round'; ctx.stroke();
+      });
+      // Body.
+      ctx.beginPath(); ctx.moveTo(-0.42, 0.45); ctx.lineTo(-0.38, -0.36); ctx.quadraticCurveTo(-0.37, -0.42, -0.3, -0.42);
+      ctx.lineTo(0.28, -0.42); ctx.quadraticCurveTo(0.35, -0.42, 0.36, -0.36); ctx.lineTo(0.4, 0.45); ctx.closePath(); paper(ctx, PAPER.teal);
+      noShadow(ctx, () => {
+        line(ctx, -0.38, -0.2, 0.36, -0.2, '#23756f', 0.04);
+        ctx.beginPath(); ctx.ellipse(-0.05, 0.15, 0.13, 0.1, 0, 0, Math.PI * 2); paper(ctx, '#7cc5bd');
+      });
+    });
+    noShadow(ctx, () => {
+      for (const d of drops) {
+        const p = d.getPosition(), v = d.getLinearVelocity();
+        // Drops stretch a little in the way they're moving.
+        const a = Math.atan2(v.y, v.x), sp = Math.min(1, v.length() / 6);
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(a);
+        ctx.beginPath(); ctx.ellipse(0, 0, 0.11 + sp * 0.06, 0.1, 0, 0, Math.PI * 2); paper(ctx, PAPER.sky);
+        ctx.restore();
+      }
+    });
+  },
+  flower(ctx, rp, t) {
+    const k = Math.min(1, (rp.state.load ?? 0) / WATER_NEEDED);
+    withBody(ctx, rp.bodies[0], () => {
+      // Pot.
+      ctx.beginPath(); ctx.moveTo(-0.38, 0.12); ctx.lineTo(0.38, 0.12); ctx.lineTo(0.3, 0.6); ctx.lineTo(-0.3, 0.6); ctx.closePath(); paper(ctx, '#c8643c');
+      rrect(ctx, -0.44, 0.06, 0.88, 0.14, 0.04); paper(ctx, '#d97a50');
+      noShadow(ctx, () => {
+        // Stem stands up as it drinks; it droops a little while thirsty.
+        const lean = (1 - k) * 0.35;
+        const tx = Math.sin(lean) * 0.5, ty = -0.1 - Math.cos(lean) * 0.4;
+        ctx.beginPath(); ctx.moveTo(0, 0.08); ctx.quadraticCurveTo(0.02, -0.1, tx, ty);
+        ctx.strokeStyle = '#5a8f3c'; ctx.lineWidth = 0.06; ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(-0.1, -0.05, 0.12, 0.05, -0.5, 0, Math.PI * 2); paper(ctx, PAPER.leaf);
+        ctx.save(); ctx.translate(tx, ty); ctx.rotate(lean + (k >= 1 ? Math.sin(t * 2) * 0.08 : 0));
+        if (k <= 0) {
+          ctx.beginPath(); ctx.ellipse(0, -0.06, 0.08, 0.13, 0, 0, Math.PI * 2); paper(ctx, PAPER.leaf);
+        } else {
+          // Petals open as the flower drinks.
+          const r = 0.08 + k * 0.16;
+          for (let i = 0; i < 7; i++) {
+            const a = (i / 7) * Math.PI * 2;
+            ctx.beginPath(); ctx.ellipse(Math.cos(a) * r, Math.sin(a) * r, 0.06 + k * 0.08, 0.04 + k * 0.05, a, 0, Math.PI * 2); paper(ctx, PAPER.mustard);
+          }
+          ctx.beginPath(); ctx.arc(0, 0, 0.06 + k * 0.06, 0, Math.PI * 2); paper(ctx, '#8f6640');
+        }
+        ctx.restore();
       });
     });
   },

@@ -53,8 +53,10 @@ A calm chain-reaction puzzle game for ages 4–7, played with a parent on a tabl
 | Toy car | 1.2 × 0.75 | dynamic, two motor wheels | A wind-up pickup truck. Drives the way it faces from the moment Go is pressed, pushes what's in front (even the heavy ball) and carries a ball on its flat back. Climbs gentle (15°) ramps; its wheels slip on 30°. A tap flips its facing. The Playroom's own part. |
 | Hammer | 0.8 × 2.1 | dynamic head on a hinge, static base | Stands upright, held still, until anything bumps it. Then it's spring-loaded: it snaps down the way it faces (up to a little past flat) and whacks what's in its arc. The head reaches about 1.6–1.9 cells from the hinge, so a ball to whack should sit a bit above the hinge, not level with it (level with it, the head lands on top of the ball). A tap flips its facing. The Workshop's own part. |
 | Toaster | 1.7 × 1 | static, wide slot on top | Anything whose centre sits in the slot for 0.4 s pops out with a "ding": straight up about 4 cells and tossed 1.5 cells/s the way the toaster faces (it lands about 2.6 cells away). It's a lift, not a bounce: it pops to the same height however gently things arrive. The slot is wide (1.2) so a ball dropped within ±0.5 of the middle is caught; things rolling along the floor can't get in, they have to drop in. A tap flips its facing. The Kitchen's own part. |
+| Watering can | 0.9 × 0.9 (+ spout) | static | Any bump (not its own water) tips it 45° toward its spout, and it pours 18 water drops (small dynamic circles) over about 1.2 s. Water runs down ramps and splashes off things, can wake the hamster or switch on a fan, and soaks away when it reaches the floor, the table's edge, or sits still for half a second. A tap flips its facing. The Garden's own part. |
+| Flower | 0.9 × 1.2 | sensor, in a pot | A target: drops that reach it soak in, and it opens up as it drinks. The goal (can → flower) is reached at 6 drops. |
 
-Parts that only face left or right (hamster, conveyor, car, hammer, toaster) get one ↔ flip button instead of the two turn buttons.
+Parts that only face left or right (hamster, conveyor, car, hammer, toaster, watering can) get one ↔ flip button instead of the two turn buttons.
 
 A run also ends when nothing has moved for 1.5 s, because a hamster or a fan can keep pushing something against a wall forever.
 
@@ -124,6 +126,12 @@ The hammer levels come after the six Workshop tutorials:
 35. **Face the hammer:** a ball rolls in from the right. Place the hammer in its path, turned to face the ball on the shelf.
 36. **Hammer dominoes:** a falling domino starts the line; add two dominoes so the line reaches the hammer, which whacks the ball across the room.
 
+The watering can levels come after the Garden's first six:
+
+40. **Watering can:** bump the can with a ball, and it waters the thirsty flower below.
+41. **Water path:** water runs downhill. Join two ramps into a path that carries the water to the flower on a shelf.
+42. **Water wake:** place the can under a falling ball, spout pointing at the sleeping hamster; the splash wakes him and he rolls to the cheese.
+
 The toaster levels come after the Kitchen's first six:
 
 37. **Toaster:** a ball falls from the top. Put the toaster under it, facing the counter, and it pops the ball into the pot.
@@ -149,7 +157,7 @@ Each room draws the same parts as its own things (`src/render/skins.ts`). The ph
 | Ramp | nailed plank | branch | cutting board | toy track | floorboard |
 | Block | wooden crate | hay bale | toast | toy block | cardboard box |
 | Basket | toolbox | flower pot | cooking pot | toy chest | trunk |
-| Star | gear | flower | star cookie | star | moon |
+| Star | gear | butterfly | star cookie | star | moon |
 | Pin | screw | cactus | fork | drawing pin | needle |
 | Domino | wooden slat | fence picket | cereal box | crayon | book |
 | Balloon | red | yellow | pink | blue | purple |

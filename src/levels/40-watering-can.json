@@ -1,0 +1,12 @@
+{
+  "id": "40-watering-can",
+  "voice": "The flower is thirsty! Bump the watering can, so it tips over and waters the flower.",
+  "goal": { "type": "reach", "object": "can1", "target": "flower1" },
+  "fixed": [
+    { "part": "ramp", "x": 3, "y": 5, "rot": 0 },
+    { "part": "can", "id": "can1", "x": 3, "y": 4.5, "rot": 0 },
+    { "part": "flower", "id": "flower1", "x": 6, "y": 9.4 }
+  ],
+  "tray": [{ "part": "ball", "count": 1 }],
+  "solution": [{ "part": "ball", "x": 3, "y": 1.5 }]
+}

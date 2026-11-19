@@ -171,11 +171,20 @@ const garden: Partial<Record<PartKind, DrawFn>> = {
     paper(ctx, '#f6f1e3');
     noShadow(ctx, () => { ctx.strokeStyle = '#b9a98a'; ctx.lineWidth = 0.03; ctx.stroke(); for (const y of [-0.35, 0.4]) dot(ctx, 0, y, 0.03, PAPER.grey); });
   }),
-  // The target star becomes a nodding flower.
+  // The target star becomes a fluttering butterfly (the flower is the garden's own target now).
   star: body((ctx, _rp, t) => {
-    ctx.rotate(Math.sin(t * 2) * 0.1);
-    for (let i = 0; i < 6; i++) { const a = (i / 6) * TAU; dot(ctx, Math.cos(a) * 0.3, Math.sin(a) * 0.3, 0.2, '#f29bb0'); }
-    noShadow(ctx, () => { dot(ctx, 0, 0, 0.19, PAPER.mustard); dot(ctx, -0.05, -0.05, 0.06, '#f6d27a'); });
+    const flap = 0.55 + Math.abs(Math.sin(t * 5)) * 0.45;
+    for (const s of [-1, 1]) {
+      ctx.save(); ctx.scale(s * flap, 1);
+      ctx.beginPath(); ctx.ellipse(0.24, -0.16, 0.24, 0.2, -0.4, 0, TAU); paper(ctx, '#f29bb0');
+      ctx.beginPath(); ctx.ellipse(0.2, 0.18, 0.16, 0.14, 0.4, 0, TAU); paper(ctx, '#9a7bc9');
+      ctx.restore();
+    }
+    noShadow(ctx, () => {
+      rrect(ctx, -0.05, -0.3, 0.1, 0.56, 0.05); paper(ctx, PAPER.ink);
+      line(ctx, -0.02, -0.3, -0.12, -0.46, PAPER.ink, 0.025);
+      line(ctx, 0.02, -0.3, 0.12, -0.46, PAPER.ink, 0.025);
+    });
   }),
   balloon: balloonIn('#f2c94c', '#f8e39a'),
 };

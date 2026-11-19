@@ -65,6 +65,10 @@ export const sfx = {
   vroom: () => { for (let i = 0; i < 5; i++) tone(140 + i * 25, 0.05, 'square', 0.05, i * 0.06); },
   /** The toaster popping: a spring twang and a little bell. */
   ding: () => { tone(300, 0.12, 'triangle', 0.15, 0, 700); tone(1568, 0.6, 'sine', 0.18, 0.08); },
+  /** The watering can tipping: a soft rush of water. */
+  pour: () => noise(1.2, 0.18, 'bandpass', 1400),
+  /** A drop soaking into a flower. */
+  drip: () => { const now = performance.now(); if (now - lastClack < 60) return; lastClack = now; tone(900, 0.07, 'sine', 0.12, 0, 1400); },
   hmm: () => { tone(330, 0.25, 'sine', 0.18); tone(262, 0.35, 'sine', 0.18, 0.22); },
 };
 
