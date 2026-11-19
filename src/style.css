@@ -276,3 +276,31 @@ svg .fill { fill: currentColor; stroke: none; }
 
 /* ---------- grown-ups: show the answer ---------- */
 .talk-side .text-btn + .text-btn { margin-top: 6px; }
+
+/* ---------- puzzle maker ---------- */
+.make .star { fill: #ffe9a8; }
+.make[aria-pressed="true"] { background: #cfe8d0; }
+.make[aria-pressed="true"] .star { fill: var(--teal); }
+#btn-make-done { animation: hint-pulse 1.6s ease-in-out infinite; }
+.card .made-badge {
+  position: absolute;
+  bottom: -8px;
+  left: -8px;
+  width: 40px;
+  height: 40px;
+}
+.card.mine { background: #eef7f3; }
+.card.fresh { animation: fresh 0.9s ease-in-out 3; }
+@keyframes fresh { 50% { transform: scale(1.06) rotate(-1deg); box-shadow: var(--shadow), 0 0 0 8px rgba(47, 156, 149, 0.25); } }
+.mine-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+
+/* Phones held upright: everything in the top bar has to fit, Go most of all. */
+@media (max-width: 460px) {
+  .bar { gap: 5px; padding-inline: 6px; }
+  .goal canvas { width: 76px; }
+  .goal .speaker { display: none; }
+  .icon { width: 48px; height: 48px; border-radius: 14px; }
+  .icon svg { width: 30px; height: 30px; }
+  .go { width: 60px; height: 52px; }
+  .go svg { width: 32px; height: 32px; }
+}

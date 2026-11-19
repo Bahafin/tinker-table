@@ -5,7 +5,8 @@ import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from './s
 import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow } from './render/draw';
 import { Game, drawIcon } from './ui/game';
 import { sfx, speak, unlockAudio } from './ui/audio';
-import { INTRO, ROUTINE, SKILLS, TALK, TIPS } from './parents/content';
+import { INTRO, MADE_TALK, MAKER_HOW, ROUTINE, SKILLS, TALK, TIPS } from './parents/content';
+import { decodeLevel, encodeLevel, MADE_VOICE, SHARED_VOICE } from './levels/share';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -50,6 +51,8 @@ function thumb(level: Level, toy = false, withSolution = false): HTMLCanvasEleme
 function showMap() {
   game?.destroy();
   game = null;
+  // Leaving a shared puzzle: drop the link from the address bar so a reload shows the map.
+  if (location.hash.startsWith('#p=')) history.replaceState(null, '', location.pathname + location.search);
   try { speechSynthesis.cancel(); } catch { /* none */ }
   $('play').classList.add('hidden');
   $('map').classList.remove('hidden');
@@ -71,7 +74,42 @@ function showMap() {
   t.append(thumb(TOY_BOX, true));
   t.onclick = () => startLevel(-1);
   box.append(t);
+  // Puzzles made in the toy box on this device.
+  loadMine().forEach((code, k) => {
+    const lv = decodeLevel(code, MADE_VOICE);
+    if (!lv) return;
+    const b = document.createElement('button');
+    b.className = 'card mine';
+    if (code === justMade) b.classList.add('fresh');
+    b.setAttribute('aria-label', `My puzzle ${k + 1}`);
+    b.append(thumb(lv));
+    b.insertAdjacentHTML('beforeend', MADE_BADGE);
+    if (done.has(lv.id)) b.insertAdjacentHTML('beforeend', STICKER);
+    b.onclick = () => startLevel(-2, lv);
+    box.append(b);
+  });
+  if (justMade) {
+    box.querySelector('.fresh')?.scrollIntoView({ block: 'center' });
+    justMade = '';
+  }
 }
+
+// ---------- made puzzles (kept on this device) ----------
+const MINE_KEY = 'tinker.mine';
+const MAX_MINE = 20;
+let justMade = '';
+function loadMine(): string[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(MINE_KEY) ?? '[]');
+    return Array.isArray(v) ? v.filter((x) => typeof x === 'string') : [];
+  } catch { return []; }
+}
+function saveMine(list: string[]) {
+  try { localStorage.setItem(MINE_KEY, JSON.stringify(list.slice(-MAX_MINE))); } catch { /* private mode */ }
+}
+/** A pin-and-star badge marks puzzles that were made, not built in. */
+const MADE_BADGE = `<svg class="made-badge" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" style="fill:${PAPER.teal};stroke:#fff;stroke-width:4"/>
+<path d="M24 11l3.8 7.7 8.5 1.2-6.1 6 1.4 8.4L24 30.3l-7.6 4 1.4-8.4-6.1-6 8.5-1.2z" style="fill:#fff;stroke:none"/></svg>`;
 
 // ---------- grown-ups' corner ----------
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -133,16 +171,82 @@ function showGrownups() {
       <h3>Talk cards for each level</h3>
       <p>Pick one or two questions. You don't need to ask them all.</p>
       <div id="gu-cards"></div>
-      <p class="small">Tinker Table collects no data. Progress stickers are kept only on this device.</p>`;
+      <h3>Puzzles made on this device</h3>
+      <p>${esc(MAKER_HOW)}</p>
+      <div id="gu-mine"></div>
+      <p class="small">Tinker Table collects no data. Progress stickers and made puzzles are kept only on this device. A shared link contains only the puzzle itself.</p>`;
     const cards = $('gu-cards');
     LEVELS.forEach((lv, i) => cards.append(talkCard(lv, `Level ${i + 1}`, i)));
     cards.append(talkCard(TOY_BOX, 'The toy box', -1, true));
     guBuilt = true;
   }
+  renderMine();
   $('map').classList.add('hidden');
   $('grownups').classList.remove('hidden');
   $('gu-body').scrollTop = 0;
 }
+/** The grown-ups' list of made puzzles, with share and delete. Rebuilt on every visit. */
+function renderMine() {
+  const box = $('gu-mine');
+  box.innerHTML = '';
+  const list = loadMine();
+  if (!list.length) {
+    box.innerHTML = `<p class="small">${esc(MADE_TALK.none)}</p>`;
+    return;
+  }
+  list.forEach((code, k) => {
+    const lv = decodeLevel(code, MADE_VOICE);
+    if (!lv) return;
+    const card = document.createElement('section');
+    card.className = 'talk mine';
+    const side = document.createElement('div');
+    side.className = 'talk-side';
+    const pic = thumb(lv);
+    pic.className = 'talk-pic';
+    const play = document.createElement('button');
+    play.className = 'text-btn';
+    play.textContent = 'Play it';
+    play.onclick = () => { hideGrownups(); startLevel(-2, lv); };
+    side.append(pic, play);
+    const body = document.createElement('div');
+    body.innerHTML = `<h4>My puzzle ${k + 1}</h4><p class="idea">${esc(MADE_TALK.idea)}</p>`;
+    const row = document.createElement('div');
+    row.className = 'mine-actions';
+    const share = document.createElement('button');
+    share.className = 'text-btn';
+    share.textContent = 'Share';
+    share.onclick = () => sharePuzzle(code, share);
+    const del = document.createElement('button');
+    del.className = 'text-btn';
+    del.textContent = 'Delete';
+    del.onclick = () => {
+      if (del.dataset.sure !== '1') { del.dataset.sure = '1'; del.textContent = 'Tap again to delete'; return; }
+      saveMine(loadMine().filter((c) => c !== code));
+      renderMine();
+    };
+    row.append(share, del);
+    body.append(row);
+    card.append(side, body);
+    box.append(card);
+  });
+}
+
+/** Share a made puzzle as a link: the share sheet if there is one, else copy it. */
+async function sharePuzzle(code: string, btn: HTMLButtonElement) {
+  const url = `${location.origin}${location.pathname}#p=${code}`;
+  const label = btn.textContent;
+  const flash = (t: string) => { btn.textContent = t; setTimeout(() => { btn.textContent = label; }, 2200); };
+  try {
+    if (navigator.share) { await navigator.share({ title: 'A Tinker Table puzzle', url }); return; }
+    await navigator.clipboard.writeText(url);
+    flash('Link copied!');
+  } catch (e) {
+    if ((e as Error)?.name === 'AbortError') return; // the share sheet was closed
+    // Copying isn't allowed here: show the link to copy by hand.
+    window.prompt('Copy this link:', url);
+  }
+}
+
 function hideGrownups() {
   $('grownups').classList.add('hidden');
   $('map').classList.remove('hidden');
@@ -213,24 +317,66 @@ function drawGoalPic(level: Level) {
   drawIcon(ctx, kindOf(level.goal.target), w * 0.8, h / 2, h * 0.9);
 }
 
+/** While making a puzzle, the goal picture fills in as the goal is picked: ? → ?, then ball → ?, then ball → basket. */
+function drawMakeGoal(g: Game) {
+  const c = $<HTMLCanvasElement>('goal-pic');
+  const dpr = 2;
+  c.width = c.clientWidth * dpr || 400;
+  c.height = c.clientHeight * dpr || 128;
+  const ctx = c.getContext('2d')!;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const w = c.width / dpr, h = c.height / dpr;
+  ctx.clearRect(0, 0, w, h);
+  const m = g.making!;
+  const slot = (x: number, kind: PartKind | null, active: boolean) => {
+    if (kind) {
+      if (kind === 'pulley') drawIcon(ctx, kind, x, h * 0.82, h * 1.25);
+      else drawIcon(ctx, kind, x, h / 2, h * 0.8);
+      return;
+    }
+    ctx.save();
+    ctx.setLineDash([6, 5]);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = active ? PAPER.mustard : 'rgba(60,45,30,0.3)';
+    ctx.beginPath(); ctx.arc(x, h / 2, h * 0.32, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  };
+  slot(w * 0.18, m.object !== null ? g.placements[m.object].part : null, m.step === 'object');
+  ctx.strokeStyle = PAPER.ink; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(w * 0.36, h / 2); ctx.lineTo(w * 0.6, h / 2);
+  ctx.moveTo(w * 0.53, h / 2 - 9); ctx.lineTo(w * 0.61, h / 2); ctx.lineTo(w * 0.53, h / 2 + 9); ctx.stroke();
+  slot(w * 0.8, m.target !== null ? g.placements[m.target].part : null, m.step === 'target');
+}
+
 function syncButtons() {
   if (!game) return;
-  const run = game.mode !== 'build';
-  $('btn-go').classList.toggle('hidden', run);
-  $('btn-stop').classList.toggle('hidden', !run || game.mode === 'won');
+  const making = game.mode === 'make';
+  const run = game.mode === 'run' || game.mode === 'won';
+  $('btn-go').classList.toggle('hidden', run || making);
+  $('btn-stop').classList.toggle('hidden', game.mode !== 'run');
+  $('btn-slow').classList.toggle('hidden', making);
   $('btn-slow').setAttribute('aria-pressed', String(game.slow));
   const hint = $('btn-hint');
   hint.classList.toggle('hidden', !game.hintReady);
   hint.classList.toggle('ready', game.hintReady);
+  $('btn-make').classList.toggle('hidden', !(game.canMake || making));
+  $('btn-make').setAttribute('aria-pressed', String(making));
+  $('btn-make-done').classList.toggle('hidden', !(making && game.making!.step === 'pins'));
+  if (making) drawMakeGoal(game);
+  else if (madeGoalShown) drawGoalPic(game.level);
+  madeGoalShown = making;
   if (game.mode !== 'won') {
     $('won').classList.add('hidden');
     clearTimeout(wonTimer);
   }
 }
 
-function startLevel(i: number) {
-  current = i;
-  const level = i < 0 ? TOY_BOX : LEVELS[i];
+let madeGoalShown = false;
+
+/** i: a level number, -1 for the toy box, or -2 with a made or shared puzzle. */
+function startLevel(i: number, custom?: Level) {
+  current = custom ? -2 : i;
+  const level = custom ?? (i < 0 ? TOY_BOX : LEVELS[i]);
   game?.destroy();
   $('map').classList.add('hidden');
   $('play').classList.remove('hidden');
@@ -260,6 +406,18 @@ $('btn-goal').onclick = () => game && speak(game.level.voice);
 $('btn-go').onclick = () => game?.go();
 $('btn-stop').onclick = () => game?.reset();
 $('btn-hint').onclick = () => { if (game?.showHint()) sfx.place(); };
+$('btn-make').onclick = () => {
+  if (!game) return;
+  if (game.mode === 'make') game.stopMaking(); else game.startMaking();
+};
+$('btn-make-done').onclick = () => {
+  const lv = game?.checkPuzzle();
+  if (!lv) return;
+  const code = encodeLevel(lv);
+  saveMine([...loadMine().filter((c) => c !== code), code]);
+  justMade = code;
+  setTimeout(showMap, 900);
+};
 $('btn-slow').onclick = () => { if (game) { game.slow = !game.slow; syncButtons(); } };
 $('btn-replay').onclick = () => { $('won').classList.add('hidden'); game?.replay(); };
 $('btn-next').onclick = () => startLevel(current + 1 < LEVELS.length ? current + 1 : -1);
@@ -272,4 +430,13 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) {
 document.addEventListener('gesturestart', (e) => e.preventDefault());
 
 showMap();
+// A shared puzzle link (…/#p=<code>) opens straight into the puzzle. Bad codes are ignored.
+function openSharedFromHash() {
+  const m = /^#p=([A-Za-z0-9_-]{1,4000})$/.exec(location.hash);
+  if (!m) return;
+  const lv = decodeLevel(m[1], SHARED_VOICE);
+  if (lv) startLevel(-2, lv);
+}
+openSharedFromHash();
+window.addEventListener('hashchange', openSharedFromHash);
 (window as unknown as { tinker: () => Game | null }).tinker = () => game;

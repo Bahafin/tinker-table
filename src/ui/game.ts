@@ -5,8 +5,12 @@ import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from '../
 import { drawFixedPin, drawPart, drawTable, PAPER, paperGrain, setPaperShadow } from '../render/draw';
 import { sfx } from './audio';
 import { nextHint } from './hints';
+import { GOAL_OBJECTS, GOAL_TARGETS, MADE_VOICE } from '../levels/share';
 
-export type Mode = 'build' | 'run' | 'won';
+export type Mode = 'build' | 'run' | 'won' | 'make';
+
+/** Puzzle making in the toy box: pick what travels, where it goes, then pin parts. */
+export interface Making { step: 'object' | 'target' | 'pins'; object: number | null; target: number | null; pins: Set<number> }
 
 interface Drag {
   p: Placement;
@@ -86,6 +90,8 @@ export class Game {
   private raf = 0;
   /** Runs that ended without reaching the goal, for the hint button. */
   misses = 0;
+  /** Set while making a puzzle in the toy box. */
+  making: Making | null = null;
   private hint: { rp: RuntimePart; from: number } | null = null;
   private L = { scale: 1, ox: 0, oy: 0, trayTop: 0, trayH: 0, item: 0, itemX0: 0, cw: 0, ch: 0, dpr: 1 };
 
@@ -143,6 +149,105 @@ export class Game {
     return this.mode === 'build' && this.misses >= MISSES_BEFORE_HINT && !!this.level.solution;
   }
 
+  /** The toy box can become a puzzle once there's something on the table. */
+  get canMake() {
+    return this.level.id === 'toybox' && this.mode === 'build' && this.placements.length >= 2;
+  }
+
+  startMaking() {
+    if (!this.canMake) return;
+    this.selected = null;
+    this.mode = 'make';
+    this.making = { step: 'object', object: null, target: null, pins: new Set() };
+    sfx.place();
+    this.onChange();
+  }
+
+  stopMaking() {
+    if (this.mode !== 'make') return;
+    this.mode = 'build';
+    this.making = null;
+    this.onChange();
+  }
+
+  /** In make mode a tap picks the goal, then pins or unpins parts. */
+  private makeTap(e: PointerEvent) {
+    const m = this.making!;
+    this.layout();
+    const w = this.toWorld(e);
+    const minHalf = MIN_TOUCH_PX / 2 / this.L.scale;
+    let i = -1;
+    for (let k = this.placements.length - 1; k >= 0; k--) if (hitTest(this.placements[k], w.x, w.y, minHalf)) { i = k; break; }
+    if (i < 0) return;
+    const kind = this.placements[i].part;
+    const ok = () => { sfx.place(); this.onChange(); };
+    if (m.step === 'object') {
+      if (!GOAL_OBJECTS.has(kind)) { sfx.nope(); this.doWiggle(i); return; }
+      m.object = i; m.pins.add(i); m.step = 'target'; return ok();
+    }
+    if (m.step === 'target') {
+      if (!GOAL_TARGETS.has(kind) || i === m.object) { sfx.nope(); this.doWiggle(i); return; }
+      m.target = i; m.pins.add(i); m.step = 'pins'; return ok();
+    }
+    if (i === m.object || i === m.target) { sfx.nope(); this.doWiggle(i); return; }
+    if (m.pins.has(i)) m.pins.delete(i); else m.pins.add(i);
+    ok();
+  }
+
+  /** Is this placed part one you can tap in the current making step? */
+  private makeable(i: number) {
+    const m = this.making;
+    if (!m) return false;
+    const kind = this.placements[i].part;
+    if (m.step === 'object') return GOAL_OBJECTS.has(kind);
+    if (m.step === 'target') return GOAL_TARGETS.has(kind) && i !== m.object;
+    return i !== m.object && i !== m.target;
+  }
+
+  /** The puzzle as made so far, or null if the goal isn't picked yet or nothing is left for the tray. */
+  madeLevel(): Level | null {
+    const m = this.making;
+    if (!m || m.step !== 'pins' || m.object === null || m.target === null) return null;
+    const fixed: Placement[] = [];
+    const solution: Placement[] = [];
+    this.placements.forEach((p, i) => {
+      const { fixed: _f, id: _id, ...clean } = p;
+      if (i === m.object) fixed.push({ ...clean, id: 'goal-object' });
+      else if (i === m.target) fixed.push({ ...clean, id: 'goal-target' });
+      else if (m.pins.has(i)) fixed.push(clean);
+      else solution.push(clean);
+    });
+    if (!solution.length) return null;
+    const tray: Level['tray'] = [];
+    for (const p of solution) {
+      const t = tray.find((x) => x.part === p.part);
+      if (t) t.count++; else tray.push({ part: p.part, count: 1 });
+    }
+    return { id: 'made', voice: MADE_VOICE, goal: { type: 'reach', object: 'goal-object', target: 'goal-target' }, fixed, tray, solution };
+  }
+
+  /**
+   * Check the puzzle: it must work with the tray parts placed, and must not work
+   * with only the pinned parts. Returns the level if it's a good puzzle.
+   */
+  checkPuzzle(): Level | null {
+    const level = this.madeLevel();
+    const fail = () => {
+      sfx.hmm();
+      const m = this.making;
+      const at = m?.object ?? m?.target ?? 0;
+      this.doWiggle(at);
+      return null;
+    };
+    if (!level) return fail();
+    const fixed = level.fixed.map((p) => ({ ...p, fixed: true }));
+    const works = new Sim([...fixed, ...level.solution!], level.goal).runHeadless();
+    const solvesItself = new Sim(fixed, level.goal).runHeadless();
+    if (!works || solvesItself) return fail();
+    sfx.chime();
+    return level;
+  }
+
   /** Show a faint ghost of the next missing part. Returns false if nothing is missing. */
   showHint(): boolean {
     const p = nextHint(this.level.solution, this.placements);
@@ -194,6 +299,7 @@ export class Game {
   // ---------- input ----------
 
   private down = (e: PointerEvent) => {
+    if (this.mode === 'make') { this.makeTap(e); return; }
     if (this.mode !== 'build' || this.drag) return;
     this.layout();
     const w = this.toWorld(e);
@@ -462,7 +568,9 @@ export class Game {
       drawPart(ctx, rp, this.t);
       if (wig) ctx.restore();
       if (rp.placement.fixed && this.mode === 'build') drawFixedPin(ctx, rp);
+      if (this.making && kidIndex >= 0 && this.making.pins.has(kidIndex)) drawFixedPin(ctx, rp);
     });
+    if (this.making) this.renderMaking(ctx);
 
     // The part being dragged, at its snapped spot.
     if (this.drag?.moved) {
@@ -490,6 +598,28 @@ export class Game {
 
     this.renderTray(ctx);
     this.renderHandles(ctx);
+  }
+
+  /** Rings in make mode: solid teal on the goal parts, a pulsing dashed ring on parts you can tap now. */
+  private renderMaking(ctx: CanvasRenderingContext2D) {
+    const m = this.making!;
+    ctx.save();
+    ctx.shadowColor = 'transparent';
+    this.placements.forEach((p, i) => {
+      const goal = i === m.object || i === m.target;
+      const tap = this.makeable(i) && m.step !== 'pins';
+      if (!goal && !tap) return;
+      const def = PARTS[p.part];
+      const r = Math.max(def.hit.w, def.hit.h) + 0.3 + (tap ? 0.06 * Math.sin(this.t * 6) : 0);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y + (def.hit.dy ?? 0), r, 0, Math.PI * 2);
+      ctx.lineWidth = goal ? 0.09 : 0.07;
+      ctx.strokeStyle = goal ? PAPER.teal : PAPER.mustard;
+      ctx.setLineDash(goal ? [] : [0.2, 0.14]);
+      ctx.lineDashOffset = -this.t * 0.6;
+      ctx.stroke();
+    });
+    ctx.restore();
   }
 
   /** The hint ghost: fades in, glows a little, fades out. Drawn in world units. */

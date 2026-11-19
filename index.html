@@ -53,6 +53,13 @@
           <svg class="speaker" viewBox="0 0 48 48"><path d="M8 19h8l10-8v26l-10-8H8z" class="fill" /><path d="M32 17a9 9 0 0 1 0 14M36 12a15 15 0 0 1 0 24" /></svg>
         </button>
         <div class="spacer"></div>
+        <!-- Toy box only: turn the machine on the table into a puzzle. -->
+        <button id="btn-make" class="icon make hidden" aria-label="Make a puzzle" aria-pressed="false">
+          <svg viewBox="0 0 48 48"><path d="M24 6l4.6 9.4 10.4 1.5-7.5 7.3 1.8 10.3L24 29.6l-9.3 4.9 1.8-10.3L9 16.9l10.4-1.5z" class="star" /><circle cx="24" cy="38" r="3.5" class="fill" /><path d="M24 34.5V30" /></svg>
+        </button>
+        <button id="btn-make-done" class="go hidden" aria-label="Check my puzzle">
+          <svg viewBox="0 0 48 48"><path d="M12 25l8 8 16-17" /></svg>
+        </button>
         <!-- Appears after a couple of missed runs: shows a ghost of a missing part. -->
         <button id="btn-hint" class="icon hint hidden" aria-label="Hint">
           <svg viewBox="0 0 48 48"><path d="M24 7a12 12 0 0 0-7 21.7c1.3 1 2 2.3 2 3.8V34h10v-1.5c0-1.5.7-2.8 2-3.8A12 12 0 0 0 24 7z" class="bulb" /><path d="M19 39h10M21 43h6" /><path d="M24 2v1M8 10l1 1M40 10l-1 1M4 22h1M43 22h1" class="rays" /></svg>

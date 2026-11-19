@@ -266,3 +266,15 @@ export const TALK: Record<string, TalkCard> = {
     tryAtHome: 'Draw your child\'s favourite machine together on paper, with arrows showing what moves where.',
   },
 };
+
+/** How to make a puzzle, for grown-ups (the toy box itself has no words). */
+export const MAKER_HOW =
+  'In the toy box, build a machine that works, then tap the button with the star. Tap the thing that travels (a ball, balloon, hamster or pulley), ' +
+  'then where it should go (a basket, star or cheese). Tap any other parts that should stay put: they get a brass pin. Everything without a pin goes into the tray ' +
+  'for the solver. Tap the tick: the game checks the machine works, and that it does not work without the tray parts. Good puzzles appear at the end of the map. ' +
+  'Try swapping roles: you make one for your child, then they make one for you.';
+
+export const MADE_TALK = {
+  idea: 'Ask the maker how the machine is meant to work before anyone tries it. Explaining their own puzzle is great practice in planning and describing steps.',
+  none: 'No puzzles made yet. They appear here once one is saved from the toy box.',
+};
