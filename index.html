@@ -21,12 +21,28 @@
     <section id="map" class="screen">
       <h1 class="logo"><img src="logo.svg" alt="Tinker Table" /></h1>
       <div id="levels"></div>
+      <!-- The sticker book: one sticker for every finished level. -->
+      <button id="btn-book" class="book-btn" aria-label="Sticker book">
+        <svg viewBox="0 0 48 48"><path d="M8 10c6-2 11-1 16 3v27c-5-4-10-5-16-3z" class="page" /><path d="M40 10c-6-2-11-1-16 3v27c5-4 10-5 16-3z" class="page" /><circle cx="15" cy="21" r="4" class="dot1" /><path d="M32 17l1.6 3.3 3.6.5-2.6 2.5.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.5 3.6-.5z" class="dot2" /></svg>
+        <span class="new hidden"></span>
+      </button>
       <!-- Grown-ups' corner: must be held, so a child's quick tap does nothing. -->
       <button id="btn-grownups" class="grownups-btn" aria-label="For grown-ups: press and hold">
         <span class="ring"></span>
         <svg viewBox="0 0 48 48"><circle cx="17" cy="13" r="5" /><path d="M8 40V28a9 9 0 0 1 18 0v12" /><circle cx="34" cy="22" r="3.5" /><path d="M28 40v-7a6 6 0 0 1 12 0v7" /></svg>
         <small>Grown-ups<br />press &amp; hold</small>
       </button>
+    </section>
+
+    <!-- Sticker book: drag stickers from the strip onto the page, anywhere. -->
+    <section id="book" class="screen hidden">
+      <header class="bar">
+        <button id="btn-book-close" class="icon" aria-label="Back to the rooms">
+          <svg viewBox="0 0 48 48"><path d="M38 24H12M22 13 11 24l11 11" /></svg>
+        </button>
+      </header>
+      <div id="book-page" class="book-page" role="img" aria-label="Sticker page"></div>
+      <div id="book-strip" class="book-strip" aria-label="Stickers to stick"></div>
     </section>
 
     <!-- Grown-ups' corner (text is fine here: it's for parents) -->
@@ -64,6 +80,10 @@
         <button id="btn-hint" class="icon hint hidden" aria-label="Hint">
           <svg viewBox="0 0 48 48"><path d="M24 7a12 12 0 0 0-7 21.7c1.3 1 2 2.3 2 3.8V34h10v-1.5c0-1.5.7-2.8 2-3.8A12 12 0 0 0 24 7z" class="bulb" /><path d="M19 39h10M21 43h6" /><path d="M24 2v1M8 10l1 1M40 10l-1 1M4 22h1M43 22h1" class="rays" /></svg>
         </button>
+        <!-- Guess the path: draw where you think it will go, then press Go. -->
+        <button id="btn-guess" class="icon" aria-label="Draw where it will go" aria-pressed="false">
+          <svg viewBox="0 0 48 48"><path d="M30 9l9 9-19 19-11 2 2-11z" class="pencil" /><path d="M26 13l9 9" /><path d="M6 44c6-2 9 1 15-1" class="crayon" /></svg>
+        </button>
         <button id="btn-slow" class="icon" aria-label="Slow motion" aria-pressed="false">
           <svg viewBox="0 0 48 48"><path d="M5 37h31c5 0 8-3 8-8" /><circle cx="20" cy="25" r="11" /><path d="M20 25a3.5 3.5 0 1 1 3.5-3.5a7 7 0 0 1-7 7" /><path d="M39 29l-3-10M44 29l1-10" /><circle cx="36" cy="18" r="1.5" class="fill" /><circle cx="45" cy="18" r="1.5" class="fill" /></svg>
         </button>
@@ -76,6 +96,8 @@
       </header>
       <canvas id="stage"></canvas>
       <div id="won" class="won hidden">
+        <!-- Film strip: snapshots of the winning run, in order. Tap one to watch it again. -->
+        <div id="film" class="film" role="group" aria-label="What happened"></div>
         <button id="btn-replay" class="icon big" aria-label="Watch again slowly">
           <svg viewBox="0 0 48 48"><path d="M12 24a12 12 0 1 0 4-9" /><path d="M10 9v8h8" /></svg>
         </button>

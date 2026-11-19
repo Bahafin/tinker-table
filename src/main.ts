@@ -7,6 +7,7 @@ import { Game, drawIcon } from './ui/game';
 import { sfx, speak, unlockAudio } from './ui/audio';
 import { INTRO, MADE_TALK, MAKER_HOW, ROUTINE, SKILLS, TALK, TIPS } from './parents/content';
 import { decodeLevel, encodeLevel, MADE_VOICE, SHARED_VOICE } from './levels/share';
+import { looseStickers, renderBook } from './ui/book';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -125,6 +126,8 @@ function showMap() {
   box.className = mapRoom ? 'in-room' : 'rooms';
   box.style.width = '';
   $('map').classList.toggle('in-room', !!mapRoom);
+  // A little dot on the book when there are stickers waiting to be stuck in.
+  $('btn-book').querySelector('.new')!.classList.toggle('hidden', !looseStickers(loadDone()));
   if (!mapRoom) showRooms(box);
   else if (mapRoom === 'toybox') showToyRoom(box);
   else showRoom(box, ROOMS.find((r) => r.id === mapRoom)!);
@@ -192,9 +195,9 @@ function roomHeader(box: HTMLElement, banner: HTMLElement) {
 function showRoom(box: HTMLElement, room: Room) {
   const done = loadDone();
   roomHeader(box, roomBanner(room));
-  // Shrink the cards a little when a room has more rows than fit on the screen.
-  const rows = Math.ceil(room.count / 3);
-  if (rows > 2) box.style.width = `min(1120px, 100%, calc((100dvh - 170px) / ${rows} * 4.6))`;
+  // Five cards to a row (see style.css); shrink them when the rows would not fit on the screen.
+  const rows = Math.ceil(room.count / 5);
+  if (rows > 2 && innerWidth > 700) box.style.width = `min(1180px, 100%, calc((100dvh - 170px) / ${rows} * 8))`;
   for (let i = room.first; i < room.first + room.count; i++) {
     const lv = LEVELS[i];
     const b = document.createElement('button');
@@ -322,7 +325,7 @@ function showGrownups() {
       <h3>Puzzles made on this device</h3>
       <p>${esc(MAKER_HOW)}</p>
       <div id="gu-mine"></div>
-      <p class="small">Tinker Table collects no data. Progress stickers and made puzzles are kept only on this device. A shared link contains only the puzzle itself.</p>`;
+      <p class="small">Tinker Table collects no data. Progress, the sticker book and made puzzles are kept only on this device. A shared link contains only the puzzle itself.</p>`;
     const cards = $('gu-cards');
     LEVELS.forEach((lv, i) => cards.append(talkCard(lv, `Level ${i + 1}`, i)));
     cards.append(talkCard(TOY_BOX, 'The toy box', -1, true));
@@ -393,6 +396,18 @@ async function sharePuzzle(code: string, btn: HTMLButtonElement) {
     // Copying isn't allowed here: show the link to copy by hand.
     window.prompt('Copy this link:', url);
   }
+}
+
+// ---------- sticker book ----------
+function showBook() {
+  $('map').classList.add('hidden');
+  $('book').classList.remove('hidden');
+  renderBook($('book-page'), $('book-strip'), loadDone());
+  sfx.place();
+}
+function hideBook() {
+  $('book').classList.add('hidden');
+  showMap();
 }
 
 function hideGrownups() {
@@ -504,6 +519,8 @@ function syncButtons() {
   $('btn-go').classList.toggle('hidden', run || making);
   $('btn-stop').classList.toggle('hidden', game.mode !== 'run');
   $('btn-slow').classList.toggle('hidden', making);
+  $('btn-guess').classList.toggle('hidden', !game.level.goal || making || run);
+  $('btn-guess').setAttribute('aria-pressed', String(game.pencil));
   $('btn-slow').setAttribute('aria-pressed', String(game.slow));
   const hint = $('btn-hint');
   hint.classList.toggle('hidden', !game.hintReady);
@@ -518,6 +535,24 @@ function syncButtons() {
     $('won').classList.add('hidden');
     clearTimeout(wonTimer);
   }
+}
+
+/** The film strip after a win: the run's snapshots as little photos that pop in one by one. */
+function showFilm() {
+  const box = $('film');
+  box.innerHTML = '';
+  const frames = game?.filmStrip() ?? [];
+  if (frames.length < 2) return;
+  frames.forEach((f, k) => {
+    const b = document.createElement('button');
+    b.className = 'frame';
+    b.setAttribute('aria-label', `Picture ${k + 1}: watch again`);
+    b.style.animationDelay = `${0.15 + k * 0.18}s`;
+    b.style.setProperty('--tilt', `${[-3, 2, -1.5, 2.5, -2][k % 5]}deg`);
+    b.append(f);
+    b.onclick = () => { $('won').classList.add('hidden'); game?.replay(); };
+    box.append(b);
+  });
 }
 
 let madeGoalShown = false;
@@ -545,7 +580,7 @@ function startLevel(i: number, custom?: Level) {
   game.onWin = () => {
     markDone(level.id);
     $('btn-next').classList.toggle('hidden', current < 0);
-    wonTimer = window.setTimeout(() => $('won').classList.remove('hidden'), 1300);
+    wonTimer = window.setTimeout(() => { showFilm(); $('won').classList.remove('hidden'); }, 1300);
   };
   syncButtons();
   drawGoalPic(level);
@@ -556,6 +591,8 @@ function startLevel(i: number, custom?: Level) {
 document.addEventListener('pointerdown', unlockAudio, { capture: true });
 wireHold($('btn-grownups'), showGrownups);
 $('btn-gu-close').onclick = hideGrownups;
+$('btn-book').onclick = showBook;
+$('btn-book-close').onclick = hideBook;
 $('btn-gu-print').onclick = () => window.print();
 $('btn-home').onclick = showMap;
 $('btn-home2').onclick = showMap;
@@ -575,6 +612,7 @@ $('btn-make-done').onclick = () => {
   justMade = code;
   setTimeout(showMap, 900);
 };
+$('btn-guess').onclick = () => game?.togglePencil();
 $('btn-slow').onclick = () => { if (game) { game.slow = !game.slow; syncButtons(); } };
 $('btn-replay').onclick = () => { $('won').classList.add('hidden'); game?.replay(); };
 $('btn-next').onclick = () => startLevel(current + 1 < LEVELS.length ? current + 1 : -1);

@@ -40,6 +40,13 @@ interface Handle { dir: -1 | 0 | 1; px: number; py: number }
 const MISSES_BEFORE_HINT = 2;
 /** How long a hint ghost stays (seconds). */
 const HINT_SECONDS = 3.2;
+/** Film strip: a snapshot every this many seconds of machine time, and the size of each. */
+const FILM_EVERY = 0.4;
+const FILM_W = 320, FILM_H = 200;
+/** Frames on the film strip shown after a win. */
+export const FILM_FRAMES = 5;
+
+type Pt = { x: number; y: number };
 
 const iconCache = new Map<PartKind, RuntimePart>();
 export function partIcon(kind: PartKind): RuntimePart {
@@ -97,6 +104,19 @@ export class Game {
   /** Set while making a puzzle in the toy box. */
   making: Making | null = null;
   private hint: { rp: RuntimePart; from: number } | null = null;
+  /** Guess the path: the line the child drew before pressing Go (world units). */
+  guess: Pt[] = [];
+  /** The pencil is out: the next stroke on the table draws a guess. */
+  pencil = false;
+  private drawing: number | null = null;
+  /** Where the goal object really went on the last run. */
+  private trail: Pt[] = [];
+  /** Keep showing the last run's path next to the guess, until something changes. */
+  private showTrail = false;
+  /** Snapshots of the current run, for the film strip after a win. */
+  private film: HTMLCanvasElement[] = [];
+  private lastShot = -1;
+  private wonAt = 0;
   private L = { scale: 1, ox: 0, oy: 0, trayTop: 0, trayH: 0, item: 0, itemX0: 0, cw: 0, ch: 0, dpr: 1 };
 
   constructor(private canvas: HTMLCanvasElement, readonly level: Level) {
@@ -126,6 +146,11 @@ export class Game {
     this.acc = 0;
     this.endTimer = 0;
     this.mode = 'run';
+    this.pencil = false;
+    this.trail = [];
+    this.showTrail = this.guess.length > 1;
+    this.film = [];
+    this.lastShot = -1;
     sfx.go();
     if (this.sim.parts.some((p) => p.kind === 'car')) setTimeout(sfx.vroom, 150);
     this.onChange();
@@ -262,6 +287,37 @@ export class Game {
     return true;
   }
 
+  /** Guess the path is for levels with a goal: there's something to follow. */
+  get canGuess() {
+    return this.mode === 'build' && !!this.level.goal;
+  }
+
+  /** Take out (or put away) the pencil. Taking it out rubs out the old guess. */
+  togglePencil() {
+    if (!this.canGuess) return;
+    this.pencil = !this.pencil;
+    if (this.pencil) { this.guess = []; this.showTrail = false; this.selected = null; }
+    sfx.pickup();
+    this.onChange();
+  }
+
+  /** The film strip of the last winning run: a few snapshots in order, the last one at the goal. */
+  filmStrip(n = FILM_FRAMES): HTMLCanvasElement[] {
+    const f = this.film;
+    if (f.length <= n) return [...f];
+    return Array.from({ length: n }, (_, i) => f[Math.round((i * (f.length - 1)) / (n - 1))]);
+  }
+
+  private snap() {
+    const L = this.L;
+    const c = document.createElement('canvas');
+    c.width = FILM_W; c.height = FILM_H;
+    c.getContext('2d')!.drawImage(this.canvas, L.ox * L.dpr, L.oy * L.dpr, WORLD_W * L.scale * L.dpr, WORLD_H * L.scale * L.dpr, 0, 0, FILM_W, FILM_H);
+    this.film.push(c);
+    // Long runs: keep every other frame, so memory stays small.
+    if (this.film.length > 80) this.film = this.film.filter((_, i) => i % 2 === 0 || i === this.film.length - 1);
+  }
+
   private remaining(kind: PartKind) {
     const t = this.level.tray.find((x) => x.part === kind);
     if (!t) return 0;
@@ -305,9 +361,16 @@ export class Game {
 
   private down = (e: PointerEvent) => {
     if (this.mode === 'make') { this.makeTap(e); return; }
-    if (this.mode !== 'build' || this.drag) return;
+    if (this.mode !== 'build' || this.drag || this.drawing !== null) return;
     this.layout();
     const w = this.toWorld(e);
+    if (this.pencil) {
+      if (w.py > this.L.trayTop) return;
+      this.canvas.setPointerCapture(e.pointerId);
+      this.drawing = e.pointerId;
+      this.guess = [{ x: w.x, y: w.y }];
+      return;
+    }
     const lift = e.pointerType === 'touch' ? 0.8 : 0;
     const ti = this.trayIndexAt(w.px, w.py);
     if (ti >= 0) {
@@ -343,6 +406,13 @@ export class Game {
   }
 
   private move = (e: PointerEvent) => {
+    if (this.drawing === e.pointerId) {
+      const w = this.toWorld(e);
+      const last = this.guess[this.guess.length - 1];
+      const x = Math.max(0, Math.min(WORLD_W, w.x)), y = Math.max(0, Math.min(WORLD_H, w.y));
+      if (Math.hypot(x - last.x, y - last.y) > 0.12 && this.guess.length < 400) this.guess.push({ x, y });
+      return;
+    }
     const d = this.drag;
     if (!d || e.pointerId !== d.pointerId) return;
     const w = this.toWorld(e);
@@ -359,6 +429,20 @@ export class Game {
   };
 
   private up = (e: PointerEvent) => {
+    if (this.drawing === e.pointerId) {
+      this.drawing = null;
+      // A dot isn't a guess: keep the pencil out for another try.
+      const w = this.toWorld(e);
+      const last = this.guess[this.guess.length - 1];
+      if (Math.hypot(w.x - last.x, w.y - last.y) > 0.05) this.guess.push({ x: Math.max(0, Math.min(WORLD_W, w.x)), y: Math.max(0, Math.min(WORLD_H, w.y)) });
+      let len = 0;
+      for (let i = 1; i < this.guess.length; i++) len += Math.hypot(this.guess[i].x - this.guess[i - 1].x, this.guess[i].y - this.guess[i - 1].y);
+      if (len < 0.8) { this.guess = []; return; }
+      this.pencil = false;
+      sfx.place();
+      this.onChange();
+      return;
+    }
     const d = this.drag;
     if (!d || e.pointerId !== d.pointerId) return;
     this.drag = null;
@@ -454,6 +538,7 @@ export class Game {
   }
 
   private cancel = (e: PointerEvent) => {
+    if (this.drawing === e.pointerId) { this.drawing = null; this.guess = []; }
     if (this.drag && e.pointerId === this.drag.pointerId) {
       this.drag = null;
       this.changed();
@@ -470,6 +555,7 @@ export class Game {
 
   private changed() {
     this.preview = null;
+    this.showTrail = false;
     this.onChange();
   }
 
@@ -493,6 +579,12 @@ export class Game {
       while (this.acc >= DT && n++ < 6) {
         s.step();
         this.acc -= DT;
+      }
+      const o = this.level.goal && s.byId(this.level.goal.object);
+      if (o) {
+        const b = Sim.goalBody(o).getPosition();
+        const last = this.trail[this.trail.length - 1];
+        if (!last || Math.hypot(b.x - last.x, b.y - last.y) > 0.1) this.trail.push({ x: b.x, y: b.y });
       }
       for (const ev of s.events) {
         if (ev.type === 'clack') sfx.clack(ev.strength);
@@ -526,6 +618,7 @@ export class Game {
 
   private win() {
     this.mode = 'won';
+    this.wonAt = this.t;
     this.restoreSlow();
     sfx.chime();
     const target = this.sim!.byId(this.level.goal!.target)!.bodies[0].getPosition();
@@ -594,6 +687,7 @@ export class Game {
       ctx.restore();
     }
 
+    this.renderGuess(ctx);
     this.renderHint(ctx);
     ctx.shadowColor = 'transparent';
     this.drawGrain(ctx);
@@ -604,6 +698,60 @@ export class Game {
 
     this.renderTray(ctx);
     this.renderHandles(ctx);
+
+    // Film strip: a snapshot every so often while the machine runs, and one more
+    // just after the win, with the confetti flying.
+    if (this.sim && this.mode === 'run' && (this.lastShot < 0 || this.sim.time - this.lastShot >= FILM_EVERY)) {
+      this.lastShot = this.sim.time;
+      this.snap();
+    }
+    if (this.mode === 'won' && this.lastShot >= 0 && this.t - this.wonAt > 0.45) {
+      this.lastShot = -1;
+      this.snap();
+    }
+  }
+
+  /** The guessed path (a crayon line) and, once the machine has run, the real one (teal dots). */
+  private renderGuess(ctx: CanvasRenderingContext2D) {
+    ctx.save();
+    ctx.shadowColor = 'transparent';
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const g = this.guess;
+    if (g.length > 1) {
+      ctx.globalAlpha = 0.8;
+      ctx.strokeStyle = PAPER.tomato;
+      ctx.lineWidth = 0.14;
+      ctx.beginPath();
+      ctx.moveTo(g[0].x, g[0].y);
+      for (const p of g) ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      // An arrow head where the guess ends, once it's drawn.
+      if (this.drawing === null) {
+        const a = g[g.length - 1], b = g[Math.max(0, g.length - 4)];
+        const ang = Math.atan2(a.y - b.y, a.x - b.x);
+        ctx.fillStyle = PAPER.tomato;
+        ctx.beginPath();
+        for (const k of [0, 2.4, -2.4]) ctx.lineTo(a.x + Math.cos(ang + k) * 0.3, a.y + Math.sin(ang + k) * 0.3);
+        ctx.fill();
+      }
+    }
+    if (this.showTrail && this.trail.length > 1) {
+      // Dots every 0.3 cells along the real path.
+      ctx.globalAlpha = 0.85;
+      ctx.fillStyle = PAPER.teal;
+      let next = 0, walked = 0;
+      for (let i = 1; i < this.trail.length; i++) {
+        const a = this.trail[i - 1], b = this.trail[i];
+        const len = Math.hypot(b.x - a.x, b.y - a.y);
+        while (next <= walked + len) {
+          const f = (next - walked) / len;
+          ctx.beginPath(); ctx.arc(a.x + (b.x - a.x) * f, a.y + (b.y - a.y) * f, 0.075, 0, Math.PI * 2); ctx.fill();
+          next += 0.3;
+        }
+        walked += len;
+      }
+    }
+    ctx.restore();
   }
 
   /** Rings in make mode: solid teal on the goal parts, a pulsing dashed ring on parts you can tap now. */

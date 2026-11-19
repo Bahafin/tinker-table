@@ -5,7 +5,7 @@ What we plan to build next, in order. Every feature has to keep three rules:
 - **No fail state.** Nothing scores, times or tells the child off.
 - **Free to run.** No servers, no accounts and no analytics. Everything stays on the device or inside a link.
 
-The current game: 45 levels in five rooms, the toy box, the grown-ups' corner, offline play, and the web version on GitHub Pages. See [design.md](design.md).
+The current game: 50 levels in five rooms of ten, the toy box, guess the path, the film strip, the sticker book, the grown-ups' corner, offline play, and the web version on GitHub Pages. See [design.md](design.md).
 
 ## Decisions so far
 - **The web version stays the main home.** A store app later wraps the same code with Capacitor.
@@ -60,16 +60,23 @@ The current game: 45 levels in five rooms, the toy box, the grown-ups' corner, o
 - Every room now has nine levels (45 in all) and its own part.
 - This replaces the "new parts" list in Milestone 6 (musical parts stay there).
 
-## Milestone 5: thinking out loud
+## Milestone 4.6: ten levels a room, in order of difficulty (done)
+- Five new levels, one per room, each using that room's part: 50 levels, ten in every room.
+- Every level has a measured `difficulty` score (see "Difficulty order" in [design.md](design.md)).
+- The levels were re-sorted so that inside a room each level is harder than the last, and each room's Nth level is harder than the previous room's Nth level. A test checks both, and that no level appears twice.
+- To make that work, the rooms are now in the order Workshop, Playroom, Attic, Kitchen, Garden. Progress is kept by level, so finished levels stay finished in their new places.
+- A room page shows its ten levels as two rows of five.
+
+## Milestone 5: thinking out loud (done)
 - **Guess the path:**
-  - Before pressing Go, the child draws with a finger where they think the ball will go.
-  - After the run, their line and the real path show together.
+  - A pencil button sits in the top bar. Tap it, then draw with a finger where you think the ball will go.
+  - While the machine runs, the real path appears as teal dots next to the red crayon guess, and both stay on the table after the run until something is moved.
   - It's the "guess, try, look" loop made visible, and it gives the grown-up something to talk about. There's no scoring.
-- **Film strip:** after a win, 4–5 snapshots of the run appear in order. The child tells the story of the machine, and tapping a frame replays the run.
+- **Film strip:** after a win, five snapshots of the run pop in as little photos, the last one with the confetti. The child tells the story of the machine, and tapping a photo replays the run slowly.
 - **Sticker book:**
-  - Each finished level gives a sticker (a character or a part) to place freely on a page.
-  - It rewards finishing without scoring how well the child did.
-  - Kept on the device.
+  - A book button on the front page. Each finished level gives a sticker: the most special part in that level, drawn in its room's look on a round backing in the room's colours.
+  - Drag stickers from the strip onto the page, anywhere. Drag one off the page to put it back. A red dot on the book means there are stickers waiting.
+  - It rewards finishing without scoring how well the child did. Kept on the device.
 
 ## Milestone 6: new things to play with
 - **Musical parts:**

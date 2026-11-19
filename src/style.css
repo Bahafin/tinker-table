@@ -149,6 +149,25 @@ svg .fill { fill: currentColor; stroke: none; }
   box-shadow: var(--shadow);
   animation: pop 0.35s cubic-bezier(0.2, 1.6, 0.4, 1);
 }
+.won { flex-wrap: wrap; justify-content: center; max-width: calc(100vw - 24px); }
+/* Film strip: little photos of the run, in order. */
+.film { flex-basis: 100%; display: flex; justify-content: center; gap: clamp(6px, 1.4vw, 14px); }
+.film:empty { display: none; }
+.film .frame {
+  border: none;
+  padding: 5px 5px 12px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 3px 8px rgba(80, 55, 30, 0.25);
+  cursor: pointer;
+  transform: rotate(var(--tilt, 0deg));
+  animation: frame-in 0.3s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+.film .frame canvas { display: block; width: clamp(60px, 11vw, 124px); aspect-ratio: 16 / 10; border-radius: 2px; }
+.film .frame:active { transform: rotate(var(--tilt, 0deg)) scale(0.94); }
+@keyframes frame-in { from { opacity: 0; transform: translateY(14px) rotate(0deg) scale(0.7); } }
+#btn-guess svg .pencil { fill: #f6d58a; }
+#btn-guess svg .crayon { stroke: var(--stop); }
 .big { width: 110px; height: 96px; border-radius: 28px; }
 .big svg { width: 56px; height: 56px; }
 @keyframes pop { from { transform: translateX(-50%) scale(0.6); opacity: 0; } }
@@ -387,4 +406,106 @@ svg .fill { fill: currentColor; stroke: none; }
   .room-tile .room-pic { width: 54px; height: 54px; }
   .room-tile .dots { gap: 5px; }
   .room-tile .dots i { width: 12px; height: 12px; border-width: 2px; }
+}
+
+/* ---------- sticker book ---------- */
+.book-btn {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 14px);
+  left: calc(env(safe-area-inset-left) + 16px);
+  width: 76px;
+  height: 76px;
+  border: none;
+  border-radius: 22px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.book-btn:active { transform: translateY(3px); }
+.book-btn svg { width: 50px; height: 50px; }
+.book-btn .page { fill: #fff; stroke-width: 3; }
+.book-btn .dot1 { fill: #f29bb0; stroke-width: 2.5; }
+.book-btn .dot2 { fill: #f2c94c; stroke-width: 2; }
+.book-btn .new {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--stop);
+  border: 3px solid #fff;
+  animation: hint-pulse 1.6s ease-in-out infinite;
+}
+#map.in-room .book-btn { display: none; }
+
+#book { background: var(--bg); align-items: center; }
+#book .bar { align-self: stretch; }
+.book-page {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: min(100% - 32px, (100dvh - 280px) * 1.6);
+  aspect-ratio: 16 / 10;
+  max-height: calc(100dvh - 260px);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle, rgba(60, 45, 30, 0.08) 1.5px, transparent 2px) 0 0 / 28px 28px,
+    #fffaf0;
+  box-shadow: var(--shadow);
+  outline: 3px dashed rgba(185, 138, 90, 0.45);
+  outline-offset: -14px;
+  touch-action: none;
+}
+.book-strip {
+  display: flex;
+  gap: 10px;
+  align-self: stretch;
+  overflow-x: auto;
+  padding: 14px 16px calc(env(safe-area-inset-bottom) + 14px);
+  min-height: 120px;
+  touch-action: pan-x;
+}
+.book-strip.empty::before {
+  content: "";
+  margin: auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 4px dashed rgba(60, 45, 30, 0.2);
+}
+.stk {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 3px 3px rgba(80, 55, 30, 0.3));
+  cursor: grab;
+  touch-action: none;
+}
+.book-page .stk {
+  position: absolute;
+  width: 13%;
+  height: auto;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%) rotate(var(--tilt, 0deg));
+}
+.stk.lifted {
+  position: fixed;
+  z-index: 50;
+  transform: translate(-50%, -50%) rotate(-6deg) scale(1.12);
+  filter: drop-shadow(0 10px 8px rgba(80, 55, 30, 0.35));
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  .book-btn { position: relative; top: auto; left: auto; order: -1; align-self: flex-start; width: 64px; height: 64px; margin-bottom: -60px; }
+  .stk { width: 72px; height: 72px; }
+}
+
+/* A room's ten levels: two rows of five, easiest top left. */
+@media (min-width: 701px) {
+  #levels.in-room { grid-template-columns: repeat(5, minmax(0, 1fr)); width: min(1180px, 100%); }
+  #levels.in-room .card { padding: 7px; border-radius: 16px; }
+  #levels.in-room .card .sticker { width: 40px; height: 40px; top: -8px; right: -8px; }
 }
