@@ -28,6 +28,8 @@ interface Confetti { x: number; y: number; vx: number; vy: number; a: number; va
 
 const SLOW = 0.4;
 const MIN_TOUCH_PX = 64;
+/** Space between tray items, in CSS pixels. */
+const TRAY_GAP = 6;
 /** Rotate buttons: radius in screen px (64 px across). */
 const HANDLE_R = 32;
 /** How far a pointer may slide and still count as a tap. Small fingers wobble. */
@@ -117,7 +119,7 @@ export class Game {
   private film: HTMLCanvasElement[] = [];
   private lastShot = -1;
   private wonAt = 0;
-  private L = { scale: 1, ox: 0, oy: 0, trayTop: 0, trayH: 0, item: 0, itemX0: 0, cw: 0, ch: 0, dpr: 1 };
+  private L = { scale: 1, ox: 0, oy: 0, trayTop: 0, trayH: 0, item: 0, itemX0: 0, itemY0: 0, cols: 1, cw: 0, ch: 0, dpr: 1 };
 
   constructor(private canvas: HTMLCanvasElement, readonly level: Level) {
     this.fixed = level.fixed.map((p) => ({ ...p, fixed: true }));
@@ -334,14 +336,30 @@ export class Game {
       c.width = Math.round(cw * dpr);
       c.height = Math.round(ch * dpr);
     }
-    const n = this.level.tray.length;
-    const trayH = Math.max(96, Math.min(130, ch * 0.17));
+    const n = Math.max(1, this.level.tray.length);
+    // The tray is one row of parts; when they don't fit (the toy box has every part),
+    // it wraps onto more rows rather than running off the screen.
+    const rowH = Math.max(96, Math.min(130, ch * 0.17));
+    const gap = TRAY_GAP;
+    const fit = (cols: number) => Math.min(rowH - 14, (cw - 24) / cols - gap);
+    let rows = 1;
+    let cols = n;
+    let item = fit(cols);
+    const maxRows = Math.max(2, Math.floor((ch * 0.45 - 14) / (MIN_TOUCH_PX + gap)));
+    while (item < MIN_TOUCH_PX && rows < maxRows) {
+      rows++;
+      cols = Math.ceil(n / rows);
+      item = fit(cols);
+    }
+    // Only a very short screen with every row used squeezes parts below the usual size.
+    item = Math.max(40, item);
+    const trayH = rows === 1 ? rowH : rows * (item + gap) - gap + 14;
     const scale = Math.min((cw - 16) / WORLD_W, (ch - trayH - 12) / WORLD_H);
     const ox = (cw - WORLD_W * scale) / 2;
     const oy = 6;
-    const item = Math.max(MIN_TOUCH_PX, Math.min(trayH - 14, (cw - 24) / n - 6));
-    const itemX0 = (cw - n * (item + 6) + 6) / 2;
-    this.L = { scale, ox, oy, trayTop: ch - trayH, trayH, item, itemX0, cw, ch, dpr };
+    const itemX0 = (cw - cols * (item + gap) + gap) / 2;
+    const itemY0 = ch - trayH + (trayH - (rows * (item + gap) - gap)) / 2;
+    this.L = { scale, ox, oy, trayTop: ch - trayH, trayH, item, itemX0, itemY0, cols, cw, ch, dpr };
   }
 
   private toWorld(e: PointerEvent) {
@@ -353,8 +371,11 @@ export class Game {
   private trayIndexAt(px: number, py: number) {
     const L = this.L;
     if (py < L.trayTop) return -1;
-    const i = Math.floor((px - L.itemX0) / (L.item + 6));
-    return i >= 0 && i < this.level.tray.length ? i : -1;
+    const col = Math.floor((px - L.itemX0) / (L.item + TRAY_GAP));
+    const row = Math.floor((py - L.itemY0) / (L.item + TRAY_GAP));
+    if (col < 0 || col >= L.cols || row < 0) return -1;
+    const i = row * L.cols + col;
+    return i < this.level.tray.length ? i : -1;
   }
 
   // ---------- input ----------
@@ -893,11 +914,11 @@ export class Game {
 
   private renderTray(ctx: CanvasRenderingContext2D) {
     const L = this.L;
-    const y0 = L.trayTop + (L.trayH - L.item) / 2;
     ctx.save();
     ctx.globalAlpha = this.mode === 'build' ? 1 : 0.45;
     this.level.tray.forEach((t, i) => {
-      const x = L.itemX0 + i * (L.item + 6);
+      const x = L.itemX0 + (i % L.cols) * (L.item + TRAY_GAP);
+      const y0 = L.itemY0 + Math.floor(i / L.cols) * (L.item + TRAY_GAP);
       const left = this.remaining(t.part);
       ctx.save();
       ctx.shadowColor = 'rgba(80,55,30,0.2)'; ctx.shadowOffsetY = 3; ctx.shadowBlur = 4;
