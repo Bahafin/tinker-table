@@ -49,6 +49,23 @@ const FILM_W = 320, FILM_H = 200;
 export const FILM_FRAMES = 5;
 
 type Pt = { x: number; y: number };
+/** Tall, thin parts read better drawn bigger in a round tab. */
+const TALL_ICONS = new Set<PartKind>(['hammer', 'rope', 'domino']);
+
+/** One room's parts for the toy box tray, drawn in that room's look. */
+export interface TraySet { skin: string; accent: string; paper: string; icon: PartKind; parts: PartKind[] }
+type TrayItem = { part: PartKind; count: number; skin?: string };
+type TrayHit = { item: number } | { tab: number } | { page: -1 | 1 } | null;
+type Box = { x: number; y: number; w: number; h: number };
+interface TrayLayout {
+  scale: number; ox: number; oy: number; trayTop: number; trayH: number; item: number; cw: number; ch: number; dpr: number;
+  /** Parts showing in the tray (i: index into the tray's items) and where. */
+  items: { i: number; x: number; y: number }[];
+  tabs: { x: number; y: number }[];
+  tab: number;
+  prev: Box | null;
+  next: Box | null;
+}
 
 const iconCache = new Map<PartKind, RuntimePart>();
 export function partIcon(kind: PartKind): RuntimePart {
@@ -121,7 +138,11 @@ export class Game {
   private film: HTMLCanvasElement[] = [];
   private lastShot = -1;
   private wonAt = 0;
-  private L = { scale: 1, ox: 0, oy: 0, trayTop: 0, trayH: 0, item: 0, itemX0: 0, itemY0: 0, cols: 1, cw: 0, ch: 0, dpr: 1 };
+  private L: TrayLayout = { scale: 1, ox: 0, oy: 0, trayTop: 0, trayH: 0, item: 0, cw: 0, ch: 0, dpr: 1, items: [], tabs: [], tab: 0, prev: null, next: null };
+  /** Toy box: the room sets of parts the tray's tabs choose between, and which one is showing. */
+  sets: TraySet[] | null = null;
+  private setIndex = 0;
+  private page = 0;
 
   /** start: parts already on the table (a machine saved in the toy box). */
   constructor(private canvas: HTMLCanvasElement, readonly level: Level, start: Placement[] = []) {
@@ -331,7 +352,15 @@ export class Game {
     if (this.film.length > 80) this.film = this.film.filter((_, i) => i % 2 === 0 || i === this.film.length - 1);
   }
 
+  /** What the tray shows now: the level's parts, or the chosen room's set in the toy box. */
+  private trayItems(): TrayItem[] {
+    if (!this.sets) return this.level.tray;
+    const s = this.sets[this.setIndex];
+    return s.parts.map((part) => ({ part, count: Infinity, skin: s.skin }));
+  }
+
   private remaining(kind: PartKind) {
+    if (this.sets) return Infinity;
     const t = this.level.tray.find((x) => x.part === kind);
     if (!t) return 0;
     return t.count - this.placements.filter((p) => p.part === kind).length;
@@ -347,11 +376,12 @@ export class Game {
       c.width = Math.round(cw * dpr);
       c.height = Math.round(ch * dpr);
     }
-    const n = Math.max(1, this.level.tray.length);
-    // The tray is one row of parts; when they don't fit (the toy box has every part),
-    // it wraps onto more rows rather than running off the screen.
     const rowH = Math.max(96, Math.min(130, ch * 0.17));
     const gap = TRAY_GAP;
+    if (this.sets) { this.layoutSets(cw, ch, dpr, rowH); return; }
+    const n = Math.max(1, this.level.tray.length);
+    // The tray is one row of parts; when they don't fit it wraps onto more rows
+    // rather than running off the screen.
     const fit = (cols: number) => Math.min(rowH - 14, (cw - 24) / cols - gap);
     let rows = 1;
     let cols = n;
@@ -370,7 +400,53 @@ export class Game {
     const oy = 6;
     const itemX0 = (cw - cols * (item + gap) + gap) / 2;
     const itemY0 = ch - trayH + (trayH - (rows * (item + gap) - gap)) / 2;
-    this.L = { scale, ox, oy, trayTop: ch - trayH, trayH, item, itemX0, itemY0, cols, cw, ch, dpr };
+    const items = this.level.tray.map((_, i) => ({ i, x: itemX0 + (i % cols) * (item + gap), y: itemY0 + Math.floor(i / cols) * (item + gap) }));
+    this.L = { scale, ox, oy, trayTop: ch - trayH, trayH, item, cw, ch, dpr, items, tabs: [], tab: 0, prev: null, next: null };
+  }
+
+  /**
+   * Toy box tray: room tabs pick a set of parts (each room's parts in its own look), and
+   * arrows page through a set that is longer than the row. Wide screens keep it all on one
+   * row so the table stays big; narrow ones put the tabs on a row of their own.
+   */
+  private layoutSets(cw: number, ch: number, dpr: number, rowH: number) {
+    const gap = TRAY_GAP;
+    const sets = this.sets!;
+    const narrow = cw < 700;
+    const pad = 12;
+    const n = this.trayItems().length;
+    const item = narrow ? 76 : Math.min(rowH - 14, 88);
+    const tab = narrow ? Math.max(44, Math.min(68, (cw - 2 * pad) / sets.length - gap)) : Math.min(item, 68);
+    const arrowW = Math.max(48, Math.round(item * 0.6));
+    // Wide: tabs then one row of parts. Narrow: tabs on their own row, then as many rows of
+    // parts as fit in the lower part of the screen.
+    const areaX0 = narrow ? pad : pad + sets.length * (tab + gap) + 14;
+    const areaW = cw - pad - areaX0;
+    const colsFor = (w: number) => Math.max(1, Math.floor((w + gap) / (item + gap)));
+    const maxRows = narrow ? Math.max(1, Math.floor((ch * 0.55 - tab - 3 * gap - 14) / (item + gap))) : 1;
+    let cols = colsFor(areaW);
+    let rows = Math.min(maxRows, Math.ceil(n / cols));
+    const fitsAll = cols * rows >= n;
+    if (!fitsAll) { cols = colsFor(areaW - 2 * (arrowW + gap)); rows = maxRows; }
+    const perPage = cols * rows;
+    const pages = Math.max(1, Math.ceil(n / perPage));
+    this.page = Math.min(this.page, pages - 1);
+    const blockH = rows * (item + gap) - gap;
+    const trayH = narrow ? tab + blockH + 3 * gap + 14 : rowH;
+    const rowY = ch - 7 - blockH;
+    const tabY = narrow ? ch - trayH + 7 : rowY + (item - tab) / 2;
+    const tabX0 = narrow ? (cw - sets.length * (tab + gap) + gap) / 2 : pad;
+    const tabs = sets.map((_, k) => ({ x: tabX0 + k * (tab + gap), y: tabY }));
+    const inner = fitsAll ? areaW : areaW - 2 * (arrowW + gap);
+    const used = Math.min(cols, n) * (item + gap) - gap;
+    const x0 = areaX0 + (fitsAll ? 0 : arrowW + gap) + (narrow ? (inner - used) / 2 : 0);
+    const from = this.page * perPage;
+    const shown = Math.min(perPage, n - from);
+    const list = Array.from({ length: shown }, (_, k) => ({ i: from + k, x: x0 + (k % cols) * (item + gap), y: rowY + Math.floor(k / cols) * (item + gap) }));
+    const prev = !fitsAll && this.page > 0 ? { x: areaX0, y: rowY, w: arrowW, h: blockH } : null;
+    const next = !fitsAll && this.page < pages - 1 ? { x: areaX0 + areaW - arrowW, y: rowY, w: arrowW, h: blockH } : null;
+    const scale = Math.min((cw - 16) / WORLD_W, (ch - trayH - 12) / WORLD_H);
+    this.L = { scale, ox: (cw - WORLD_W * scale) / 2, oy: 6, trayTop: ch - trayH, trayH, item, cw, ch, dpr, items: list, tabs, tab, prev, next };
   }
 
   private toWorld(e: PointerEvent) {
@@ -379,14 +455,16 @@ export class Game {
     return { px, py, x: (px - this.L.ox) / this.L.scale, y: (py - this.L.oy) / this.L.scale };
   }
 
-  private trayIndexAt(px: number, py: number) {
+  /** What is under a finger in the tray: a part, a room tab, or a page arrow. */
+  private trayHit(px: number, py: number): TrayHit {
     const L = this.L;
-    if (py < L.trayTop) return -1;
-    const col = Math.floor((px - L.itemX0) / (L.item + TRAY_GAP));
-    const row = Math.floor((py - L.itemY0) / (L.item + TRAY_GAP));
-    if (col < 0 || col >= L.cols || row < 0) return -1;
-    const i = row * L.cols + col;
-    return i < this.level.tray.length ? i : -1;
+    if (py < L.trayTop) return null;
+    const inBox = (x: number, y: number, w: number, h: number) => px >= x - TRAY_GAP / 2 && px < x + w + TRAY_GAP / 2 && py >= y - TRAY_GAP / 2 && py < y + h + TRAY_GAP / 2;
+    for (const it of L.items) if (inBox(it.x, it.y, L.item, L.item)) return { item: it.i };
+    for (let k = 0; k < L.tabs.length; k++) if (inBox(L.tabs[k].x, L.tabs[k].y, L.tab, L.tab)) return { tab: k };
+    if (L.prev && inBox(L.prev.x, L.prev.y, L.prev.w, L.prev.h)) return { page: -1 };
+    if (L.next && inBox(L.next.x, L.next.y, L.next.w, L.next.h)) return { page: 1 };
+    return null;
   }
 
   // ---------- input ----------
@@ -405,11 +483,19 @@ export class Game {
       return;
     }
     const lift = e.pointerType === 'touch' ? 0.8 : 0;
-    const ti = this.trayIndexAt(w.px, w.py);
-    if (ti >= 0) {
-      const kind = this.level.tray[ti].part;
+    const hit = this.trayHit(w.px, w.py);
+    if (hit && 'tab' in hit) {
+      if (hit.tab !== this.setIndex) { this.setIndex = hit.tab; this.page = 0; sfx.place(); }
+      return;
+    }
+    if (hit && 'page' in hit) { this.page += hit.page; sfx.place(); return; }
+    if (hit) {
+      const it = this.trayItems()[hit.item];
+      const kind = it.part;
       if (this.remaining(kind) <= 0) { sfx.nope(); return; }
-      this.startDrag(e, { part: kind, x: w.x, y: w.y - lift }, -1, { x: 0, y: -lift }, w);
+      const p: Placement = { part: kind, x: w.x, y: w.y - lift };
+      if (it.skin) p.skin = it.skin;
+      this.startDrag(e, p, -1, { x: 0, y: -lift }, w);
       this.drag!.moved = true;
       sfx.pickup();
       return;
@@ -698,7 +784,9 @@ export class Game {
         ctx.save();
         ctx.translate(p.x, p.y); ctx.rotate(Math.sin(this.t * 50) * 0.08); ctx.translate(-p.x, -p.y);
       }
+      if (rp.placement.skin !== undefined) setSkin(rp.placement.skin || this.skin);
       drawPart(ctx, rp, this.t);
+      if (rp.placement.skin !== undefined) setSkin(this.skin);
       if (wig) ctx.restore();
       if (rp.placement.fixed && this.mode === 'build') drawFixedPin(ctx, rp);
       if (this.making && kidIndex >= 0 && this.making.pins.has(kidIndex)) drawFixedPin(ctx, rp);
@@ -717,7 +805,9 @@ export class Game {
       ctx.save();
       ctx.globalAlpha = bad || overTray ? 0.5 : 0.92;
       setPaperShadow(ctx, Math.max(3, L.scale * 0.1));
+      setSkin(show.skin || this.skin);
       drawPart(ctx, this.dragSim!.parts[0], this.t);
+      setSkin(this.skin);
       ctx.restore();
     }
 
@@ -949,9 +1039,12 @@ export class Game {
     const L = this.L;
     ctx.save();
     ctx.globalAlpha = this.mode === 'build' ? 1 : 0.45;
-    this.level.tray.forEach((t, i) => {
-      const x = L.itemX0 + (i % L.cols) * (L.item + TRAY_GAP);
-      const y0 = L.itemY0 + Math.floor(i / L.cols) * (L.item + TRAY_GAP);
+    this.renderTabs(ctx);
+    const items = this.trayItems();
+    L.items.forEach(({ i, x, y: y0 }) => {
+      const t = items[i];
+      if (!t) return;
+      setSkin(t.skin ?? this.skin);
       const left = this.remaining(t.part);
       ctx.save();
       ctx.shadowColor = 'rgba(80,55,30,0.2)'; ctx.shadowOffsetY = 3; ctx.shadowBlur = 4;
@@ -970,6 +1063,38 @@ export class Game {
         }
       }
     });
+    setSkin(this.skin);
     ctx.restore();
+  }
+
+  /** Room tabs (a round badge in the room's colours with its own part) and the page arrows. */
+  private renderTabs(ctx: CanvasRenderingContext2D) {
+    const L = this.L;
+    if (!this.sets) return;
+    this.sets.forEach((s, k) => {
+      const { x, y } = L.tabs[k];
+      const on = k === this.setIndex;
+      ctx.save();
+      ctx.translate(0, on ? -4 : 0);
+      ctx.shadowColor = 'rgba(80,55,30,0.25)'; ctx.shadowOffsetY = on ? 4 : 2; ctx.shadowBlur = on ? 6 : 3;
+      ctx.beginPath(); ctx.roundRect(x, y, L.tab, L.tab, L.tab / 2); ctx.fillStyle = s.paper; ctx.fill();
+      ctx.shadowColor = 'transparent';
+      ctx.lineWidth = on ? 5 : 3; ctx.strokeStyle = s.accent; ctx.stroke();
+      setSkin(s.skin);
+      drawIcon(ctx, s.icon, x + L.tab / 2, y + L.tab / 2, L.tab * (s.icon === 'hammer' ? 1.45 : TALL_ICONS.has(s.icon) ? 1.05 : 0.8), this.t);
+      ctx.restore();
+    });
+    setSkin(this.skin);
+    for (const [a, dir] of [[L.prev, -1], [L.next, 1]] as const) {
+      if (!a) continue;
+      ctx.save();
+      ctx.shadowColor = 'rgba(80,55,30,0.2)'; ctx.shadowOffsetY = 3; ctx.shadowBlur = 4;
+      ctx.beginPath(); ctx.roundRect(a.x, a.y, a.w, a.h, 14); ctx.fillStyle = '#fffaf0'; ctx.fill();
+      ctx.shadowColor = 'transparent';
+      const cx = a.x + a.w / 2, cy = a.y + a.h / 2, s = Math.min(a.w, a.h) * 0.22;
+      ctx.beginPath(); ctx.moveTo(cx - dir * s * 0.5, cy - s); ctx.lineTo(cx + dir * s * 0.6, cy); ctx.lineTo(cx - dir * s * 0.5, cy + s);
+      ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = PAPER.ink; ctx.stroke();
+      ctx.restore();
+    }
   }
 }

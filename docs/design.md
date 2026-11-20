@@ -187,6 +187,7 @@ The front page is a **row of rooms you swipe along**, left to right in order of 
 Inside a room, the banner shows the room's picture and name, with a back button.
 
 The **Toy box** and **Puzzle maker** rooms each start with a dashed card with a big plus, which starts something new. After it come the things kept on this device, as solid white "photo" cards: machines kept in the toy box (heart badge) and puzzles made in the maker (star badge).
+- **The tray in both rooms** has a row of round **room tabs** (each room's own part on its colours). A tab shows every part used in that room's levels, drawn in that room's look, so an apple from the Garden and the Kitchen's toaster can share one table. Arrows page through a set that is longer than the row. On a narrow screen the tabs get a row of their own and the parts fill a few rows below.
 - **Toy box:** build freely, no goal. The heart button in the top bar keeps the machine. A kept machine opens with its parts on the table, and the heart saves changes to it rather than adding a copy. Up to 20 are kept.
 - **Puzzle maker:** every part, goals included. Build a machine, then tap the star button to make it a puzzle (see rule 12). Up to 20 puzzles are kept, and grown-ups can share them.
 

@@ -18,14 +18,21 @@ const MAX_PARTS = 40;
 const MAX_CODE = 4000;
 const VERSION = 1;
 
-/** [kind, x*2, y*2, rot/15] */
-type Packed = [number, number, number, number];
+/** Room looks a toy-box part can have. Only ever append: saved codes depend on the order. */
+const SKINS = ['', 'workshop', 'playroom', 'attic', 'kitchen', 'garden', 'music'];
+
+/** [kind, x*2, y*2, rot/15] and, for a part in a room's look, that look's place in SKINS. */
+type Packed = [number, number, number, number] | [number, number, number, number, number];
 interface Wire { v: number; f: Packed[]; s: Packed[]; g: [number, number] }
 
 export const MADE_VOICE = 'Can you solve this puzzle?';
 export const SHARED_VOICE = "Here's a puzzle someone made for you! Can you solve it?";
 
-const pack = (p: Placement): Packed => [KINDS.indexOf(p.part), Math.round(p.x * 2), Math.round(p.y * 2), Math.round((p.rot ?? 0) / 15)];
+const pack = (p: Placement): Packed => {
+  const a: Packed = [KINDS.indexOf(p.part), Math.round(p.x * 2), Math.round(p.y * 2), Math.round((p.rot ?? 0) / 15)];
+  const s = SKINS.indexOf(p.skin ?? '');
+  return s > 0 ? [...a, s] : a;
+};
 
 function toBase64Url(s: string) {
   return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -54,8 +61,9 @@ export function encodeLevel(level: Level): string {
 const isInt = (n: unknown): n is number => typeof n === 'number' && Number.isInteger(n);
 
 function unpack(a: unknown, placed: boolean): Placement | null {
-  if (!Array.isArray(a) || a.length !== 4 || !a.every(isInt)) return null;
-  const [k, x2, y2, r] = a as number[];
+  if (!Array.isArray(a) || (a.length !== 4 && a.length !== 5) || !a.every(isInt)) return null;
+  const [k, x2, y2, r, sk] = a as number[];
+  if (sk !== undefined && !(sk > 0 && sk < SKINS.length)) return null;
   const part = KINDS[k];
   if (!part) return null;
   const def = PARTS[part];
@@ -65,6 +73,7 @@ function unpack(a: unknown, placed: boolean): Placement | null {
   if (def.rotStep === 180 && Math.abs(rot) !== 180 && rot !== 0) return null;
   const p: Placement = { part, x: x2 / 2, y: y2 / 2 };
   if (rot) p.rot = rot;
+  if (sk !== undefined) p.skin = SKINS[sk];
   // Pinned parts only need to be on the table. Parts the solver places must be (within a
   // grid step) where the game itself would let them go: flush against an edge they can
   // sit between grid points, which the code rounds, so they are put back exactly there.

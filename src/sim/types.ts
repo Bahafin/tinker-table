@@ -12,6 +12,8 @@ export interface Placement {
   rot?: number;
   /** Came with the level: cannot be moved by the player. */
   fixed?: boolean;
+  /** Toy box: drawn in this room's look ('' or missing: the table's own look). */
+  skin?: string;
 }
 
 /** The centre of `object` is inside `target`'s goal zone. */

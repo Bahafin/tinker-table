@@ -3,7 +3,8 @@ import { LEVELS, MAKER_BOX, ROOMS, roomOf, roomVoice, TOY_BOX, type Room } from 
 import { Sim } from './sim/sim';
 import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from './sim/types';
 import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow, setSkin } from './render/draw';
-import { Game, drawIcon } from './ui/game';
+import { Game, drawIcon, type TraySet } from './ui/game';
+import { ALL_PARTS, TOY_PARTS } from './sim/parts';
 import { sfx, speak, unlockAudio } from './ui/audio';
 import { INTRO, MADE_TALK, MAKER_HOW, ROUTINE, SKILLS, TALK, TIPS, TOYS_HOW } from './parents/content';
 import { decodeLevel, decodeToy, encodeLevel, encodeToy, MADE_VOICE, SHARED_VOICE } from './levels/share';
@@ -82,9 +83,35 @@ function thumb(level: Level, toy = false, withSolution = false, room?: Room): HT
   const parts: Placement[] = level.fixed.map((p) => ({ ...p, fixed: true }));
   if (withSolution) parts.push(...(level.solution ?? []));
   const sim = new Sim(parts, level.goal);
-  for (const rp of sim.parts) { drawPart(ctx, rp, 0); drawFixedPin(ctx, rp); }
+  for (const rp of sim.parts) {
+    // Toy-box parts can each come from a different room.
+    if (rp.placement.skin !== undefined) setSkin(rp.placement.skin || (room?.id ?? ''));
+    drawPart(ctx, rp, 0);
+    if (rp.placement.skin !== undefined) setSkin(room?.id ?? '');
+    if (!level.id.startsWith('toybox')) drawFixedPin(ctx, rp);
+  }
   setSkin('');
   return c;
+}
+
+/** Each room's own part, shown on its tab in the toy box tray. */
+const ROOM_PART: Record<string, PartKind> = { workshop: 'hammer', playroom: 'car', attic: 'scissors', kitchen: 'toaster', garden: 'can' };
+
+/**
+ * The toy box tray's sets: one per room, with every part used in that room's levels, in the
+ * room's own look. Parts from different rooms can share the table. The puzzle maker adds the
+ * goal parts (star, cheese) that the toy box leaves out.
+ */
+function traySets(withGoals: boolean): TraySet[] {
+  const order = withGoals ? ALL_PARTS : TOY_PARTS;
+  return ROOMS.map((room) => {
+    const used = new Set<PartKind>([ROOM_PART[room.id]]);
+    for (const lv of LEVELS.slice(room.first, room.first + room.count)) {
+      for (const p of lv.fixed) used.add(p.part);
+      for (const t of lv.tray) used.add(t.part);
+    }
+    return { skin: room.id, accent: room.accent, paper: room.paper, icon: ROOM_PART[room.id], parts: order.filter((k) => used.has(k)) };
+  });
 }
 
 /** A room's front-page picture: its own things laid out on its own paper. */
@@ -782,6 +809,7 @@ function startLevel(i: number, custom?: Level, start: Placement[] = []) {
   $('won').classList.add('hidden');
   const slow = game?.slow ?? false;
   game = new Game($<HTMLCanvasElement>('stage'), level, start);
+  if (i === -1 || i === -3) game.sets = traySets(i === -3);
   const room = custom || i < 0 ? undefined : roomOf(i);
   if (room) { game.paper = room.paper; game.skin = room.id; }
   // Home goes back to the room this level is in (made and shared puzzles live in the puzzle maker).
