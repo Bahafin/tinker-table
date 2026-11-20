@@ -221,6 +221,16 @@ export class Game {
     return this.level.id === 'toybox' && this.mode === 'build' && this.placements.length >= 1;
   }
 
+  /** Toy box and puzzle maker: take everything off the table (the tray has more). */
+  clearAll() {
+    if (this.mode !== 'build' || !this.placements.length) return;
+    this.placements = [];
+    this.selected = null;
+    this.guess = [];
+    sfx.whoosh();
+    this.changed();
+  }
+
   startMaking() {
     if (!this.canMake) return;
     this.selected = null;

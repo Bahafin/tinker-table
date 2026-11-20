@@ -706,6 +706,7 @@ function drawGoalPic(level: Level) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const w = c.width / dpr, h = c.height / dpr;
   ctx.clearRect(0, 0, w, h);
+  if (level.id === 'maker' && game) { drawMakeGoal(game); return; }
   if (!level.goal) {
     (['ball', 'domino', 'balloon'] as PartKind[]).forEach((k, i) => drawIcon(ctx, k, w * (0.2 + i * 0.3), h / 2, h * 0.75));
     return;
@@ -729,6 +730,7 @@ function drawGoalPic(level: Level) {
 }
 
 /** While making a puzzle, the goal picture fills in as the goal is picked: ? → ?, then ball → ?, then ball → basket. */
+/** The maker's goal picture: "? → ?" while building, filling in as the goal is picked. */
 function drawMakeGoal(g: Game) {
   const c = $<HTMLCanvasElement>('goal-pic');
   const dpr = 2;
@@ -738,7 +740,7 @@ function drawMakeGoal(g: Game) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const w = c.width / dpr, h = c.height / dpr;
   ctx.clearRect(0, 0, w, h);
-  const m = g.making!;
+  const m = g.making ?? { step: 'build', object: null, target: null };
   const slot = (x: number, kind: PartKind | null, active: boolean) => {
     if (kind) {
       if (kind === 'pulley') drawIcon(ctx, kind, x, h * 0.82, h * 1.25);
@@ -774,10 +776,18 @@ function syncButtons() {
   hint.classList.toggle('ready', game.hintReady);
   $('btn-save').classList.toggle('hidden', game.level.id !== 'toybox' || run);
   $('btn-save').toggleAttribute('disabled', !game.canSave);
-  $('btn-make').classList.toggle('hidden', !(game.canMake || making));
+  // The puzzle maker shows its star button all along: faded until there's a machine to make into a puzzle.
+  const maker = game.level.id === 'maker';
+  $('btn-make').classList.toggle('hidden', !maker || run);
+  $('btn-make').toggleAttribute('disabled', !game.canMake && !making);
+  $('btn-make').classList.toggle('ready', game.canMake && !making);
   $('btn-make').setAttribute('aria-pressed', String(making));
+  const free = game.level.id === 'toybox' || maker;
+  $('btn-clear').classList.toggle('hidden', !free || run || making);
+  $('btn-clear').toggleAttribute('disabled', !game.placements.length);
+  if (!game.placements.length) $('btn-clear').classList.remove('sure');
   $('btn-make-done').classList.toggle('hidden', !(making && game.making!.step === 'pins'));
-  if (making) drawMakeGoal(game);
+  if (making || maker) drawMakeGoal(game);
   else if (madeGoalShown) drawGoalPic(game.level);
   madeGoalShown = making;
   if (game.mode !== 'won') {
@@ -850,6 +860,7 @@ function startLevel(i: number, custom?: Level, start: Placement[] = []) {
   const slow = game?.slow ?? false;
   game = new Game($<HTMLCanvasElement>('stage'), level, start);
   if (i === -1 || i === -3) game.sets = traySets(i === -3);
+  if (i === -3) game.paper = MAKER_PAPER;
   const room = custom || i < 0 ? undefined : roomOf(i);
   if (room) { game.paper = room.paper; game.skin = room.id; }
   // Home goes back to the room this level is in (made and shared puzzles live in the puzzle maker).
@@ -907,6 +918,22 @@ $('btn-save').onclick = () => {
   b.classList.remove('kept');
   void b.offsetWidth;
   b.classList.add('kept');
+};
+// Clearing the table takes two taps: the first one asks (the bin turns red and wiggles).
+let clearTimer = 0;
+$('btn-clear').onclick = () => {
+  const b = $('btn-clear');
+  if (!game) return;
+  if (!b.classList.contains('sure')) {
+    b.classList.add('sure');
+    sfx.nope();
+    clearTimeout(clearTimer);
+    clearTimer = window.setTimeout(() => b.classList.remove('sure'), 2500);
+    return;
+  }
+  clearTimeout(clearTimer);
+  b.classList.remove('sure');
+  game.clearAll();
 };
 $('btn-guess').onclick = () => game?.togglePencil();
 $('btn-slow').onclick = () => { if (game) { game.slow = !game.slow; syncButtons(); } };
