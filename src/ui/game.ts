@@ -707,8 +707,9 @@ export class Game {
         if (!last || Math.hypot(b.x - last.x, b.y - last.y) > 0.1) this.trail.push({ x: b.x, y: b.y });
       }
       for (const ev of s.events) {
-        if (ev.type === 'pop') this.bangs.push({ x: ev.x, y: ev.y, t: this.t });
+        if (ev.type === 'pop' || (ev.type === 'note' && ev.note === 'bell')) this.bangs.push({ x: ev.x, y: ev.y, t: this.t });
         if (ev.type === 'clack') sfx.clack(ev.strength);
+        else if (ev.type === 'note') sfx.note(ev.note);
         else sfx[ev.type]();
       }
       s.events = [];
@@ -741,7 +742,9 @@ export class Game {
     this.wonAt = this.t;
     this.restoreSlow();
     sfx.chime();
-    const target = this.sim!.byId(this.level.goal!.target)!.bodies[0].getPosition();
+    // Confetti bursts from the target, or (for a tune) from the last part that played.
+    const g = this.level.goal!;
+    const target = g.type === 'reach' ? this.sim!.byId(g.target)!.bodies[0].getPosition() : this.lastNoteAt();
     const colors = [PAPER.tomato, PAPER.mustard, PAPER.teal, PAPER.sky, PAPER.leaf];
     for (let i = 0; i < 70; i++) {
       const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.2;
@@ -1014,6 +1017,13 @@ export class Game {
   private getPreview() {
     if (!this.preview) this.preview = new Sim([...this.fixed, ...this.placements], this.level.goal);
     return this.preview;
+  }
+
+  /** Where the most recent note was played (the middle of the table if none was). */
+  private lastNoteAt() {
+    let best: RuntimePart | null = null;
+    for (const rp of this.sim?.parts ?? []) if ((rp.state.hit ?? 0) > (best?.state.hit ?? 0)) best = rp;
+    return best ? best.bodies[0].getPosition() : { x: WORLD_W / 2, y: WORLD_H / 2 };
   }
 
   private renderBangs(ctx: CanvasRenderingContext2D) {

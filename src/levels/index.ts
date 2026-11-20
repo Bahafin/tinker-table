@@ -49,6 +49,16 @@ import l47 from './47-boing-can.json';
 import l48 from './48-toaster-belt.json';
 import l49 from './49-car-jump.json';
 import l50 from './50-snip-boing.json';
+import l51 from './51-first-notes.json';
+import l52 from './52-drum-jump.json';
+import l53 from './53-alarm-bell.json';
+import l54 from './54-zigzag-song.json';
+import l55 from './55-boom-ding.json';
+import l56 from './56-fling-ring.json';
+import l57 from './57-xylophone-bridge.json';
+import l58 from './58-hamster-song.json';
+import l59 from './59-toaster-tune.json';
+import l60 from './60-grand-concert.json';
 import { ALL_PARTS, TOY_PARTS } from '../sim/parts';
 
 /**
@@ -59,15 +69,17 @@ import { ALL_PARTS, TOY_PARTS } from '../sim/parts';
  */
 export const LEVELS = [
   // Workshop
-  l6, l34, l11, l1, l46, l10, l13, l16, l36, l35,
+  l6, l34, l1, l46, l10, l13, l16, l36, l3, l35,
   // Playroom
-  l31, l8, l5, l20, l3, l12, l49, l17, l32, l33,
+  l31, l11, l8, l5, l20, l12, l49, l17, l32, l33,
   // Attic
-  l43, l4, l2, l44, l22, l14, l15, l45, l50, l18,
+  l43, l4, l2, l44, l22, l14, l27, l45, l50, l18,
   // Kitchen
-  l37, l9, l7, l48, l38, l23, l21, l26, l39, l19,
+  l37, l9, l7, l48, l38, l23, l21, l26, l39, l30,
   // Garden
-  l40, l42, l47, l41, l24, l27, l28, l25, l29, l30,
+  l40, l42, l47, l15, l41, l24, l28, l25, l29, l19,
+  // Music room
+  l51, l52, l53, l55, l56, l54, l58, l57, l59, l60,
 ] as Level[];
 
 /**
@@ -82,6 +94,7 @@ export const ROOMS: Room[] = [
   { id: 'attic', name: 'Attic', first: 20, count: 10, paper: '#ece7f1', accent: '#3d4a73' },
   { id: 'kitchen', name: 'Kitchen', first: 30, count: 10, paper: '#f7e7dc', accent: '#e5583f' },
   { id: 'garden', name: 'Garden', first: 40, count: 10, paper: '#edf1dc', accent: '#7cae4e' },
+  { id: 'music', name: 'Music room', first: 50, count: 10, paper: '#f6e9ef', accent: '#b5527f' },
 ];
 /**
  * Each room draws some parts as its own things (see render/skins.ts), so the spoken goal

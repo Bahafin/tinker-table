@@ -1,0 +1,59 @@
+{
+  "id": "55-boom-ding",
+  "voice": "Boom, then ding! Bounce the ball off the drum and up into the bell.",
+  "difficulty": 3.93,
+  "goal": {
+    "type": "tune",
+    "object": "ball1",
+    "notes": [
+      "drum",
+      "bell"
+    ]
+  },
+  "fixed": [
+    {
+      "part": "shortramp",
+      "x": 2,
+      "y": 3,
+      "rot": 15
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 1.5,
+      "y": 2.4
+    },
+    {
+      "part": "block",
+      "x": 9,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 9,
+      "y": 8.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "drum",
+      "count": 1
+    },
+    {
+      "part": "bell",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "drum",
+      "x": 5,
+      "y": 9.5
+    },
+    {
+      "part": "bell",
+      "x": 7,
+      "y": 6
+    }
+  ]
+}

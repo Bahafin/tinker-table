@@ -1,7 +1,7 @@
 {
   "id": "02-dominoes",
   "voice": "Stand one domino on each stepping stone, so they knock the ball into the basket!",
-  "difficulty": 3.1,
+  "difficulty": 2.83,
   "goal": {
     "type": "reach",
     "object": "ball1",

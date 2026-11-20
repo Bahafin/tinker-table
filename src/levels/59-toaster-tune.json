@@ -1,0 +1,59 @@
+{
+  "id": "59-toaster-tune",
+  "voice": "Ding, red, boom! Pop the ball up from the toaster into the bell, then down the red bar onto the drum.",
+  "difficulty": 6.04,
+  "goal": {
+    "type": "tune",
+    "object": "ball1",
+    "notes": [
+      "bell",
+      "c",
+      "drum"
+    ]
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 3,
+      "y": 1
+    },
+    {
+      "part": "xylo-c",
+      "x": 5.5,
+      "y": 7.5,
+      "rot": 30
+    }
+  ],
+  "tray": [
+    {
+      "part": "toaster",
+      "count": 1
+    },
+    {
+      "part": "bell",
+      "count": 1
+    },
+    {
+      "part": "drum",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "toaster",
+      "x": 3,
+      "y": 9.5
+    },
+    {
+      "part": "bell",
+      "x": 5,
+      "y": 6
+    },
+    {
+      "part": "drum",
+      "x": 9,
+      "y": 9
+    }
+  ]
+}

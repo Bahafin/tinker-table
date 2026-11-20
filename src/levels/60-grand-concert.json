@@ -1,0 +1,96 @@
+{
+  "id": "60-grand-concert",
+  "voice": "The grand concert! The car plays red and yellow, the bell wakes the hamster, and the hamster bangs the drum.",
+  "difficulty": 8.66,
+  "goal": {
+    "type": "tune",
+    "object": "car1",
+    "notes": [
+      "c",
+      "e",
+      "bell",
+      "drum"
+    ]
+  },
+  "fixed": [
+    {
+      "part": "ramp",
+      "x": 2.75,
+      "y": 4,
+      "rot": 0
+    },
+    {
+      "part": "car",
+      "id": "car1",
+      "x": 2,
+      "y": 3.5
+    },
+    {
+      "part": "ramp",
+      "x": 8.75,
+      "y": 4,
+      "rot": 0
+    },
+    {
+      "part": "ball",
+      "id": "ball2",
+      "x": 9.9,
+      "y": 3.5
+    },
+    {
+      "part": "drum",
+      "x": 5,
+      "y": 9.5
+    },
+    {
+      "part": "basket",
+      "x": 9,
+      "y": 7.6
+    }
+  ],
+  "tray": [
+    {
+      "part": "xylo-c",
+      "count": 1
+    },
+    {
+      "part": "xylo-d",
+      "count": 1
+    },
+    {
+      "part": "xylo-e",
+      "count": 1
+    },
+    {
+      "part": "bell",
+      "count": 1
+    },
+    {
+      "part": "hamster",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "xylo-c",
+      "x": 5,
+      "y": 4
+    },
+    {
+      "part": "xylo-e",
+      "x": 6.5,
+      "y": 4
+    },
+    {
+      "part": "bell",
+      "x": 12,
+      "y": 5.5
+    },
+    {
+      "part": "hamster",
+      "x": 10.5,
+      "y": 9.5,
+      "rot": 180
+    }
+  ]
+}

@@ -26,7 +26,7 @@ describe('share codes', () => {
     expect(back.solution).toEqual(made.solution);
     expect(back.tray).toEqual([{ part: 'ramp', count: 1 }]);
     expect(back.fixed[0].id).toBe(back.goal!.object);
-    expect(back.fixed[2].id).toBe(back.goal!.target);
+    expect(back.fixed[2].id).toBe((back.goal as { target: string }).target);
   });
 
   test('a decoded puzzle plays the same', () => {
@@ -35,8 +35,8 @@ describe('share codes', () => {
     expect(run(back)).toBe(run(made));
   });
 
-  test('every built-in level fits in a short code', () => {
-    for (const l of LEVELS) {
+  test('every built-in reach level fits in a short code (tunes cannot be made in the maker)', () => {
+    for (const l of LEVELS.filter((x) => x.goal?.type === 'reach')) {
       const code = encodeLevel(l);
       expect(code.length).toBeLessThan(2000);
       expect(decodeLevel(code)).not.toBeNull();

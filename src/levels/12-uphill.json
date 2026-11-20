@@ -11,44 +11,45 @@
     {
       "part": "ball",
       "id": "ball1",
-      "x": 2,
+      "x": 14,
       "y": 6
     },
     {
       "part": "hamster",
       "id": "hamster1",
+      "x": 14,
+      "y": 9.5,
+      "rot": 180
+    },
+    {
+      "part": "block",
+      "x": 5,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 4,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 3,
+      "y": 9.5
+    },
+    {
+      "part": "block",
       "x": 2,
       "y": 9.5
     },
     {
       "part": "block",
-      "x": 11,
-      "y": 9.5
-    },
-    {
-      "part": "block",
-      "x": 12,
-      "y": 9.5
-    },
-    {
-      "part": "block",
-      "x": 13,
-      "y": 9.5
-    },
-    {
-      "part": "block",
-      "x": 14,
-      "y": 9.5
-    },
-    {
-      "part": "block",
-      "x": 15,
+      "x": 1,
       "y": 9.5
     },
     {
       "part": "cheese",
       "id": "cheese1",
-      "x": 14.5,
+      "x": 1.5,
       "y": 8.6
     }
   ],
@@ -61,9 +62,9 @@
   "solution": [
     {
       "part": "ramp",
-      "x": 9,
+      "x": 7,
       "y": 9.5,
-      "rot": -15
+      "rot": 15
     }
   ]
 }

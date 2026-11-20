@@ -10,6 +10,7 @@ const KINDS: PartKind[] = [
   'ball', 'heavyball', 'ramp', 'shortramp', 'block', 'basket', 'star', 'domino', 'seesaw',
   'balloon', 'pin', 'fan', 'spring', 'pulley', 'hamster', 'conveyor', 'cheese',
   'car', 'hammer', 'toaster', 'can', 'flower', 'rope', 'scissors',
+  'xylo-c', 'xylo-d', 'xylo-e', 'xylo-g', 'xylo-a', 'bell', 'drum',
 ];
 export const GOAL_OBJECTS = new Set<PartKind>(['ball', 'heavyball', 'balloon', 'hamster', 'pulley', 'car', 'can', 'rope']);
 export const GOAL_TARGETS = new Set<PartKind>(['basket', 'star', 'cheese', 'flower']);
@@ -48,6 +49,7 @@ function fromBase64Url(s: string) {
  */
 export function encodeLevel(level: Level): string {
   const g = level.goal!;
+  if (g.type !== 'reach') throw new Error('only reach goals can be shared');
   const fixed = level.fixed;
   const wire: Wire = {
     v: VERSION,

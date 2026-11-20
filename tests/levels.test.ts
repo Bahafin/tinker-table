@@ -75,6 +75,27 @@ describe('rooms', () => {
     expect(new Set(LEVELS.map(key)).size).toBe(LEVELS.length);
   });
 
+  test('no two levels look and play the same', () => {
+    // Same thing travelling, same target, starting and ending in nearly the same spots, and
+    // solved with the same kinds of parts: that's the same level twice, even in another room.
+    const at = (l: Level, id: string) => l.fixed.find((p) => p.id === id)!;
+    const ends = (l: Level) => {
+      const g = l.goal!;
+      const o = at(l, g.object);
+      return [o, g.type === 'reach' ? at(l, g.target) : o];
+    };
+    const parts = (l: Level) => (l.solution ?? []).map((p) => p.part).sort().join(',');
+    for (let i = 0; i < LEVELS.length; i++) {
+      for (let j = i + 1; j < LEVELS.length; j++) {
+        const [a, b] = [LEVELS[i], LEVELS[j]];
+        if (a.goal!.type !== b.goal!.type || parts(a) !== parts(b)) continue;
+        const [ao, at2] = ends(a), [bo, bt] = ends(b);
+        const close = (p: Placement, q: Placement) => p.part === q.part && Math.hypot(p.x - q.x, p.y - q.y) < 1.5;
+        expect(close(ao, bo) && close(at2, bt), `${a.id} and ${b.id} look the same`).toBe(false);
+      }
+    }
+  });
+
   test('get harder along each room, and from room to room', async () => {
     const { ROOMS } = await import('../src/levels');
     const d = (i: number) => LEVELS[i].difficulty!;

@@ -1,0 +1,69 @@
+{
+  "id": "57-xylophone-bridge",
+  "voice": "Build a bridge that sings! Lay the bars across the gap so the car plays red, yellow, green.",
+  "difficulty": 5.96,
+  "goal": {
+    "type": "tune",
+    "object": "car1",
+    "notes": [
+      "c",
+      "e",
+      "g"
+    ]
+  },
+  "fixed": [
+    {
+      "part": "ramp",
+      "x": 2.75,
+      "y": 6,
+      "rot": 0
+    },
+    {
+      "part": "car",
+      "id": "car1",
+      "x": 2,
+      "y": 5.5
+    },
+    {
+      "part": "ramp",
+      "x": 10.25,
+      "y": 6,
+      "rot": 0
+    }
+  ],
+  "tray": [
+    {
+      "part": "xylo-c",
+      "count": 1
+    },
+    {
+      "part": "xylo-d",
+      "count": 1
+    },
+    {
+      "part": "xylo-e",
+      "count": 1
+    },
+    {
+      "part": "xylo-g",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "xylo-c",
+      "x": 5,
+      "y": 6
+    },
+    {
+      "part": "xylo-e",
+      "x": 6.5,
+      "y": 6
+    },
+    {
+      "part": "xylo-g",
+      "x": 8,
+      "y": 6
+    }
+  ]
+}

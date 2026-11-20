@@ -59,6 +59,11 @@ A calm chain-reaction puzzle game for ages 5–8 (younger children with a grown-
 | Flower | 0.9 × 1.2 | sensor, in a pot | A target: drops that reach it soak in, and it opens up as it drinks. The goal (can → flower) is reached at 6 drops. |
 | Rope | hook + ball Ø 0.7 on a 2.5 rope | static hook, dynamic ball, rope joint | A ball hanging from a hook. Turning it starts the ball raised to one side, so it swings when Go is pressed. As a goal object, the ball counts. A ball left swinging on an uncut rope stops counting as movement after 6 s, so a missed run still ends. The Attic's own part. |
 | Scissors | 0.9 × 0.6 | static sensor | Cuts any rope that touches its blades (anywhere along them), and pops balloons like a pin. Things pass through them. The Attic's own part. |
+| Xylophone bars | 1.5 × 0.2 | static, a little bouncy | Five colours, five notes (red C, orange D, yellow E, green G, blue A: a pentatonic scale, so any order sounds nice). A bar plays its note when something hits it faster than 0.8 cells/s, at most once per 0.15 s, so a ball resting on it stays quiet. It flashes as it plays. Turns in 15° steps. The Music room's part. |
+| Bell | 0.9 × 0.9 | static | Rings when hit and swings a little. Like a pop, the ring wakes a sleeping hamster within 5 cells, and a dotted ring shows how far it reaches. |
+| Drum | 1.2 × 0.8 | static, bouncy skin | Booms when hit, and bounces what lands on it back up (restitution 0.85). |
+
+**Tune goals.** A music level's goal can be a tune instead of a target: the notes played, in order, must end with the tune (the same note twice in a row counts once). The goal picture shows the tune as the parts that play it. Tunes can't be made in the puzzle maker yet.
 
 Parts that only face left or right (hamster, conveyor, car, hammer, toaster, watering can) get one ↔ flip button instead of the two turn buttons.
 
@@ -164,6 +169,21 @@ Added with the move to ten levels a room, one more for each room's own part:
 49. **Car jump** (Playroom): a gap wider than one plank. A ramp tilted up at the edge lets the car jump across to the star.
 50. **Snip and boing** (Attic): snip the rope, and a spring where the marble lands bounces it over a wall into the trunk. Both parts are needed.
 
+The Music room, after the Garden (the hardest room):
+
+51. **First notes:** the ball rolls off a ramp; put the red bar, then the yellow one, where it bounces, to play two notes.
+52. **Drum jump:** a drum where the ball lands bounces it over a wall into the basket.
+53. **Alarm bell:** the ball rolls away from the sleeping hamster. Hang the bell in its path: the ring wakes him and he runs to the cheese.
+54. **Zigzag song:** three bars, each tilted the other way, bounce a falling ball from side to side: red, yellow, green. One bar in the tray is spare.
+55. **Boom, then ding:** a drum where the ball lands and a bell where the bounce goes.
+56. **Fling and ring:** drop the heavy ball on the see-saw to fling the little one up into the bell; then boom on the drum.
+57. **Xylophone bridge:** lay three of the four bars across a gap in the right order; the car plays them as it drives over.
+58. **Hamster song:** the bell wakes the hamster, who pushes his ball off the shelf down two bars: ding, green, yellow.
+59. **Toaster tune:** catch the falling ball in the toaster; it pops up into the bell, rolls down the red bar and lands on the drum. The bell must stay out of the way of the falling ball.
+60. **Grand concert:** the car plays red and yellow across the bridge and pushes a ball onto the bell; the ring wakes the hamster (placed facing the drum), who runs and plays the drum. A basket catches the ball so only the hamster can reach the drum.
+
+**Mirrored to look different:** some levels that looked too like another were flipped left to right (the machine runs right to left): 09, 12, 15, 17, 32, 44, 46 and 48. A test now fails if two levels have the same goal, nearly the same start and end spots, and the same kinds of parts to place.
+
 Tried and dropped: a fan blowing a ball uphill (its reach is too short to climb a real slope), a falling domino used as a bridge (too chaotic: random placements won), the hammer knocking a ball uphill (a whacked ball rolls fast but climbs less than one cell), and a car stopping suddenly to throw its ball forward (the cab holds the ball in).
 
 ### Difficulty order
@@ -171,13 +191,13 @@ Every level has a `difficulty` score in its file. It adds two things:
 - **How many ideas the child has to put together** (rated by hand, 1–4): one step like "a ramp guides the ball" scores 1, a chain of three or four cause-and-effect steps scores 3–4, and a turn or flip that has to be worked out adds a little.
 - **How exact the answer is**, measured by `scripts/level-stats.test.ts`. Each part of the solution is moved over the whole table at every angle, with the other parts left in place, and the share of spots that still work is counted. Fewer working spots means harder. Spare parts in the tray and more kinds of things on the table add a little too.
 
-The score is the first number plus half the second. The rooms are then laid out so that, checked by a test, each room's levels get harder from first to last, and each room's Nth level is harder than the previous room's Nth level. That needed the room order Workshop, Playroom, Attic, Kitchen, Garden: the toy car's first level is so easy that the Playroom has to come second. The scores are a guide, not a promise; playtests should move levels that feel out of place.
+The score is the first number plus half the second. The rooms are then laid out so that, checked by a test, each room's levels get harder from first to last, and each room's Nth level is harder than the previous room's Nth level. That needed the room order Workshop, Playroom, Attic, Kitchen, Garden: the toy car's first level is so easy that the Playroom has to come second. The Music room comes last. Each room keeps its four own-part levels (all ten in the Music room); the general levels are shared out between the first five rooms so both rules hold, which moved six of them when the music levels were added. The scores are a guide, not a promise; playtests should move levels that feel out of place.
 
 ```bash
 STATS=46-belt-hammer,49-car-jump npx vitest run scripts/level-stats
 ```
 
-The front page is a **row of rooms you swipe along**, left to right in order of difficulty: five **rooms** of ten levels (Workshop, Playroom, Attic, Kitchen, Garden), then the **Toy box** and the **Puzzle maker** at the end.
+The front page is a **row of rooms you swipe along**, left to right in order of difficulty: six **rooms** of ten levels (Workshop, Playroom, Attic, Kitchen, Garden, Music room), then the **Toy box** and the **Puzzle maker** at the end.
 - One room sits big in the middle and the next one peeks in from the side, so a child can see there is more. Big round arrows on both sides do the same as a swipe.
 - Each room shows its own things, one dot per level (filled in when the level is done) and its **name as a word label**. When a room comes to rest in the middle the voice says its name, and tapping the name says it again.
 - Tapping the room in the middle opens it; tapping a peeking room brings it to the middle first.

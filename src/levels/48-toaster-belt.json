@@ -2,15 +2,59 @@
   "id": "48-toaster-belt",
   "voice": "Ding! The toaster pops the ball up high. Catch it with the belt, and carry it over the wall into the basket.",
   "difficulty": 3.85,
-  "goal": { "type": "reach", "object": "ball1", "target": "basket1" },
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
   "fixed": [
-    { "part": "ball", "id": "ball1", "x": 3, "y": 1 },
-    { "part": "toaster", "id": "toaster1", "x": 3, "y": 9.5, "rot": 0 },
-    { "part": "block", "x": 8, "y": 9.5 },
-    { "part": "block", "x": 8, "y": 8.5 },
-    { "part": "block", "x": 8, "y": 7.5 },
-    { "part": "basket", "id": "basket1", "x": 10, "y": 9.4 }
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 13,
+      "y": 1
+    },
+    {
+      "part": "toaster",
+      "id": "toaster1",
+      "x": 13,
+      "y": 9.5,
+      "rot": 180
+    },
+    {
+      "part": "block",
+      "x": 8,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 8,
+      "y": 8.5
+    },
+    {
+      "part": "block",
+      "x": 8,
+      "y": 7.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 6,
+      "y": 9.4
+    }
   ],
-  "tray": [{ "part": "conveyor", "count": 1 }],
-  "solution": [{ "part": "conveyor", "x": 6, "y": 6.5, "rot": 0 }]
+  "tray": [
+    {
+      "part": "conveyor",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "conveyor",
+      "x": 10,
+      "y": 6.5,
+      "rot": 180
+    }
+  ]
 }

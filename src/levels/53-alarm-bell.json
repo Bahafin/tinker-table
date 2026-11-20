@@ -1,0 +1,60 @@
+{
+  "id": "53-alarm-bell",
+  "voice": "Ding! The hamster needs an alarm clock. Hang the bell where the ball will hit it, so he wakes up and runs to the cheese.",
+  "difficulty": 3.52,
+  "goal": {
+    "type": "reach",
+    "object": "hamster1",
+    "target": "cheese1"
+  },
+  "fixed": [
+    {
+      "part": "ramp",
+      "x": 12,
+      "y": 2.5,
+      "rot": -15
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 13,
+      "y": 1.8
+    },
+    {
+      "part": "ramp",
+      "x": 7,
+      "y": 6.5,
+      "rot": -15
+    },
+    {
+      "part": "basket",
+      "x": 2.5,
+      "y": 9.4
+    },
+    {
+      "part": "hamster",
+      "id": "hamster1",
+      "x": 11,
+      "y": 9.5
+    },
+    {
+      "part": "cheese",
+      "id": "cheese1",
+      "x": 15,
+      "y": 9.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "bell",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "bell",
+      "x": 9,
+      "y": 5
+    }
+  ]
+}

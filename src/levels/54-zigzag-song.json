@@ -1,0 +1,66 @@
+{
+  "id": "54-zigzag-song",
+  "voice": "A zigzag song! Make the ball bounce from side to side: red, yellow, then green.",
+  "difficulty": 5.07,
+  "goal": {
+    "type": "tune",
+    "object": "ball1",
+    "notes": [
+      "c",
+      "e",
+      "g"
+    ]
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 8,
+      "y": 0.6
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 4,
+      "y": 9.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "xylo-c",
+      "count": 1
+    },
+    {
+      "part": "xylo-d",
+      "count": 1
+    },
+    {
+      "part": "xylo-e",
+      "count": 1
+    },
+    {
+      "part": "xylo-g",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "xylo-c",
+      "x": 8,
+      "y": 3,
+      "rot": -30
+    },
+    {
+      "part": "xylo-e",
+      "x": 6,
+      "y": 5,
+      "rot": 30
+    },
+    {
+      "part": "xylo-g",
+      "x": 8,
+      "y": 7,
+      "rot": -30
+    }
+  ]
+}

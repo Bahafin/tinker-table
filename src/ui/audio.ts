@@ -1,3 +1,5 @@
+import type { Note } from '../sim/types';
+
 let ac: AudioContext | null = null;
 let lastClack = 0;
 
@@ -72,7 +74,19 @@ export const sfx = {
   /** Scissors cutting a rope. */
   snip: () => { noise(0.04, 0.5, 'highpass', 3000); noise(0.05, 0.4, 'highpass', 2500); },
   hmm: () => { tone(330, 0.25, 'sine', 0.18); tone(262, 0.35, 'sine', 0.18, 0.22); },
+  /** A musical part: a wooden xylophone note, the bell, or the drum. */
+  note: (n: Note) => {
+    if (n === 'bell') { tone(1318, 1.4, 'sine', 0.22); tone(1318 * 2.76, 0.5, 'sine', 0.06); tone(1318 * 5.4, 0.25, 'sine', 0.03); return; }
+    if (n === 'drum') { tone(130, 0.35, 'sine', 0.55, 0, 50); noise(0.12, 0.3, 'lowpass', 400); return; }
+    const f = NOTE_HZ[n];
+    tone(f, 0.7, 'sine', 0.32);
+    tone(f * 4, 0.12, 'sine', 0.07);
+    tone(f * 10, 0.04, 'sine', 0.03);
+  },
 };
+
+/** The xylophone's five notes (C major pentatonic, so any order sounds nice). */
+export const NOTE_HZ: Record<'c' | 'd' | 'e' | 'g' | 'a', number> = { c: 523.25, d: 587.33, e: 659.25, g: 783.99, a: 880 };
 
 // ---------- voice ----------
 // Devices ship several voices; the default is usually the oldest, most robotic one.

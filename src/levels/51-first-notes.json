@@ -1,0 +1,51 @@
+{
+  "id": "51-first-notes",
+  "voice": "Play a little tune! Put the bars where the ball bounces: red, then yellow.",
+  "difficulty": 2.96,
+  "goal": {
+    "type": "tune",
+    "object": "ball1",
+    "notes": [
+      "c",
+      "e"
+    ]
+  },
+  "fixed": [
+    {
+      "part": "ramp",
+      "x": 3,
+      "y": 3,
+      "rot": 15
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 2,
+      "y": 2.3
+    }
+  ],
+  "tray": [
+    {
+      "part": "xylo-c",
+      "count": 1
+    },
+    {
+      "part": "xylo-e",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "xylo-c",
+      "x": 6,
+      "y": 4.5,
+      "rot": 15
+    },
+    {
+      "part": "xylo-e",
+      "x": 8,
+      "y": 5,
+      "rot": 15
+    }
+  ]
+}

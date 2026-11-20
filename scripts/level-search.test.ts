@@ -29,7 +29,7 @@ test.skipIf(!env.TUNE)('level search', () => {
     const ok = s.runHeadless();
     const o = s.byId(level.goal!.object)!;
     const b = Sim.goalBody(o).getPosition();
-    say(`${label}: ${ok ? 'SOLVED' : 'no'} after ${s.time.toFixed(1)}s, goal object at (${b.x.toFixed(2)}, ${b.y.toFixed(2)})`);
+    say(`${label}: ${ok ? 'SOLVED' : 'no'} after ${s.time.toFixed(1)}s, goal object at (${b.x.toFixed(2)}, ${b.y.toFixed(2)})${s.played.length ? ', notes ' + s.played.join(' ') : ''}`);
   };
   run('empty', fixed);
   if (level.solution && !env.FIX) run('solution', [...fixed, ...level.solution]);

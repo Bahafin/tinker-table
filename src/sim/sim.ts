@@ -1,6 +1,6 @@
 import { World, Vec2, Edge, Body, Circle, type Contact } from 'planck';
-import { PARTS, type RuntimePart } from './parts';
-import { WORLD_H, WORLD_W, type Goal, type Placement, type SimEvent } from './types';
+import { NOTE_OF, PARTS, type RuntimePart } from './parts';
+import { WORLD_H, WORLD_W, type Goal, type Note, type Placement, type SimEvent } from './types';
 
 export const DT = 1 / 60;
 const MAX_TIME = 25;
@@ -9,6 +9,9 @@ const FAN_REACH = 4.5;
 const FAN_FORCE = 14;
 /** How far away (cells) a sleeping hamster can hear a balloon pop. */
 export const HEAR_POP = 5;
+/** A musical part only plays for a hit faster than this (cells/s), and not twice within NOTE_GAP s. */
+const NOTE_SPEED = 0.8;
+const NOTE_GAP = 0.15;
 export const CONVEYOR_SPEED = 2.5;
 const HAMSTER_SPIN = 5;
 /** A released hammer's swing speed (rad/s) and strength. */
@@ -45,6 +48,9 @@ export class Sim {
   success = false;
   settled = false;
   events: SimEvent[] = [];
+  /** Notes played so far this run, in order, a note repeated straight away counted once (for tune goals). */
+  played: Note[] = [];
+  private tuneDone = false;
   private goalHeld = 0;
   private stillFor = 0;
   private toDestroy: RuntimePart[] = [];
@@ -125,6 +131,30 @@ export class Sim {
       if (x?.kind === 'hamster' && !x.state.on && yb.isDynamic()) {
         x.state.on = true;
         this.events.push({ type: 'squeak' });
+      }
+      // A musical part plays its note when something (not water) hits it properly:
+      // a ball just resting or rolling slowly along it doesn't keep ringing.
+      const note = x && NOTE_OF[x.kind];
+      if (note && yb.isDynamic() && !yt?.drop && yb.getLinearVelocity().length() > NOTE_SPEED
+        && this.time - (x.state.hitAt ?? -1) > NOTE_GAP) {
+        x.state.hitAt = this.time;
+        x.state.hit = globalThis.performance?.now() ?? 0;
+        const at = x.bodies[0].getPosition();
+        // A ball bouncing twice on one bar is still one note of the tune.
+        if (this.played[this.played.length - 1] !== note) this.played.push(note);
+        this.events.push({ type: 'note', note, x: at.x, y: at.y });
+        // The bell is loud enough to wake a hamster close by, like a pop.
+        if (note === 'bell') {
+          for (const h of this.parts) {
+            if (h.kind === 'hamster' && !h.state.on && Vec2.distance(h.bodies[0].getPosition(), at) <= HEAR_POP) {
+              h.state.on = true;
+              h.bodies[0].setAwake(true);
+              this.events.push({ type: 'squeak' });
+            }
+          }
+        }
+        const g = this.goal;
+        if (g?.type === 'tune' && this.played.length >= g.notes.length && g.notes.every((n, i) => n === this.played[this.played.length - g.notes.length + i])) this.tuneDone = true;
       }
     }
     const rel = a.getLinearVelocity().clone().sub(b.getLinearVelocity()).length();
@@ -239,6 +269,7 @@ export class Sim {
 
   goalReached(): boolean {
     if (!this.goal) return false;
+    if (this.goal.type === 'tune') return this.tuneDone;
     const obj = this.byId(this.goal.object);
     const target = this.byId(this.goal.target);
     // A flower is reached by watering it, not by getting there.

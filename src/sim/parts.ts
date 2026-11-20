@@ -1,5 +1,5 @@
 import { World, Body, Box, Circle, Polygon, RevoluteJoint, PulleyJoint, RopeJoint, Vec2, type Joint } from 'planck';
-import type { PartKind, Placement } from './types';
+import type { Note, PartKind, Placement } from './types';
 
 const DEG = Math.PI / 180;
 /** Toy car wheel speed (rad/s) and motor strength. */
@@ -19,7 +19,8 @@ export interface RuntimePart {
   zone?: { x0: number; y0: number; x1: number; y1: number };
   /** on: fan blowing / hamster awake. dir: +1 right, -1 left (conveyor, hamster). */
   /** load: toaster wait, watering can pour time, or drops a flower has drunk. drops: drops poured so far. */
-  state: { on?: boolean; popped?: boolean; dir?: number; load?: number; drops?: number };
+  /** hit: when a musical part last played (performance.now ms; only for drawing it ring). */
+  state: { on?: boolean; popped?: boolean; dir?: number; load?: number; drops?: number; hit?: number; hitAt?: number };
   /** The hammer's hinge, held still until something bumps the hammer. */
   brake?: RevoluteJoint;
   /** A rope part's rope, until the scissors cut it. */
@@ -341,11 +342,56 @@ export const PARTS: Record<PartKind, PartDef> = {
       rp.zone = { x0: -0.9, y0: -0.8, x1: 0.9, y1: 0.8 };
     },
   },
+  // Musical parts: each plays its note when something hits it (see Sim.onContact).
+  'xylo-c': xylo(),
+  'xylo-d': xylo(),
+  'xylo-e': xylo(),
+  'xylo-g': xylo(),
+  'xylo-a': xylo(),
+  bell: {
+    // A bell hanging from a hook: rings when hit, and wakes a sleeping hamster nearby.
+    hit: { w: 0.45, h: 0.5 },
+    rotatable: false,
+    build(world, p, rp) {
+      const b = staticBody(world, { ...p, rot: 0 });
+      b.createFixture(new Polygon([new Vec2(-0.42, 0.4), new Vec2(0.42, 0.4), new Vec2(0.24, -0.3), new Vec2(-0.24, -0.3)]), { friction: 0.3, restitution: 0.4 });
+      rp.bodies.push(b);
+    },
+  },
+  drum: {
+    // A drum: a bouncy skin on top, so whatever lands on it bounces up again with a boom.
+    hit: { w: 0.6, h: 0.45 },
+    rotatable: false,
+    build(world, p, rp) {
+      const b = staticBody(world, { ...p, rot: 0 });
+      b.createFixture(new Box(0.6, 0.4), { friction: 0.4, restitution: 0.85 });
+      rp.bodies.push(b);
+    },
+  },
+};
+
+/** A xylophone bar: a short plank that rings its note. Balls bounce a little off it. */
+function xylo(): PartDef {
+  return {
+    hit: { w: 0.75, h: 0.3 },
+    rotatable: true,
+    build(world, p, rp) {
+      const b = staticBody(world, p);
+      b.createFixture(new Box(0.75, 0.1), { friction: 0.3, restitution: 0.35 });
+      rp.bodies.push(b);
+    },
+  };
+}
+
+/** The note each musical part plays. */
+export const NOTE_OF: Partial<Record<PartKind, Note>> = {
+  'xylo-c': 'c', 'xylo-d': 'd', 'xylo-e': 'e', 'xylo-g': 'g', 'xylo-a': 'a', bell: 'bell', drum: 'drum',
 };
 
 export const ALL_PARTS: PartKind[] = [
   'ball', 'heavyball', 'ramp', 'shortramp', 'block', 'domino', 'seesaw',
   'balloon', 'pin', 'fan', 'spring', 'conveyor', 'hamster', 'car', 'hammer', 'toaster', 'can', 'rope', 'scissors', 'pulley', 'basket', 'star', 'cheese', 'flower',
+  'xylo-c', 'xylo-d', 'xylo-e', 'xylo-g', 'xylo-a', 'bell', 'drum',
 ];
 
 /** Parts offered in the toy box (goal-only parts like the star and cheese are left out). */

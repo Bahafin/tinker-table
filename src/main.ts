@@ -1,7 +1,7 @@
 import './style.css';
 import { LEVELS, MAKER_BOX, ROOMS, roomOf, roomVoice, TOY_BOX, type Room } from './levels';
 import { Sim } from './sim/sim';
-import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from './sim/types';
+import { WORLD_H, WORLD_W, type Level, type Note, type PartKind, type Placement } from './sim/types';
 import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow, setSkin } from './render/draw';
 import { Game, drawIcon, type TraySet } from './ui/game';
 import { ALL_PARTS, TOY_PARTS } from './sim/parts';
@@ -41,6 +41,7 @@ const ROOM_ICONS: Record<string, string> = {
   garden: '<circle cx="38" cy="10" r="5" class="petal" stroke-width="2"/><path d="M22 42V26"/><path d="M22 36c-6 0-9-3-10-7 5 0 9 2 10 7z" class="leaf" stroke-width="2"/><g stroke-width="2"><circle cx="22" cy="12" r="5.5" class="pink"/><circle cx="15" cy="19" r="5.5" class="pink"/><circle cx="29" cy="19" r="5.5" class="pink"/><circle cx="22" cy="26" r="5.5" class="pink"/><circle cx="22" cy="19" r="4.5" class="petal"/></g>',
   kitchen: '<path d="M9 22h24v9a7 7 0 0 1-7 7H16a7 7 0 0 1-7-7z" class="accent"/><path d="M33 25h8" /><path d="M15 16c0-3 3-3 3-6M22 16c0-3 3-3 3-6" />',
   playroom: '<rect x="8" y="26" width="14" height="14" rx="2" class="accent"/><rect x="24" y="26" width="14" height="14" rx="2" class="petal"/><rect x="16" y="11" width="14" height="14" rx="2" class="leaf"/>',
+  music: '<path d="M18 34V12l20-5v22"/><ellipse cx="13.5" cy="34.5" rx="5.5" ry="4.5" class="accent"/><ellipse cx="33.5" cy="29.5" rx="5.5" ry="4.5" class="accent"/><path d="M18 18l20-5"/>',
   attic: '<path d="M30 9a13 13 0 1 0 9 22A11 11 0 0 1 30 9z" class="accent"/><path d="M13 11l1.5 3 3.2.5-2.3 2.2.6 3.2-3-1.6-2.9 1.6.6-3.2-2.3-2.2 3.2-.5z" class="petal"/>',
 };
 
@@ -94,8 +95,11 @@ function thumb(level: Level, toy = false, withSolution = false, room?: Room): HT
   return c;
 }
 
+/** The part that plays each note, for drawing a tune. */
+const NOTE_PART: Record<Note, PartKind> = { c: 'xylo-c', d: 'xylo-d', e: 'xylo-e', g: 'xylo-g', a: 'xylo-a', bell: 'bell', drum: 'drum' };
+
 /** Each room's own part, shown on its tab in the toy box tray. */
-const ROOM_PART: Record<string, PartKind> = { workshop: 'hammer', playroom: 'car', attic: 'scissors', kitchen: 'toaster', garden: 'can' };
+const ROOM_PART: Record<string, PartKind> = { workshop: 'hammer', playroom: 'car', attic: 'scissors', kitchen: 'toaster', garden: 'can', music: 'bell' };
 
 /**
  * The toy box tray's sets: one per room, with every part used in that room's levels, in the
@@ -135,6 +139,12 @@ function roomScene(room: Room): HTMLCanvasElement {
   if (room.id === 'attic') { things[2] = ['rope', 10.4, 3.4, 6.4]; things[1] = ['scissors', 5, 2.4, 2.4]; }
   if (room.id === 'kitchen') things[2] = ['toaster', 10.2, 3.6, 3.2];
   if (room.id === 'workshop') things[2] =['hammer', 10.3, 3.6, 5.6];
+  if (room.id === 'music') {
+    things[2] = ['bell', 10.4, 3.4, 2.8];
+    things[4] = ['drum', 2.8, 7.8, 3.2];
+    things[5] = ['xylo-c', 6.2, 6.6, 3];
+    things[6] = ['xylo-g', 8.4, 7.8, 3];
+  }
   for (const [k, x, y, size] of things) drawIcon(ctx, k, x * s, y * s, size * s);
   setSkin('');
   return c;
@@ -698,6 +708,12 @@ function drawGoalPic(level: Level) {
   ctx.clearRect(0, 0, w, h);
   if (!level.goal) {
     (['ball', 'domino', 'balloon'] as PartKind[]).forEach((k, i) => drawIcon(ctx, k, w * (0.2 + i * 0.3), h / 2, h * 0.75));
+    return;
+  }
+  if (level.goal.type === 'tune') {
+    // A tune: its notes in order, as the parts that play them.
+    const n = level.goal.notes.length;
+    level.goal.notes.forEach((note, i) => drawIcon(ctx, NOTE_PART[note], w * (i + 0.5) / n, h / 2, Math.min(h * 0.95, (w / n) * 0.95)));
     return;
   }
   const kindOf = (id: string) => level.fixed.find((p) => p.id === id)!.part;

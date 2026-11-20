@@ -28,6 +28,13 @@ const SOLID: Record<PartKind, { w: number; h: number; dy?: number }> = {
   // Only the hanging ball is solid; the rope itself doesn't stop parts being placed.
   rope: { w: 0.35, h: 0.35, dy: 2.5 },
   scissors: { w: 0.4, h: 0.25 },
+  'xylo-c': { w: 0.75, h: 0.1 },
+  'xylo-d': { w: 0.75, h: 0.1 },
+  'xylo-e': { w: 0.75, h: 0.1 },
+  'xylo-g': { w: 0.75, h: 0.1 },
+  'xylo-a': { w: 0.75, h: 0.1 },
+  bell: { w: 0.42, h: 0.4 },
+  drum: { w: 0.6, h: 0.4 },
 };
 
 const SHRINK = 0.03;

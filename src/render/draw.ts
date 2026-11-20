@@ -392,7 +392,67 @@ const DRAW: Record<string, (ctx: Ctx, rp: RuntimePart, t: number) => void> = {
       });
     });
   },
+  'xylo-c': xyloBar('#e5583f'),
+  'xylo-d': xyloBar('#ef8a3c'),
+  'xylo-e': xyloBar('#e9b23c'),
+  'xylo-g': xyloBar('#7cb45a'),
+  'xylo-a': xyloBar('#6db3e0'),
+  bell(ctx, rp) {
+    const k = ringing(rp);
+    withBody(ctx, rp.bodies[0], () => {
+      noShadow(ctx, () => line(ctx, 0, -0.5, 0, -0.32, PAPER.ink, 0.05));
+      // It swings a little while it rings.
+      ctx.rotate(Math.sin(k * 30) * 0.25 * k);
+      ctx.beginPath();
+      ctx.moveTo(-0.24, -0.3); ctx.quadraticCurveTo(0, -0.42, 0.24, -0.3);
+      ctx.quadraticCurveTo(0.3, 0.1, 0.42, 0.36); ctx.lineTo(-0.42, 0.36);
+      ctx.quadraticCurveTo(-0.3, 0.1, -0.24, -0.3);
+      paper(ctx, k > 0 ? '#f0cf6a' : PAPER.brass);
+      noShadow(ctx, () => {
+        rrect(ctx, -0.44, 0.3, 0.88, 0.1, 0.04); paper(ctx, '#a8832f');
+        ctx.beginPath(); ctx.arc(0, 0.45, 0.08, 0, Math.PI * 2); paper(ctx, '#a8832f');
+        ctx.beginPath(); ctx.ellipse(-0.1, -0.1, 0.05, 0.14, 0.2, 0, Math.PI * 2); paper(ctx, '#f6e3a3');
+      });
+    });
+  },
+  drum(ctx, rp) {
+    const k = ringing(rp);
+    withBody(ctx, rp.bodies[0], () => {
+      rrect(ctx, -0.6, -0.3, 1.2, 0.7, 0.08); paper(ctx, PAPER.tomato);
+      noShadow(ctx, () => {
+        ctx.beginPath();
+        for (let i = 0; i <= 6; i++) ctx.lineTo(-0.55 + i * 0.183, i % 2 ? 0.3 : -0.22);
+        ctx.strokeStyle = PAPER.cream; ctx.lineWidth = 0.04; ctx.stroke();
+        rrect(ctx, -0.62, 0.3, 1.24, 0.1, 0.04); paper(ctx, PAPER.mustard);
+      });
+      // The skin dips when it's hit.
+      ctx.beginPath(); ctx.ellipse(0, -0.32 + k * 0.05, 0.6, 0.1 - k * 0.04, 0, 0, Math.PI * 2); paper(ctx, PAPER.cream);
+      noShadow(ctx, () => { rrect(ctx, -0.62, -0.38, 1.24, 0.08, 0.04); paper(ctx, PAPER.mustard); });
+    });
+  },
 };
+
+/** 1 just after a musical part played, fading to 0 over a third of a second. */
+function ringing(rp: RuntimePart) {
+  const h = rp.state.hit;
+  if (!h) return 0;
+  return Math.max(0, 1 - (performance.now() - h) / 330);
+}
+
+/** A xylophone bar in its note's colour, on two little felt pegs; it flashes when it plays. */
+function xyloBar(fill: string) {
+  return (ctx: Ctx, rp: RuntimePart) => {
+    const k = ringing(rp);
+    withBody(ctx, rp.bodies[0], () => {
+      ctx.translate(0, k * 0.04);
+      rrect(ctx, -0.75, -0.1, 1.5, 0.2, 0.08); paper(ctx, fill);
+      noShadow(ctx, () => {
+        for (const x of [-0.5, 0.5]) { ctx.beginPath(); ctx.arc(x, 0, 0.045, 0, Math.PI * 2); paper(ctx, PAPER.cream); }
+        if (k > 0) { ctx.globalAlpha = k * 0.6; rrect(ctx, -0.75, -0.1, 1.5, 0.2, 0.08); paper(ctx, '#ffffff'); }
+      });
+    });
+  };
+}
 
 /** Draw a part, in the current room's look when the room has one for it. */
 export function drawPart(ctx: Ctx, rp: RuntimePart, t: number) {

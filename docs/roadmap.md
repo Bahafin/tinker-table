@@ -5,7 +5,7 @@ What we plan to build next, in order. Every feature has to keep three rules:
 - **No fail state.** Nothing scores, times or tells the child off.
 - **Free to run.** No servers, no accounts and no analytics. Everything stays on the device or inside a link.
 
-The current game (ages 5–8): 50 levels in five rooms of ten, a front page you swipe along, the toy box, guess the path, the film strip, the sticker book, the grown-ups' corner, offline play, and the web version on GitHub Pages. See [design.md](design.md).
+The current game (ages 5–8): 60 levels in six rooms of ten (the sixth is the Music room), a front page you swipe along, the toy box, guess the path, the film strip, the sticker book, the grown-ups' corner, offline play, and the web version on GitHub Pages. See [design.md](design.md).
 
 ## Decisions so far
 - **The web version stays the main home.** A store app later wraps the same code with Capacitor.
@@ -83,13 +83,23 @@ The current game (ages 5–8): 50 levels in five rooms of ten, a front page you 
 - Room names appear as word labels next to their pictures, and the voice says them when a room comes to the middle or the name is tapped.
 - The target age is now **5–8**, with younger children welcome alongside a grown-up.
 
+## Milestone 5.6: playtest fixes (done)
+- Parts stay wholly on the table, at any angle.
+- A sleeping hamster only hears a pop (or a bell) within 5 cells, and a dotted ring shows how far the sound reaches.
+- The pencil stays out until its button is tapped again.
+- Every run the child starts counts towards a hint, including ones stopped by hand.
+- The Toy box and the Puzzle maker are separate rooms. Toy-box machines can be kept (heart button) and reopened.
+- The toy box tray has room tabs and page arrows, and parts from different rooms can share the table, each in its room's look.
+- Dominoes stand on things, and no domino level can be won with a domino left out (checked by `scripts/domino-check`).
+- Look-alike levels were mirrored, and a test stops two levels from looking and playing the same.
+
 ## Milestone 6: new things to play with
-- **Musical parts:**
-  - Bells, xylophone bars and a drum play a note when something hits them.
-  - In the toy box, machines become songs.
-  - A room of musical levels.
+- **Musical parts (done):**
+  - Five xylophone bars (a pentatonic scale), a bell and a drum play their sound when something hits them.
+  - In the toy box, machines become songs (the Music room tab), and a kept machine keeps its song.
+  - The Music room: ten levels after the Garden, most with a tune as the goal.
 - **Room parts** (rope and scissors, toy car and the others) moved to Milestone 4.5.
-- **Later parts:** a magnet, gears.
+- **Later parts:** a magnet, gears. A tune goal in the puzzle maker.
 - **A second character:** a friend for the hamster, to give levels little stories (the "why?" lesson from the first playtest).
 
 ## Later

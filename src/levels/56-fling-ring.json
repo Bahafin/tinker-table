@@ -1,0 +1,54 @@
+{
+  "id": "56-fling-ring",
+  "voice": "Fling the ball up to ring the bell, then let it land on the drum: ding, then boom! Drop the heavy ball on the see-saw.",
+  "difficulty": 4.37,
+  "goal": {
+    "type": "tune",
+    "object": "ball1",
+    "notes": [
+      "bell",
+      "drum"
+    ]
+  },
+  "fixed": [
+    {
+      "part": "seesaw",
+      "x": 8,
+      "y": 8.6,
+      "rot": -25
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 6.25,
+      "y": 7.9
+    },
+    {
+      "part": "drum",
+      "x": 13,
+      "y": 9.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "heavyball",
+      "count": 1
+    },
+    {
+      "part": "bell",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "heavyball",
+      "x": 9,
+      "y": 2.5
+    },
+    {
+      "part": "bell",
+      "x": 13,
+      "y": 3
+    }
+  ]
+}
