@@ -139,8 +139,8 @@ With a real finger, before wrapping: the Music room, the toy box tabs and arrows
 - A test release through TestFlight (and Google's internal testing) for real play before going public.
 
 ### Paperwork
-- Privacy page, logo letters as outlines, and store screenshots: done in the app-store prep branch, not merged yet.
-- Trademark check: "Tinker" (US serial 98471370, online games) still needs a proper look.
+- Privacy page, logo letters as outlines, and store screenshots: done. See [release-prep.md](release-prep.md).
+- Trademark check: the name has had a first search but not a legal clearance; "Tinker" (US serial 98471370, online games) still needs a proper look.
 - A support email for the privacy page and the store listings.
 - Apple's age questions and the Kids section rules (parental gate, no third-party analytics or ads).
 - Costs: $99 a year for Apple, $25 once for Google.
