@@ -12,7 +12,7 @@ The current game (ages 5–8): 60 levels in six rooms of ten (the sixth is the M
 - **Hints are ghost parts, never words.**
 - **The puzzle maker lives inside the toy box,** not on its own screen.
 - **Sharing puts the puzzle itself in the link.** No server stores it.
-- **Sharing is a grown-up action,** so it sits behind the press-and-hold gate.
+- **Sharing is a grown-up action,** so it sits behind the grown-ups' gate (now the PIN).
 
 ## Milestone 4: help, make and organise (done)
 
@@ -112,16 +112,18 @@ Safety first, then the wrapper, then the paperwork. The order inside each part i
 
 ### Safety for a child alone with the tablet
 - **Why:** a child left alone with the tablet wanders off into other apps and places they shouldn't be. Keeping them safely inside the game fits its calm, no-pressure feel.
-- **Grown-ups' PIN (first):**
-  - A 4-digit PIN, set by the parent the first time the app opens, replaces the press-and-hold gate.
-  - It guards the grown-ups' corner, sharing, clearing progress, and every setting below.
-  - The number pad shows digits (it's for grown-ups), and a forgotten PIN can be reset with a sum a young child can't do yet.
+- **Grown-ups' PIN (first): done.**
+  - A 4-digit PIN, offered on the first-launch card, replaces the press-and-hold gate (which stays only until a PIN is set).
+  - It guards the grown-ups' corner, and is asked again before clearing progress or changing the PIN. The play timer below will use the same pad.
+  - The number pad shows digits (it's for grown-ups), rests after 3 wrong tries, and a forgotten PIN can be reset with a sum in words a young child can't do yet.
+- **A tidier grown-ups' corner: done.** The one long page became five short sections (Safety, Play together, Talk cards by room, Made here, Settings), with talk cards closed to one line until tapped, and printing by room.
 - **Play timer that winds down (second):**
   - The parent picks 15, 20 or 30 minutes, or no limit.
   - No countdown is shown. When time is up, the hamster yawns, the machine finishes its run, the room "goes to sleep" with a lullaby, and only the PIN wakes it.
 - **Staying inside the game (third):**
-  - An app can't stop the home swipe on an iPad. The real lock is the device's own: **Guided Access** on iPad (triple-click the side button; leaving needs the parent's passcode) and **screen pinning** on Android (which the app can start itself, from a "lock" button in the grown-ups' corner).
-  - A first-launch card for parents, "Before you hand it over", shows how to switch these on, with pictures.
+  - An app can't stop the home swipe on an iPad. The real lock is the device's own: **Guided Access** on iPad (triple-click the side button; leaving needs the parent's passcode) and **screen pinning** on Android.
+  - Done: a first-launch card for parents, "Before you hand it over", and step-by-step pictures for both in the corner's Safety section.
+  - Still to do in the app wrapper: on Android the app can start screen pinning itself, from a "lock" button in the Safety section.
 - **Smaller ones:**
   - An eye-rest break about every 20 minutes: the hamster stretches and invites the child to look out of the window for 20 seconds.
   - Volume limit and a quiet mode in the grown-ups' settings.

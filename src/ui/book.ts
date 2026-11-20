@@ -7,7 +7,7 @@ import { setSkin } from '../render/draw';
 import { drawIcon } from './game';
 import { sfx } from './audio';
 
-const BOOK_KEY = 'tinker.book';
+export const BOOK_KEY = 'tinker.book';
 
 /** Which part a level's sticker shows: the most special thing in it, in this order. */
 const PRIORITY: PartKind[] = [

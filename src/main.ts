@@ -8,7 +8,10 @@ import { ALL_PARTS, TOY_PARTS } from './sim/parts';
 import { sfx, speak, unlockAudio } from './ui/audio';
 import { INTRO, MADE_TALK, MAKER_HOW, ROUTINE, SKILLS, TALK, TIPS, TOYS_HOW } from './parents/content';
 import { decodeLevel, decodeToy, encodeLevel, encodeToy, MADE_VOICE, SHARED_VOICE } from './levels/share';
-import { looseStickers, renderBook } from './ui/book';
+import { BOOK_KEY, looseStickers, renderBook } from './ui/book';
+import { Pin } from './ui/pin';
+import { askPin, newPin } from './ui/pinpad';
+import { guessPlatform, lockGuideHtml, wireLockGuide } from './parents/lock';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -462,29 +465,52 @@ const MADE_BADGE = `<svg class="made-badge" viewBox="0 0 48 48"><circle cx="24" 
 // ---------- grown-ups' corner ----------
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
+// The PIN guards the corner; until one is set, the press-and-hold does.
+const pin = new Pin();
+type GuSec = 'safety' | 'play' | 'talk' | 'made' | 'settings';
+const GU_SECS: GuSec[] = ['safety', 'play', 'talk', 'made', 'settings'];
+const GU_KEY = 'tinker.gu';
+let guSec: GuSec = (() => {
+  try { const v = localStorage.getItem(GU_KEY) as GuSec; return GU_SECS.includes(v) ? v : 'safety'; } catch { return 'safety'; }
+})();
+let talkRoom = ROOMS[0].id;
+let madeTab: 'puzzles' | 'machines' = 'puzzles';
+const TIPS_SHOWN = 4;
+
+/** A talk card: one line (picture, number, idea) that opens to the questions, words and answer. */
 function talkCard(level: Level, n: string, index: number, toy = false): HTMLElement {
   const t = TALK[level.id];
   const card = document.createElement('section');
   card.className = 'talk';
   const room = index >= 0 ? roomOf(index) : undefined;
+  const head = document.createElement('button');
+  head.className = 'talk-head';
+  head.setAttribute('aria-expanded', 'false');
   const pic = thumb(level, toy, false, room);
   pic.className = 'talk-pic';
-  const play = document.createElement('button');
-  play.className = 'text-btn';
-  play.textContent = 'Play this level';
-  play.onclick = () => { hideGrownups(); startLevel(index); };
-  card.innerHTML = `
-    <h4>${esc(n)}</h4>
-    <p class="idea">${esc(t.idea)}</p>
+  head.append(pic);
+  head.insertAdjacentHTML('beforeend', `<span class="talk-title"><b>${esc(n)}</b><span class="idea">${esc(t.idea)}</span></span>
+    <svg class="chev" viewBox="0 0 48 48"><path d="M14 19l10 10 10-10" /></svg>`);
+  head.onclick = () => {
+    const open = card.classList.toggle('open');
+    head.setAttribute('aria-expanded', String(open));
+  };
+  const body = document.createElement('div');
+  body.className = 'talk-body';
+  body.innerHTML = `
     <div class="cols">
       <div><h5>Before you press Go</h5><ul>${t.before.map((q) => `<li>${esc(q)}</li>`).join('')}</ul></div>
       <div><h5>After it runs</h5><ul>${t.after.map((q) => `<li>${esc(q)}</li>`).join('')}</ul></div>
     </div>
     <p class="words"><b>Words to use:</b> ${t.words.map((w) => `<span>${esc(w)}</span>`).join(' ')}</p>
     <p class="home"><b>Try at home:</b> ${esc(t.tryAtHome)}</p>`;
-  const side = document.createElement('div');
-  side.className = 'talk-side';
-  side.append(pic, play);
+  const acts = document.createElement('div');
+  acts.className = 'acts';
+  const play = document.createElement('button');
+  play.className = 'text-btn';
+  play.textContent = toy ? 'Open the toy box' : 'Play this level';
+  play.onclick = () => { hideGrownups(); if (toy) startToy(); else startLevel(index); };
+  acts.append(play);
   if (level.solution) {
     // For coaching: swap the picture between the puzzle and its answer.
     const ans = document.createElement('button');
@@ -495,135 +521,276 @@ function talkCard(level: Level, n: string, index: number, toy = false): HTMLElem
       showing = !showing;
       const next = thumb(level, toy, showing, room);
       next.className = 'talk-pic';
-      side.firstElementChild!.replaceWith(next);
+      head.firstElementChild!.replaceWith(next);
       ans.textContent = showing ? 'Hide the answer' : 'Show the answer';
     };
-    side.append(ans);
+    acts.append(ans);
   }
-  card.prepend(side);
+  body.append(acts);
+  card.append(head, body);
   return card;
 }
 
+const chip = (label: string, on: boolean, data: string) =>
+  `<button class="chip${on ? ' on' : ''}" role="tab" aria-selected="${on}" ${data}>${esc(label)}</button>`;
+
 let guBuilt = false;
-function showGrownups() {
-  if (!guBuilt) {
-    const body = $('gu-body');
-    body.innerHTML = `
+function buildGrownups() {
+  const body = $('gu-body');
+  const talkRooms = [...ROOMS.map((r) => ({ id: r.id, name: r.name })), { id: 'toybox', name: 'Toy box' }];
+  body.innerHTML = `
+    <section class="gu-sec" data-sec="safety">
+      <h3>Safety</h3>
+      <div id="gu-pin" class="gu-card"></div>
+      <div class="gu-card" id="gu-lock">
+        <h4>Keep your child inside the game</h4>
+        <p>No app can stop a child swiping out to the home screen. The tablet itself can: lock it to Tinker Table before you hand it over, and only your passcode unlocks it.</p>
+        ${lockGuideHtml(guessPlatform())}
+      </div>
+    </section>
+    <section class="gu-sec" data-sec="play">
       <img class="gu-logo" src="logo.svg" alt="Tinker Table" />
       <p class="lead">${esc(INTRO)}</p>
-      <h3>What your child is practising</h3>
-      <div class="skills">${SKILLS.map((s) => `<div class="skill"><h4>${esc(s.title)}</h4><p>${esc(s.body)}</p></div>`).join('')}</div>
       <h3>A simple routine for every level</h3>
       <ol class="routine">${ROUTINE.map((r) => `<li><b>${esc(r.step)}.</b> ${esc(r.say)}</li>`).join('')}</ol>
+      <h3>What your child is practising</h3>
+      <div class="skills">${SKILLS.map((s) => `<div class="skill"><h4>${esc(s.title)}</h4><p>${esc(s.body)}</p></div>`).join('')}</div>
       <h3>Playing together</h3>
-      <ul class="tips">${TIPS.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
-      <h3>Talk cards for each level</h3>
-      <p>Pick one or two questions. You don't need to ask them all.</p>
+      <ul class="tips">${TIPS.map((x, i) => `<li${i >= TIPS_SHOWN ? ' class="more"' : ''}>${esc(x)}</li>`).join('')}</ul>
+      <button class="text-btn" id="gu-tips-more">Show all ${TIPS.length} tips</button>
+    </section>
+    <section class="gu-sec" data-sec="talk">
+      <div class="chips" id="gu-rooms" role="tablist" aria-label="Rooms">${talkRooms.map((r) => chip(r.name, r.id === talkRoom, `data-room="${r.id}"`)).join('')}</div>
+      <p class="note">Pick one or two questions; you don't need to ask them all. Tap a card to open it.</p>
       <div id="gu-cards"></div>
-      <h3>Puzzles made on this device</h3>
-      <p>${esc(MAKER_HOW)}</p>
-      <div id="gu-mine"></div>
-      <h3>Machines kept in the toy box</h3>
-      <p>${esc(TOYS_HOW)}</p>
-      <div id="gu-toys"></div>
-      <p class="small">Tinker Table collects no data. Progress, the sticker book and made puzzles are kept only on this device. A shared link contains only the puzzle itself. <a href="privacy.html">Privacy policy</a></p>`;
-    const cards = $('gu-cards');
-    LEVELS.forEach((lv, i) => cards.append(talkCard(lv, `Level ${i + 1}`, i)));
-    cards.append(talkCard(TOY_BOX, 'The toy box', -1, true));
-    guBuilt = true;
+      <div class="acts print-acts">
+        <button class="text-btn" id="gu-print-room">Print this room</button>
+        <button class="text-btn" id="gu-print-all">Print all the talk cards</button>
+      </div>
+    </section>
+    <section class="gu-sec" data-sec="made">
+      <div class="chips" id="gu-made-tabs" role="tablist" aria-label="Made on this device"></div>
+      <p class="note" id="gu-made-how"></p>
+      <div id="gu-made" class="made-list"></div>
+    </section>
+    <section class="gu-sec" data-sec="settings">
+      <h3>Start again</h3>
+      <div class="gu-card">
+        <p>Clears which levels are done and the sticker book, so the rooms start fresh. Made puzzles and kept machines stay.</p>
+        <div class="acts"><button class="text-btn danger" id="gu-reset">Clear progress and stickers</button></div>
+      </div>
+      <h3>Privacy</h3>
+      <div class="gu-card">
+        <p>Tinker Table collects no data: no accounts, ads, tracking or links out. Progress, the sticker book, the PIN and made puzzles are kept only on this device. A shared link contains only the puzzle itself.</p>
+        <p><a href="privacy.html">Read the privacy policy</a></p>
+      </div>
+    </section>`;
+
+  // Talk cards: one container per room, only the chosen one on screen (all of them print).
+  const cards = $('gu-cards');
+  for (const r of ROOMS) {
+    const box = document.createElement('div');
+    box.className = 'room-cards';
+    box.dataset.room = r.id;
+    box.innerHTML = `<h3 class="room-h">${esc(r.name)}</h3>`;
+    for (let k = 0; k < r.count; k++) box.append(talkCard(LEVELS[r.first + k], String(k + 1), r.first + k));
+    cards.append(box);
   }
-  renderMine();
-  renderToys();
-  $('map').classList.add('hidden');
-  $('grownups').classList.remove('hidden');
+  const toys = document.createElement('div');
+  toys.className = 'room-cards';
+  toys.dataset.room = 'toybox';
+  toys.innerHTML = '<h3 class="room-h">Toy box</h3>';
+  toys.append(talkCard(TOY_BOX, 'Toy box', -1, true));
+  cards.append(toys);
+  showTalkRoom(talkRoom);
+  $('gu-rooms').onclick = (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-room]');
+    if (b) showTalkRoom(b.dataset.room!);
+  };
+  $('gu-print-room').onclick = () => printTalk('room');
+  $('gu-print-all').onclick = () => printTalk('all');
+
+  $('gu-tips-more').onclick = () => {
+    const open = body.querySelector('.tips')!.classList.toggle('all');
+    $('gu-tips-more').textContent = open ? 'Show fewer tips' : `Show all ${TIPS.length} tips`;
+  };
+  wireLockGuide($('gu-lock'));
+  $('gu-made-tabs').onclick = (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-made]');
+    if (b) { madeTab = b.dataset.made as typeof madeTab; renderMade(); }
+  };
+  const reset = $<HTMLButtonElement>('gu-reset');
+  reset.onclick = async () => {
+    if (reset.dataset.sure !== '1') { reset.dataset.sure = '1'; reset.textContent = 'Tap again to clear'; return; }
+    delete reset.dataset.sure;
+    reset.textContent = 'Clear progress and stickers';
+    if (!(await askPin(pin, 'Clear progress?'))) return;
+    try { localStorage.removeItem(DONE_KEY); localStorage.removeItem(BOOK_KEY); } catch { /* private mode */ }
+    reset.textContent = 'Cleared';
+    setTimeout(() => { reset.textContent = 'Clear progress and stickers'; }, 2200);
+  };
+  document.querySelector('.gu-nav')!.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-sec]');
+    if (b) showSec(b.dataset.sec as GuSec);
+  });
+  guBuilt = true;
+}
+
+function showSec(sec: GuSec) {
+  guSec = sec;
+  try { localStorage.setItem(GU_KEY, sec); } catch { /* private mode */ }
+  document.querySelectorAll<HTMLElement>('.gu-nav [data-sec]').forEach((b) => {
+    b.classList.toggle('on', b.dataset.sec === sec);
+    b.setAttribute('aria-selected', String(b.dataset.sec === sec));
+    // On a phone the menu is a sideways row: keep the chosen one in view.
+    if (b.dataset.sec === sec) b.parentElement!.scrollLeft = Math.max(0, b.offsetLeft - 12);
+  });
+  document.querySelectorAll<HTMLElement>('.gu-sec').forEach((s) => s.classList.toggle('on', s.dataset.sec === sec));
   $('gu-body').scrollTop = 0;
 }
-/** The grown-ups' list of made puzzles, with share and delete. Rebuilt on every visit. */
-function renderMine() {
-  const box = $('gu-mine');
-  box.innerHTML = '';
-  const list = loadMine();
-  if (!list.length) {
-    box.innerHTML = `<p class="small">${esc(MADE_TALK.none)}</p>`;
-    return;
-  }
-  list.forEach((code, k) => {
-    const lv = decodeLevel(code, MADE_VOICE);
-    if (!lv) return;
-    const card = document.createElement('section');
-    card.className = 'talk mine';
-    const side = document.createElement('div');
-    side.className = 'talk-side';
-    const pic = thumb(lv);
-    pic.className = 'talk-pic';
-    const play = document.createElement('button');
-    play.className = 'text-btn';
-    play.textContent = 'Play it';
-    play.onclick = () => { hideGrownups(); startLevel(-2, lv); };
-    side.append(pic, play);
-    const body = document.createElement('div');
-    body.innerHTML = `<h4>My puzzle ${k + 1}</h4><p class="idea">${esc(MADE_TALK.idea)}</p>`;
-    const row = document.createElement('div');
-    row.className = 'mine-actions';
-    const share = document.createElement('button');
-    share.className = 'text-btn';
-    share.textContent = 'Share';
-    share.onclick = () => sharePuzzle(code, share);
-    const del = document.createElement('button');
-    del.className = 'text-btn';
-    del.textContent = 'Delete';
-    del.onclick = () => {
-      if (del.dataset.sure !== '1') { del.dataset.sure = '1'; del.textContent = 'Tap again to delete'; return; }
-      saveMine(loadMine().filter((c) => c !== code));
-      renderMine();
-    };
-    row.append(share, del);
-    body.append(row);
-    card.append(side, body);
-    box.append(card);
+
+function showTalkRoom(id: string) {
+  talkRoom = id;
+  document.querySelectorAll<HTMLElement>('#gu-rooms [data-room]').forEach((b) => {
+    b.classList.toggle('on', b.dataset.room === id);
+    b.setAttribute('aria-selected', String(b.dataset.room === id));
+  });
+  document.querySelectorAll<HTMLElement>('.room-cards').forEach((c) => c.classList.toggle('on', c.dataset.room === id));
+}
+
+/** Print the talk cards: this room's, or all of them. The print styles read data-print. */
+function printTalk(scope: 'room' | 'all') {
+  document.body.dataset.print = scope;
+  window.addEventListener('afterprint', () => { delete document.body.dataset.print; }, { once: true });
+  window.print();
+}
+
+/** Open the corner: through the PIN if there is one. */
+async function openGrownups(sec?: GuSec) {
+  if (!(await askPin(pin))) return;
+  showGrownups(sec);
+}
+function showGrownups(sec?: GuSec) {
+  if (!guBuilt) buildGrownups();
+  renderSafety();
+  renderMade();
+  $('map').classList.add('hidden');
+  $('grownups').classList.remove('hidden');
+  showSec(sec ?? guSec);
+}
+
+/** The PIN card in Safety: set it, change it or turn it off. */
+function renderSafety() {
+  const box = $('gu-pin');
+  box.innerHTML = pin.isSet
+    ? `<h4>Grown-ups' PIN <span class="tag on">On</span></h4>
+       <p>The PIN is asked before this corner opens, and again before clearing progress or changing the PIN.</p>
+       <div class="acts"><button class="text-btn" id="pin-change">Change the PIN</button><button class="text-btn" id="pin-off">Turn the PIN off</button></div>`
+    : `<h4>Grown-ups' PIN <span class="tag">Off</span></h4>
+       <p>Right now this corner opens with a press-and-hold on the grown-ups' button, which a child can learn. A 4-digit PIN they don't know keeps them out of here.</p>
+       <div class="acts"><button class="text-btn primary" id="pin-set">Set a PIN</button></div>`;
+  box.insertAdjacentHTML('beforeend', '<p class="small">The PIN keeps a young child out of the grown-ups\' corner. It isn\'t a lock against grown-ups: it is kept only on this device, and clearing the browser\'s data removes it.</p>');
+  const done = () => { renderSafety(); syncGuButton(); };
+  const on = (id: string, fn: () => Promise<unknown>) => { const b = document.getElementById(id); if (b) b.onclick = () => fn().then(done); };
+  on('pin-set', () => newPin(pin));
+  on('pin-change', async () => { if (await askPin(pin, 'Type the PIN you have now')) await newPin(pin, 'Choose a new PIN'); });
+  on('pin-off', async () => { if (await askPin(pin, 'Turn the PIN off?')) pin.clear(); });
+}
+
+/** The grown-ups' button says "press & hold" only while there's no PIN. */
+function syncGuButton() {
+  const b = $('btn-grownups');
+  b.querySelector('.how')!.classList.toggle('hidden', pin.isSet);
+  b.setAttribute('aria-label', pin.isSet ? 'For grown-ups' : 'For grown-ups: press and hold');
+}
+
+/** One row in Made here: a picture, a name and its buttons. */
+function madeRow(pic: HTMLCanvasElement, title: string, buttons: HTMLButtonElement[]): HTMLElement {
+  const row = document.createElement('section');
+  row.className = 'made-row';
+  pic.className = 'made-pic';
+  const name = document.createElement('h4');
+  name.textContent = title;
+  const acts = document.createElement('div');
+  acts.className = 'acts';
+  acts.append(...buttons);
+  row.append(pic, name, acts);
+  return row;
+}
+function textBtn(label: string, fn: (b: HTMLButtonElement) => void): HTMLButtonElement {
+  const b = document.createElement('button');
+  b.className = 'text-btn';
+  b.textContent = label;
+  b.onclick = () => fn(b);
+  return b;
+}
+/** A delete button that asks with a second tap. */
+function deleteBtn(onSure: () => void): HTMLButtonElement {
+  return textBtn('Delete', (b) => {
+    if (b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Tap again to delete'; b.classList.add('danger'); return; }
+    onSure();
   });
 }
 
-/** The grown-ups' list of kept toy-box machines, with delete. */
-function renderToys() {
-  const box = $('gu-toys');
+/** Made here: puzzles made in the maker and machines kept in the toy box. Rebuilt on every visit. */
+function renderMade() {
+  const mine = loadMine().map((code) => ({ code, lv: decodeLevel(code, MADE_VOICE) })).filter((x) => x.lv);
+  const toys = loadToys().map((code) => ({ code, parts: decodeToy(code) })).filter((x) => x.parts);
+  $('gu-made-tabs').innerHTML =
+    chip(`Puzzles (${mine.length})`, madeTab === 'puzzles', 'data-made="puzzles"') +
+    chip(`Machines (${toys.length})`, madeTab === 'machines', 'data-made="machines"');
+  $('gu-made-how').textContent = madeTab === 'puzzles' ? `${MAKER_HOW} ${MADE_TALK.idea}` : TOYS_HOW;
+  const box = $('gu-made');
   box.innerHTML = '';
-  const list = loadToys();
-  if (!list.length) {
-    box.innerHTML = '<p class="small">Nothing kept yet. In the toy box, the heart button keeps the machine on the table.</p>';
-    return;
+  if (madeTab === 'puzzles') {
+    if (!mine.length) box.innerHTML = `<p class="small">${esc(MADE_TALK.none)}</p>`;
+    mine.forEach(({ code, lv }, k) => box.append(madeRow(thumb(lv!), `Puzzle ${k + 1}`, [
+      textBtn('Play', () => { hideGrownups(); startLevel(-2, lv!); }),
+      textBtn('Share', (b) => { void sharePuzzle(code, b); }),
+      deleteBtn(() => { saveMine(loadMine().filter((c) => c !== code)); renderMade(); }),
+    ])));
+  } else {
+    if (!toys.length) box.innerHTML = '<p class="small">Nothing kept yet. In the toy box, the heart button keeps the machine on the table.</p>';
+    toys.forEach(({ code, parts }, k) => box.append(madeRow(thumb({ ...TOY_BOX, fixed: parts! }), `Machine ${k + 1}`, [
+      textBtn('Open', () => { hideGrownups(); startToy(code, parts!); }),
+      deleteBtn(() => { saveToys(loadToys().filter((c) => c !== code)); renderMade(); }),
+    ])));
   }
-  list.forEach((code, k) => {
-    const parts = decodeToy(code);
-    if (!parts) return;
-    const card = document.createElement('section');
-    card.className = 'talk mine';
-    const side = document.createElement('div');
-    side.className = 'talk-side';
-    const pic = thumb({ ...TOY_BOX, fixed: parts });
-    pic.className = 'talk-pic';
-    const play = document.createElement('button');
-    play.className = 'text-btn';
-    play.textContent = 'Open it';
-    play.onclick = () => { hideGrownups(); startToy(code, parts); };
-    side.append(pic, play);
-    const body = document.createElement('div');
-    body.innerHTML = `<h4>My machine ${k + 1}</h4>`;
-    const row = document.createElement('div');
-    row.className = 'mine-actions';
-    const del = document.createElement('button');
-    del.className = 'text-btn';
-    del.textContent = 'Delete';
-    del.onclick = () => {
-      if (del.dataset.sure !== '1') { del.dataset.sure = '1'; del.textContent = 'Tap again to delete'; return; }
-      saveToys(loadToys().filter((c) => c !== code));
-      renderToys();
-    };
-    row.append(del);
-    body.append(row);
-    card.append(side, body);
-    box.append(card);
-  });
+}
+
+// ---------- before you hand it over (first launch, for grown-ups) ----------
+const WELCOME_KEY = 'tinker.welcomed';
+function showWelcome() {
+  try { if (localStorage.getItem(WELCOME_KEY)) return; } catch { return; }
+  const wrap = document.createElement('div');
+  wrap.className = 'welcome-wrap';
+  wrap.innerHTML = `
+    <div class="welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+      <h3 id="welcome-title">Before you hand it over</h3>
+      <p>Tinker Table is made to play beside you. If your child will sometimes play on their own, two things help:</p>
+      <ol>
+        <li><b>A grown-ups' PIN</b> keeps them out of the settings and the grown-ups' corner.
+          <div class="acts"><button class="text-btn primary" data-w="pin">Set a PIN</button></div></li>
+        <li><b>Lock the tablet to the game</b> with its own Guided Access (iPad) or app pinning (Android), so they can't wander into other apps.
+          <div class="acts"><button class="text-btn" data-w="lock">Show me how</button></div></li>
+      </ol>
+      <p class="small">You can do both later in the grown-ups' corner: the grown-ups' button on the front page.</p>
+      <div class="acts end"><button class="text-btn" data-w="close">Done</button></div>
+    </div>`;
+  document.body.append(wrap);
+  const close = () => {
+    try { localStorage.setItem(WELCOME_KEY, '1'); } catch { /* private mode */ }
+    wrap.remove();
+  };
+  wrap.onclick = async (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-w]');
+    if (!b) return;
+    if (b.dataset.w === 'close') close();
+    else if (b.dataset.w === 'lock') { close(); showGrownups('safety'); $('gu-lock').scrollIntoView(); }
+    else if (b.dataset.w === 'pin' && !pin.isSet) {
+      if (await newPin(pin)) { b.textContent = 'PIN set'; b.disabled = true; syncGuButton(); }
+    }
+  };
 }
 
 /** Share a made puzzle as a link: the share sheet if there is one, else copy it. */
@@ -656,11 +823,11 @@ function hideBook() {
 
 function hideGrownups() {
   $('grownups').classList.add('hidden');
-  $('map').classList.remove('hidden');
+  showMap(); // redrawn: progress may have been cleared
 }
 
-/** Press and hold for HOLD_MS to open; a short tap just wiggles. */
-function wireHold(btn: HTMLElement, onDone: () => void) {
+/** Press and hold for HOLD_MS to open; a short tap just wiggles. When `instant` says so (a PIN is set), a tap opens. */
+function wireHold(btn: HTMLElement, onDone: () => void, instant: () => boolean = () => false) {
   const HOLD_MS = 1500;
   let start = 0, raf = 0, timer = 0;
   const clear = () => {
@@ -680,7 +847,9 @@ function wireHold(btn: HTMLElement, onDone: () => void) {
     btn.style.setProperty('--p', String(Math.min(1, (performance.now() - start) / HOLD_MS)));
     raf = requestAnimationFrame(tick);
   };
+  btn.addEventListener('click', () => { if (instant()) onDone(); });
   btn.addEventListener('pointerdown', (e) => {
+    if (instant()) return;
     e.preventDefault();
     try { btn.setPointerCapture(e.pointerId); } catch { /* fine without it */ }
     clear();
@@ -692,7 +861,7 @@ function wireHold(btn: HTMLElement, onDone: () => void) {
   btn.addEventListener('pointercancel', stop);
   btn.addEventListener('contextmenu', (e) => e.preventDefault());
   // Keyboard users: Enter/Space opens it straight away.
-  btn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onDone(); } });
+  btn.addEventListener('keydown', (e) => { if (!instant() && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onDone(); } });
 }
 
 // ---------- play ----------
@@ -884,11 +1053,11 @@ function startLevel(i: number, custom?: Level, start: Placement[] = []) {
 
 // ---------- wiring ----------
 document.addEventListener('pointerdown', unlockAudio, { capture: true });
-wireHold($('btn-grownups'), showGrownups);
+wireHold($('btn-grownups'), () => { void openGrownups(); }, () => pin.isSet);
+syncGuButton();
 $('btn-gu-close').onclick = hideGrownups;
 $('btn-book').onclick = showBook;
 $('btn-book-close').onclick = hideBook;
-$('btn-gu-print').onclick = () => window.print();
 $('btn-home').onclick = showMap;
 $('btn-home2').onclick = showMap;
 $('btn-goal').onclick = () => game && speak(voice);
@@ -959,5 +1128,6 @@ function openSharedFromHash() {
   if (lv) startLevel(-2, lv);
 }
 openSharedFromHash();
+if (!location.hash.startsWith('#p=')) showWelcome();
 window.addEventListener('hashchange', openSharedFromHash);
 (window as unknown as { tinker: () => Game | null }).tinker = () => game;

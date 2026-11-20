@@ -238,19 +238,19 @@ Plus the **toy box**: every part except the goal-only star and cheese, unlimited
 - **Later**, hand-drawn sprites replace the flat shapes. Each part's draw function is isolated so this swap doesn't touch the physics.
 
 ## Grown-ups' corner
-- A small button in the map's top corner opens it, but only after it is **held for 1.5 s**. A ring fills while it's held, and a quick tap just wiggles it, so a child can't wander in by accident. This is also the parental gate the App Store expects for parent-only areas.
-- It is the only place with text. It covers:
-  - what the game practises (cause and effect, guess-try-look-change, space and angles, planning in steps, sticking with it, movement words, careful hands);
-  - a four-step routine for each level: **Look, Guess, Go, Talk**;
-  - tips for playing together.
-- **A talk card for every level and the toy box**, each with:
-  - the one idea the level is about;
-  - questions to ask before Go and after the run;
-  - words to use;
-  - a "try at home" activity;
-  - a "Play this level" button.
+- **The gate.** A small button in the front page's top corner opens it.
+  - With a **grown-ups' PIN** set, a tap opens a number pad. The pad shows digits and words, because it's for grown-ups. After 3 wrong tries it rests for 30 seconds. "Forgot the PIN?" asks a times-table sum written in words ("seven times eight"), which a grown-up does at once and a 5 to 8 year old can't yet, and then lets you choose a new PIN.
+  - Without a PIN, the button must be **held for 1.5 s**. A ring fills while it's held, and a quick tap just wiggles it.
+  - The PIN is asked again before clearing progress, changing the PIN or turning it off. It is kept only on the device, as a salted, scrambled code (`src/ui/pin.ts`, with tests). It keeps a young child out; it isn't a lock against grown-ups, and the corner says so.
+  - This is also the parental gate the App Store expects for parent-only areas.
+- **Before you hand it over.** The first time the game opens, a card for grown-ups offers to set a PIN and shows how to lock the tablet to the game. "Done" closes it for good.
+- It is the only place with text. It is split into five short sections, in a menu down the left (a sideways row on a phone). It reopens on the section used last.
+  - **Safety:** the PIN (set, change, turn off) and **"Keep your child inside the game"**: step-by-step pictures for **Guided Access** on iPad and **app pinning** on Android (`src/parents/lock.ts`). An app can't stop the home swipe; these device locks can, and leaving them needs the grown-up's passcode.
+  - **Play together:** what the game is, the four-step routine (**Look, Guess, Go, Talk**), what it practises, and the first four tips with "Show all".
+  - **Talk cards:** room tabs (and the toy box), so only one room's ten cards show at once. Each card is one line (picture, number, the idea) and opens on a tap to show questions for before Go and after the run, words to use, a "try at home" activity, "Play this level" and "Show the answer". "Print this room" or "Print all the talk cards" prints just the cards, opened up, or saves them as a PDF.
+  - **Made here:** tabs for made puzzles and kept machines, each a short row with Play (or Open), Share and Delete.
+  - **Settings:** clear progress and stickers (made things stay), and the privacy note.
 - The content lives in `src/parents/content.ts`. A test fails if a level has no talk card.
-- "Print the talk cards" prints just this content, or saves it as a PDF.
 
 ## Logo and icons
 - **Logo** (`public/logo.svg`): the app emblem next to "TINKER" on six paper letter tiles in the game's colours, with "TABLE" resting on a wooden plank.

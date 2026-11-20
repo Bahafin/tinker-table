@@ -26,11 +26,11 @@
         <svg viewBox="0 0 48 48"><path d="M8 10c6-2 11-1 16 3v27c-5-4-10-5-16-3z" class="page" /><path d="M40 10c-6-2-11-1-16 3v27c5-4 10-5 16-3z" class="page" /><circle cx="15" cy="21" r="4" class="dot1" /><path d="M32 17l1.6 3.3 3.6.5-2.6 2.5.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.5 3.6-.5z" class="dot2" /></svg>
         <span class="new hidden"></span>
       </button>
-      <!-- Grown-ups' corner: must be held, so a child's quick tap does nothing. -->
+      <!-- Grown-ups' corner: behind the PIN, or a press-and-hold until a PIN is set. -->
       <button id="btn-grownups" class="grownups-btn" aria-label="For grown-ups: press and hold">
         <span class="ring"></span>
         <svg viewBox="0 0 48 48"><circle cx="17" cy="13" r="5" /><path d="M8 40V28a9 9 0 0 1 18 0v12" /><circle cx="34" cy="22" r="3.5" /><path d="M28 40v-7a6 6 0 0 1 12 0v7" /></svg>
-        <small>Grown-ups<br />press &amp; hold</small>
+        <small>Grown-ups<br /><span class="how">press &amp; hold</span></small>
       </button>
     </section>
 
@@ -45,17 +45,24 @@
       <div id="book-strip" class="book-strip" aria-label="Stickers to stick"></div>
     </section>
 
-    <!-- Grown-ups' corner (text is fine here: it's for parents) -->
+    <!-- Grown-ups' corner (text is fine here: it's for parents). Five short sections. -->
     <section id="grownups" class="screen hidden">
       <header class="gu-bar">
         <button id="btn-gu-close" class="icon" aria-label="Back to the game">
           <svg viewBox="0 0 48 48"><path d="M14 14l20 20M34 14 14 34" /></svg>
         </button>
         <h2>For grown-ups</h2>
-        <div class="spacer"></div>
-        <button id="btn-gu-print" class="text-btn">Print the talk cards</button>
       </header>
-      <article id="gu-body" class="gu-body"></article>
+      <div class="gu-main">
+        <nav class="gu-nav" role="tablist" aria-label="Sections">
+          <button role="tab" data-sec="safety"><svg viewBox="0 0 48 48"><rect x="11" y="21" width="26" height="19" rx="4" /><path d="M17 21v-5a7 7 0 0 1 14 0v5" /></svg><span>Safety</span></button>
+          <button role="tab" data-sec="play"><svg viewBox="0 0 48 48"><circle cx="17" cy="14" r="5" /><path d="M8 40V28a9 9 0 0 1 18 0v12" /><circle cx="34" cy="22" r="3.5" /><path d="M28 40v-7a6 6 0 0 1 12 0v7" /></svg><span>Play together</span></button>
+          <button role="tab" data-sec="talk"><svg viewBox="0 0 48 48"><path d="M8 12h32v20H22l-9 7v-7H8z" /></svg><span>Talk cards</span></button>
+          <button role="tab" data-sec="made"><svg viewBox="0 0 48 48"><path d="M24 40S8 31 8 19.5a8.5 8.5 0 0 1 16-4 8.5 8.5 0 0 1 16 4C40 31 24 40 24 40z" /></svg><span>Made here</span></button>
+          <button role="tab" data-sec="settings"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="6" /><path d="M24 6v6M24 36v6M6 24h6M36 24h6M11 11l4 4M33 33l4 4M37 11l-4 4M15 33l-4 4" /></svg><span>Settings</span></button>
+        </nav>
+        <article id="gu-body" class="gu-body"></article>
+      </div>
     </section>
 
     <!-- Build / play -->
