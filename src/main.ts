@@ -64,9 +64,12 @@ function roomBanner(room: Room): HTMLElement {
   return el;
 }
 
+/** Pixels per grid cell for the little pictures: sharp on Retina screens, at most 2x. */
+const THUMB_PX = 22 * Math.min(2, Math.max(1, window.devicePixelRatio || 1));
+
 function thumb(level: Level, toy = false, withSolution = false, room?: Room): HTMLCanvasElement {
   const c = document.createElement('canvas');
-  const s = 22;
+  const s = THUMB_PX;
   c.width = WORLD_W * s;
   c.height = WORLD_H * s;
   const ctx = c.getContext('2d')!;
@@ -121,7 +124,7 @@ function traySets(withGoals: boolean): TraySet[] {
 /** A room's front-page picture: its own things laid out on its own paper. */
 function roomScene(room: Room): HTMLCanvasElement {
   const c = document.createElement('canvas');
-  const s = 22;
+  const s = THUMB_PX;
   c.width = WORLD_W * s;
   c.height = WORLD_H * s;
   const ctx = c.getContext('2d')!;
@@ -342,7 +345,7 @@ function showRoom(box: HTMLElement, room: Room) {
 /** The puzzle maker's front-page picture: a ball, a pinned star and a basket, waiting for a machine. */
 function makerScene(): HTMLCanvasElement {
   const c = document.createElement('canvas');
-  const s = 22;
+  const s = THUMB_PX;
   c.width = WORLD_W * s;
   c.height = WORLD_H * s;
   const ctx = c.getContext('2d')!;
@@ -523,7 +526,7 @@ function showGrownups() {
       <h3>Machines kept in the toy box</h3>
       <p>${esc(TOYS_HOW)}</p>
       <div id="gu-toys"></div>
-      <p class="small">Tinker Table collects no data. Progress, the sticker book and made puzzles are kept only on this device. A shared link contains only the puzzle itself.</p>`;
+      <p class="small">Tinker Table collects no data. Progress, the sticker book and made puzzles are kept only on this device. A shared link contains only the puzzle itself. <a href="privacy.html">Privacy policy</a></p>`;
     const cards = $('gu-cards');
     LEVELS.forEach((lv, i) => cards.append(talkCard(lv, `Level ${i + 1}`, i)));
     cards.append(talkCard(TOY_BOX, 'The toy box', -1, true));

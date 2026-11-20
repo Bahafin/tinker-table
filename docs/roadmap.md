@@ -120,7 +120,7 @@ The current game (ages 5–8): 60 levels in six rooms of ten (the sixth is the M
 - **App stores:**
   - Wrap the game with Capacitor for iPad and Android.
   - Costs: $99 a year for Apple, $25 once for Google.
-  - Before release: a privacy policy page, a trademark check on the name, logo letters turned into outlines, and screenshots.
+  - Before release: a privacy policy page, a trademark check on the name, logo letters turned into outlines, and screenshots. The privacy page, the logo outlines and the screenshots are done; the name has had a first search but not a legal clearance. See [release-prep.md](release-prep.md).
 
 ## How new levels are made
 Run the search tool. It tries every grid position and angle for the tray parts, and reports:
