@@ -10,17 +10,26 @@ The four jobs the roadmap lists before release, and where each one stands.
 - **Store forms that follow from it:** Apple's privacy label is "Data Not Collected". Google's Data safety form is "No data collected, no data shared". For Google's Families policy, the target age group is 5–8.
 - If the Capacitor app ever adds anything (analytics, crash reports, purchases), the page and both forms have to change first.
 
-## 2. Trademark check on "Tinker Table": first look done, not cleared
-A web search on 20 November 2026 found:
-- **No live trademark for "Tinker Table"** turned up. The closest was TINKER TABLES (furniture, class 20), cancelled in 2018.
-- **Same name, other things:** a classroom table sold by Furnware, a crafting item in some games (Tinkers' Construct, Miner's Haven, Tinkerlands), and tinkertable.io, a card-game playtesting tool.
-- **"Tinker" marks near our field:** KiwiCo's TINKER CRATE (kids' science kits), THINKER-TINKER (plush toys and children's educational software), TINKER GAMES (card games), and a TINKER application covering online games and game apps (serial 98471370; its owner and status couldn't be read, so check this one first). Disney guards TINKER BELL hard, but "Tinker Table" isn't close to it.
+## 2. The name: renamed to Bumpity, first checks clean
+The game was called **Tinker Table** until 20 November 2026. It was dropped because "Tinker" is crowded in exactly our field: the Boston Children's Museum holds a live TINKER registration for children's educational kits (US serial 98471370, class 28), and KiwiCo holds TINKER CRATE (kids' craft and activity kits).
+
+Names that were looked at and dropped:
+- **Fiddlebox:** no trademark anywhere, but a puzzle game called "Fiddlebox: Block Games" came out on Google Play on 21 October 2026.
+- **Whatchamachine:** hard to say. **Clink & Clunk:** close to the kids' app Clink & Think. **Paper Rumpus:** Rumpus has toy trademarks. **Tip & Tumble:** an existing tilt-maze app. **Roll & Rattle:** close to Oball's Rattle and Roll baby toy.
+
+What the checks on **Bumpity** found (20 November 2026):
+- **App Store and Google Play:** no app called Bumpity. The nearest are "Bump" social apps and Bumpi, a baby heartbeat app.
+- **Registers** (USPTO directly, and TMview, which covers the EUIPO, the UK IPO and about 70 other offices): no mark that is just BUMPITY. Two nearby ones for a lawyer to weigh:
+  - JUMPITY BUMPITY: registered in the US in 2025 for entertainment services (class 41, serial 99386628). It seems to be a children's play place.
+  - BUMPIT: registered in the US in 2025 for toys (class 28, serial 98938571). It matters only if Bumpity toys are ever planned.
+  - Mattel's BUMPITY THUMPITY (toys) has ended.
+- **Web addresses:** bumpity.app, playbumpity.com and bumpitygame.com were free; bumpity.com is taken.
 
 This is a search, not legal clearance. Before paying for the store accounts:
-1. Search the [USPTO trademark search](https://tmsearch.uspto.gov/) for "tinker table" and "tinker" in classes 9 (apps) and 28 (games and toys), and open serial 98471370.
-2. Do the same in the [UK IPO](https://trademarks.ipo.gov.uk/ipo-tmtext) and [EUIPO](https://euipo.europa.eu/eSearch/) searches if the game will be sold there.
-3. Search both stores for "Tinker Table" and "Tinker" kids' games.
-4. If nothing close turns up, consider filing for the name in class 9 (and 28 if there might be toys later). A trademark lawyer's clearance search costs a few hundred dollars and is worth it before the name goes on a store page.
+1. Have a trademark lawyer run a clearance search for BUMPITY in class 9 (apps), and in 41 and 28 if those matter. It costs a few hundred dollars.
+2. File for the name in class 9 (the US, and the UK/EU if the game is sold there). Filing for class 9 only keeps clear of the BUMPIT toy mark.
+3. Register bumpity.app (or playbumpity.com) and the social handles before the name is announced.
+4. The game's web address is still `bahafin.github.io/tinker-table/`, and the saved-progress keys in the browser still start with `tinker.`. The keys stay as they are, so nobody loses their progress. Renaming the GitHub repo would change the address; GitHub redirects the old repo URL but not the Pages address, so it is best done before the address is shared widely.
 
 ## 3. Logo letters as outlines: done
 - [public/logo.svg](../public/logo.svg) now draws its letters as shapes, so it looks the same on every device and needs no font. Before, each device fell back to whatever rounded font it had.

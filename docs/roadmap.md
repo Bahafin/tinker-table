@@ -1,4 +1,4 @@
-# Tinker Table roadmap
+# Bumpity roadmap
 
 What we plan to build next, in order. Every feature has to keep three rules:
 - **No text the child needs to read.** Pictures, icons and the voice carry everything. Simple word labels (room names) may sit next to pictures, and they are read aloud when tapped.
@@ -142,7 +142,7 @@ With a real finger, before wrapping: the Music room, the toy box tabs and arrows
 
 ### Paperwork
 - Privacy page, logo letters as outlines, and store screenshots: done. See [release-prep.md](release-prep.md).
-- Trademark check: the name has had a first search but not a legal clearance; "Tinker" (US serial 98471370, online games) still needs a proper look.
+- Name: renamed from Tinker Table to Bumpity (20 November 2026). First searches are clean; a lawyer's clearance and a class 9 filing are still to do. See [release-prep.md](release-prep.md).
 - A support email for the privacy page and the store listings.
 - Apple's age questions and the Kids section rules (parental gate, no third-party analytics or ads).
 - Costs: $99 a year for Apple, $25 once for Google.

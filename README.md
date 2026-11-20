@@ -1,4 +1,4 @@
-# Tinker Table (working title)
+# Bumpity
 
 A calm chain-reaction puzzle game for kids aged 5–8 (younger ones with a grown-up), built as a web app for the iPad. The design is in [docs/design.md](docs/design.md).
 

@@ -104,8 +104,6 @@ const SHOTS = {
     await wait(1800);
     await page.mouse.up();
     await wait(500);
-    await page.evaluate(() => document.querySelector('#gu-cards .talk:nth-child(10)').scrollIntoView({ block: 'start' }));
-    await wait(400);
   },
 };
 
@@ -125,6 +123,8 @@ for (const size of SIZES) {
     await ctx.addInitScript(({ done, book }) => {
       localStorage.setItem('tinker.done', JSON.stringify(done));
       localStorage.setItem('tinker.book', JSON.stringify(book));
+      localStorage.setItem('tinker.welcomed', '1'); // skip the first-launch card for grown-ups
+      localStorage.setItem('tinker.gu', 'talk'); // the grown-ups' corner opens on the talk cards
       // Quiet: no voice while taking pictures.
       if (window.speechSynthesis) window.speechSynthesis.speak = () => {};
     }, { done: DONE, book: BOOK });
