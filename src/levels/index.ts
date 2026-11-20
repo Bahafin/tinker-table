@@ -49,7 +49,7 @@ import l47 from './47-boing-can.json';
 import l48 from './48-toaster-belt.json';
 import l49 from './49-car-jump.json';
 import l50 from './50-snip-boing.json';
-import { TOY_PARTS } from '../sim/parts';
+import { ALL_PARTS, TOY_PARTS } from '../sim/parts';
 
 /**
  * Ten levels per room, easiest first. Every level has a `difficulty` score (see
@@ -122,4 +122,12 @@ export const TOY_BOX: Level = {
   voice: 'The toy box! Build anything you like.',
   fixed: [],
   tray: TOY_PARTS.map((part) => ({ part, count: Infinity })),
+};
+
+/** The puzzle maker: every part, goals included. Build a machine, then make it a puzzle. */
+export const MAKER_BOX: Level = {
+  id: 'maker',
+  voice: 'Build a machine, then turn it into a puzzle!',
+  fixed: [],
+  tray: ALL_PARTS.map((part) => ({ part, count: Infinity })),
 };

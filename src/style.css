@@ -310,6 +310,29 @@ svg .fill { fill: currentColor; stroke: none; }
   height: 40px;
 }
 .card.mine { background: #eef7f3; }
+/* Toy box and puzzle maker rooms: the card that starts something new is dashed, with a plus;
+   kept machines and made puzzles are solid little photos. */
+.card.new-card {
+  background: transparent;
+  box-shadow: none;
+  border: 4px dashed var(--accent);
+}
+.card.new-card canvas { opacity: 0.75; }
+.card .plus-badge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 76px;
+  height: 76px;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 4px 6px rgba(80, 55, 30, 0.3));
+}
+.card.saved { background: #fff; padding: 8px 8px 18px; border-radius: 6px; }
+.save .heart { fill: #f6b5a8; }
+.save:disabled { opacity: 0.4; }
+.save.kept { animation: kept 0.6s ease-out; }
+.save.kept .heart { fill: var(--stop); }
+@keyframes kept { 40% { transform: scale(1.25); } }
 .card.fresh { animation: fresh 0.9s ease-in-out 3; }
 @keyframes fresh { 50% { transform: scale(1.06) rotate(-1deg); box-shadow: var(--shadow), 0 0 0 8px rgba(47, 156, 149, 0.25); } }
 .mine-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }

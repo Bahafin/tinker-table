@@ -412,12 +412,16 @@ export const TALK: Record<string, TalkCard> = {
 
 /** How to make a puzzle, for grown-ups (the toy box itself has no words). */
 export const MAKER_HOW =
-  'In the toy box, build a machine that works, then tap the button with the star. Tap the thing that travels (a ball, balloon, hamster, pulley or car), ' +
+  'In the puzzle maker (the last room on the front page), tap the card with the plus and build a machine that works, then tap the button with the star. Tap the thing that travels (a ball, balloon, hamster, pulley or car), ' +
   'then where it should go (a basket, star or cheese). For a watering can, tap the can and then a flower: the goal is to water it. Tap any other parts that should stay put: they get a brass pin. Everything without a pin goes into the tray ' +
-  'for the solver. Tap the tick: the game checks the machine works, and that it does not work without the tray parts. Good puzzles appear in the toy box room. ' +
+  'for the solver. Tap the tick: the game checks the machine works, and that it does not work without the tray parts. Good puzzles appear in the puzzle maker room, after the plus card. ' +
   'Try swapping roles: you make one for your child, then they make one for you.';
+
+export const TOYS_HOW =
+  'The toy box is for building freely, with no goal. The heart button keeps the machine on the table, and kept machines appear in the toy box room ' +
+  'after the card with the plus. Opening one puts its parts back on the table, and the heart saves the changes. A machine with bells and drums is a song.';
 
 export const MADE_TALK = {
   idea: 'Ask the maker how the machine is meant to work before anyone tries it. Explaining their own puzzle is great practice in planning and describing steps.',
-  none: 'No puzzles made yet. They appear here once one is saved from the toy box.',
+  none: 'No puzzles made yet. They appear here once one is saved in the puzzle maker.',
 };

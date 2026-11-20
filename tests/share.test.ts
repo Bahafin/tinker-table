@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { decodeLevel, encodeLevel } from '../src/levels/share';
+import { decodeLevel, decodeToy, encodeLevel, encodeToy } from '../src/levels/share';
 import { LEVELS } from '../src/levels';
 import { Sim } from '../src/sim/sim';
 import type { Level } from '../src/sim/types';
@@ -67,5 +67,22 @@ describe('share codes', () => {
     ['strings for numbers', raw({ ...good, s: [['2', 14, 10, 0]] })],
   ])('rejects %s', (_name, code) => {
     expect(decodeLevel(code as string)).toBeNull();
+  });
+});
+
+describe('kept toy-box machines', () => {
+  const parts = [
+    { part: 'ball' as const, x: 3, y: 3 },
+    { part: 'ramp' as const, x: 5, y: 5, rot: 15 },
+    { part: 'hamster' as const, x: 9, y: 9.5, rot: 180 },
+  ];
+  test('round trip keeps every part', () => {
+    expect(decodeToy(encodeToy(parts))).toEqual(parts);
+  });
+  test('rejects junk', () => {
+    expect(decodeToy('')).toBeNull();
+    expect(decodeToy('not json!')).toBeNull();
+    expect(decodeToy(btoa(JSON.stringify({ v: 1, t: [[99, 2, 2, 0]] })))).toBeNull();
+    expect(decodeToy(btoa(JSON.stringify({ v: 1, t: [[0, 200, 2, 0]] })))).toBeNull();
   });
 });

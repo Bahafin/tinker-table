@@ -110,3 +110,24 @@ export function decodeLevel(code: string, voice = SHARED_VOICE): Level | null {
     return null;
   }
 }
+
+/** A machine built in the toy box, saved on this device: just its parts, no goal. */
+interface ToyWire { v: number; t: Packed[] }
+
+export function encodeToy(parts: Placement[]): string {
+  return toBase64Url(JSON.stringify({ v: VERSION, t: parts.map(pack) } satisfies ToyWire));
+}
+
+/** Unpack a saved machine's parts, or null if anything is wrong with it. */
+export function decodeToy(code: string): Placement[] | null {
+  try {
+    if (typeof code !== 'string' || code.length === 0 || code.length > MAX_CODE) return null;
+    if (!/^[A-Za-z0-9_-]+$/.test(code)) return null;
+    const w = JSON.parse(fromBase64Url(code)) as ToyWire;
+    if (!w || typeof w !== 'object' || w.v !== VERSION || !Array.isArray(w.t) || w.t.length > MAX_PARTS) return null;
+    const parts = w.t.map((a) => unpack(a, true));
+    return parts.some((p) => !p) ? null : (parts as Placement[]);
+  } catch {
+    return null;
+  }
+}

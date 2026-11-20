@@ -1,12 +1,12 @@
 import './style.css';
-import { LEVELS, ROOMS, roomOf, roomVoice, TOY_BOX, type Room } from './levels';
+import { LEVELS, MAKER_BOX, ROOMS, roomOf, roomVoice, TOY_BOX, type Room } from './levels';
 import { Sim } from './sim/sim';
 import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from './sim/types';
 import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow, setSkin } from './render/draw';
 import { Game, drawIcon } from './ui/game';
 import { sfx, speak, unlockAudio } from './ui/audio';
-import { INTRO, MADE_TALK, MAKER_HOW, ROUTINE, SKILLS, TALK, TIPS } from './parents/content';
-import { decodeLevel, encodeLevel, MADE_VOICE, SHARED_VOICE } from './levels/share';
+import { INTRO, MADE_TALK, MAKER_HOW, ROUTINE, SKILLS, TALK, TIPS, TOYS_HOW } from './parents/content';
+import { decodeLevel, decodeToy, encodeLevel, encodeToy, MADE_VOICE, SHARED_VOICE } from './levels/share';
 import { looseStickers, renderBook } from './ui/book';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -42,6 +42,11 @@ const ROOM_ICONS: Record<string, string> = {
   playroom: '<rect x="8" y="26" width="14" height="14" rx="2" class="accent"/><rect x="24" y="26" width="14" height="14" rx="2" class="petal"/><rect x="16" y="11" width="14" height="14" rx="2" class="leaf"/>',
   attic: '<path d="M30 9a13 13 0 1 0 9 22A11 11 0 0 1 30 9z" class="accent"/><path d="M13 11l1.5 3 3.2.5-2.3 2.2.6 3.2-3-1.6-2.9 1.6.6-3.2-2.3-2.2 3.2-.5z" class="petal"/>',
 };
+
+/** The puzzle maker's picture: a star with a pin through it. */
+const MAKER_ICON = '<path d="M24 6l4.6 9.4 10.4 1.5-7.5 7.3 1.8 10.3L24 29.6l-9.3 4.9 1.8-10.3L9 16.9l10.4-1.5z" class="petal"/><circle cx="24" cy="39" r="3.5" class="accent"/><path d="M24 35.5V29"/>';
+const MAKER_ACCENT = '#d9a23c';
+const MAKER_PAPER = '#fbf2dc';
 
 /** The toy box's picture: an open box with a ball and a star popping out. */
 const TOY_ICON = '<path d="M8 22h32l-3 18H11z" class="accent"/><path d="M8 22l-3-7 13 2M40 22l3-7-13 2"/><circle cx="20" cy="15" r="5" class="pink"/><path d="M31 6l1.6 3.3 3.6.5-2.6 2.5.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.5 3.6-.5z" class="petal" stroke-width="2"/>';
@@ -131,7 +136,7 @@ function showMap() {
   // A little dot on the book when there are stickers waiting to be stuck in.
   $('btn-book').querySelector('.new')!.classList.toggle('hidden', !looseStickers(loadDone()));
   if (!mapRoom) showRooms(box);
-  else if (mapRoom === 'toybox') showToyRoom(box);
+  else if (mapRoom === 'toybox' || mapRoom === 'maker') showToyRoom(box, mapRoom);
   else showRoom(box, ROOMS.find((r) => r.id === mapRoom)!);
   $('map').scrollTop = 0;
   if (justMade) {
@@ -204,7 +209,9 @@ function showRooms(box: HTMLElement) {
     if (LEVELS.slice(room.first, room.first + room.count).every((l) => done.has(l.id))) t.insertAdjacentHTML('beforeend', STICKER);
   }
   const toy = addStop('toybox', 'Toy box', PAPER.teal, '#eef7f3', '#f4faf7', thumb(TOY_BOX, true), TOY_ICON);
-  if (loadMine().length) toy.insertAdjacentHTML('beforeend', MADE_BADGE);
+  if (loadToys().length) toy.insertAdjacentHTML('beforeend', SAVED_BADGE);
+  const maker = addStop('maker', 'Puzzle maker', MAKER_ACCENT, MAKER_PAPER, '#fdf8ec', makerScene(), MAKER_ICON);
+  if (loadMine().length) maker.insertAdjacentHTML('beforeend', MADE_BADGE);
 
   const prev = document.createElement('button');
   prev.className = 'icon path-arrow prev';
@@ -295,29 +302,75 @@ function showRoom(box: HTMLElement, room: Room) {
   }
 }
 
-/** The toy box room: build anything, plus the puzzles made here on this device. */
-function showToyRoom(box: HTMLElement) {
+/** The puzzle maker's front-page picture: a ball, a pinned star and a basket, waiting for a machine. */
+function makerScene(): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  const s = 22;
+  c.width = WORLD_W * s;
+  c.height = WORLD_H * s;
+  const ctx = c.getContext('2d')!;
+  ctx.scale(s, s);
+  drawTable(ctx, WORLD_W, WORLD_H, MAKER_PAPER);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  setSkin('');
+  const things: [PartKind, number, number, number][] = [['ball', 3, 3, 2.2], ['star', 8, 4.6, 4.2], ['basket', 12.6, 7.6, 5], ['pin', 8, 7.4, 2.4], ['hamster', 3.2, 7.8, 2.4], ['cheese', 6, 8.4, 2]];
+  for (const [k, x, y, size] of things) drawIcon(ctx, k, x * s, y * s, size * s);
+  // A dotted path from the ball to the basket: the machine still to be built.
+  ctx.setLineDash([0.25 * s, 0.25 * s]);
+  ctx.lineWidth = 0.14 * s;
+  ctx.strokeStyle = MAKER_ACCENT;
+  ctx.beginPath(); ctx.moveTo(4.4 * s, 3.4 * s); ctx.quadraticCurveTo(9 * s, 1 * s, 12.4 * s, 6 * s); ctx.stroke();
+  return c;
+}
+
+/**
+ * The toy box and the puzzle maker rooms. Each starts with a dashed "new" card with a big plus,
+ * then what was kept on this device: machines in the toy box, puzzles in the maker.
+ */
+function showToyRoom(box: HTMLElement, which: 'toybox' | 'maker') {
   const done = loadDone();
+  const toy = which === 'toybox';
+  const accent = toy ? PAPER.teal : MAKER_ACCENT;
+  const paper = toy ? '#eef7f3' : MAKER_PAPER;
+  const name = toy ? 'Toy box' : 'Puzzle maker';
   const banner = document.createElement('div');
   banner.className = 'room-banner';
-  banner.style.setProperty('--accent', PAPER.teal);
-  banner.style.setProperty('--paper', '#eef7f3');
-  banner.innerHTML = `<span class="tape"></span><svg viewBox="0 0 48 48" aria-hidden="true">${TOY_ICON}</svg>`;
-  banner.append(nameTag('Toy box', PAPER.teal));
+  banner.style.setProperty('--accent', accent);
+  banner.style.setProperty('--paper', paper);
+  banner.innerHTML = `<span class="tape"></span><svg viewBox="0 0 48 48" aria-hidden="true">${toy ? TOY_ICON : MAKER_ICON}</svg>`;
+  banner.append(nameTag(name, accent));
   banner.insertAdjacentHTML('beforeend', '<span class="tape"></span>');
   roomHeader(box, banner);
   const t = document.createElement('button');
-  t.className = 'card toybox';
-  t.setAttribute('aria-label', 'Toy box');
-  t.append(thumb(TOY_BOX, true));
-  t.onclick = () => startLevel(-1);
+  t.className = 'card new-card';
+  t.style.setProperty('--accent', accent);
+  t.setAttribute('aria-label', toy ? 'Build something new' : 'Make a new puzzle');
+  t.append(toy ? thumb(TOY_BOX, true) : makerScene());
+  t.insertAdjacentHTML('beforeend', PLUS_BADGE);
+  t.onclick = () => (toy ? startToy() : startLevel(-3));
   box.append(t);
-  // Puzzles made in the toy box on this device.
+  if (toy) {
+    // Machines kept in the toy box: they open with their parts on the table, ready to play with.
+    loadToys().forEach((code, k) => {
+      const parts = decodeToy(code);
+      if (!parts) return;
+      const b = document.createElement('button');
+      b.className = 'card saved';
+      if (code === justMade) b.classList.add('fresh');
+      b.setAttribute('aria-label', `My machine ${k + 1}`);
+      b.append(thumb({ ...TOY_BOX, fixed: parts }));
+      b.insertAdjacentHTML('beforeend', SAVED_BADGE);
+      b.onclick = () => startToy(code, parts);
+      box.append(b);
+    });
+    return;
+  }
+  // Puzzles made here on this device.
   loadMine().forEach((code, k) => {
     const lv = decodeLevel(code, MADE_VOICE);
     if (!lv) return;
     const b = document.createElement('button');
-    b.className = 'card mine';
+    b.className = 'card saved mine';
     if (code === justMade) b.classList.add('fresh');
     b.setAttribute('aria-label', `My puzzle ${k + 1}`);
     b.append(thumb(lv));
@@ -327,6 +380,27 @@ function showToyRoom(box: HTMLElement) {
     box.append(b);
   });
 }
+
+/** A big plus on the card that starts something new. */
+const PLUS_BADGE = `<svg class="plus-badge" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" style="fill:var(--accent);stroke:#fff;stroke-width:4"/><path d="M24 13v22M13 24h22" style="stroke:#fff;stroke-width:5"/></svg>`;
+
+// ---------- machines kept in the toy box (on this device) ----------
+const TOYS_KEY = 'tinker.toys';
+const MAX_TOYS = 20;
+function loadToys(): string[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(TOYS_KEY) ?? '[]');
+    return Array.isArray(v) ? v.filter((x) => typeof x === 'string') : [];
+  } catch { return []; }
+}
+function saveToys(list: string[]) {
+  try { localStorage.setItem(TOYS_KEY, JSON.stringify(list.slice(-MAX_TOYS))); } catch { /* private mode */ }
+}
+/** The saved machine now on the table, so saving again updates it instead of adding a copy. */
+let toyCode: string | null = null;
+/** A heart badge marks a kept machine. */
+const SAVED_BADGE = `<svg class="made-badge" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" style="fill:${PAPER.tomato};stroke:#fff;stroke-width:4"/>
+<path d="M24 35s-11-6.5-11-14a6 6 0 0 1 11-3.3A6 6 0 0 1 35 21c0 7.5-11 14-11 14z" style="fill:#fff;stroke:none"/></svg>`;
 
 // ---------- made puzzles (kept on this device) ----------
 const MINE_KEY = 'tinker.mine';
@@ -409,6 +483,9 @@ function showGrownups() {
       <h3>Puzzles made on this device</h3>
       <p>${esc(MAKER_HOW)}</p>
       <div id="gu-mine"></div>
+      <h3>Machines kept in the toy box</h3>
+      <p>${esc(TOYS_HOW)}</p>
+      <div id="gu-toys"></div>
       <p class="small">Tinker Table collects no data. Progress, the sticker book and made puzzles are kept only on this device. A shared link contains only the puzzle itself.</p>`;
     const cards = $('gu-cards');
     LEVELS.forEach((lv, i) => cards.append(talkCard(lv, `Level ${i + 1}`, i)));
@@ -416,6 +493,7 @@ function showGrownups() {
     guBuilt = true;
   }
   renderMine();
+  renderToys();
   $('map').classList.add('hidden');
   $('grownups').classList.remove('hidden');
   $('gu-body').scrollTop = 0;
@@ -460,6 +538,48 @@ function renderMine() {
       renderMine();
     };
     row.append(share, del);
+    body.append(row);
+    card.append(side, body);
+    box.append(card);
+  });
+}
+
+/** The grown-ups' list of kept toy-box machines, with delete. */
+function renderToys() {
+  const box = $('gu-toys');
+  box.innerHTML = '';
+  const list = loadToys();
+  if (!list.length) {
+    box.innerHTML = '<p class="small">Nothing kept yet. In the toy box, the heart button keeps the machine on the table.</p>';
+    return;
+  }
+  list.forEach((code, k) => {
+    const parts = decodeToy(code);
+    if (!parts) return;
+    const card = document.createElement('section');
+    card.className = 'talk mine';
+    const side = document.createElement('div');
+    side.className = 'talk-side';
+    const pic = thumb({ ...TOY_BOX, fixed: parts });
+    pic.className = 'talk-pic';
+    const play = document.createElement('button');
+    play.className = 'text-btn';
+    play.textContent = 'Open it';
+    play.onclick = () => { hideGrownups(); startToy(code, parts); };
+    side.append(pic, play);
+    const body = document.createElement('div');
+    body.innerHTML = `<h4>My machine ${k + 1}</h4>`;
+    const row = document.createElement('div');
+    row.className = 'mine-actions';
+    const del = document.createElement('button');
+    del.className = 'text-btn';
+    del.textContent = 'Delete';
+    del.onclick = () => {
+      if (del.dataset.sure !== '1') { del.dataset.sure = '1'; del.textContent = 'Tap again to delete'; return; }
+      saveToys(loadToys().filter((c) => c !== code));
+      renderToys();
+    };
+    row.append(del);
     body.append(row);
     card.append(side, body);
     box.append(card);
@@ -609,6 +729,8 @@ function syncButtons() {
   const hint = $('btn-hint');
   hint.classList.toggle('hidden', !game.hintReady);
   hint.classList.toggle('ready', game.hintReady);
+  $('btn-save').classList.toggle('hidden', game.level.id !== 'toybox' || run);
+  $('btn-save').toggleAttribute('disabled', !game.canSave);
   $('btn-make').classList.toggle('hidden', !(game.canMake || making));
   $('btn-make').setAttribute('aria-pressed', String(making));
   $('btn-make-done').classList.toggle('hidden', !(making && game.making!.step === 'pins'));
@@ -643,20 +765,27 @@ let madeGoalShown = false;
 /** The current level's spoken goal, in its room's words. */
 let voice = '';
 
-/** i: a level number, -1 for the toy box, or -2 with a made or shared puzzle. */
-function startLevel(i: number, custom?: Level) {
+/** Open the toy box, empty or with a kept machine's parts on the table. */
+function startToy(code: string | null = null, parts: Placement[] = []) {
+  startLevel(-1, undefined, parts);
+  toyCode = code;
+}
+
+/** i: a level number, -1 for the toy box, -3 for the puzzle maker, or -2 with a made or shared puzzle. */
+function startLevel(i: number, custom?: Level, start: Placement[] = []) {
   current = custom ? -2 : i;
-  const level = custom ?? (i < 0 ? TOY_BOX : LEVELS[i]);
+  const level = custom ?? (i === -1 ? TOY_BOX : i === -3 ? MAKER_BOX : LEVELS[i]);
+  toyCode = null;
   game?.destroy();
   $('map').classList.add('hidden');
   $('play').classList.remove('hidden');
   $('won').classList.add('hidden');
   const slow = game?.slow ?? false;
-  game = new Game($<HTMLCanvasElement>('stage'), level);
+  game = new Game($<HTMLCanvasElement>('stage'), level, start);
   const room = custom || i < 0 ? undefined : roomOf(i);
   if (room) { game.paper = room.paper; game.skin = room.id; }
-  // Home goes back to the room this level is in (made and shared puzzles live in the toy box).
-  mapRoom = room?.id ?? 'toybox';
+  // Home goes back to the room this level is in (made and shared puzzles live in the puzzle maker).
+  mapRoom = room?.id ?? (i === -1 ? 'toybox' : 'maker');
   voice = roomVoice(room?.id, level.voice);
   setSkin(room?.id ?? '');
   game.slow = slow;
@@ -695,6 +824,21 @@ $('btn-make-done').onclick = () => {
   saveMine([...loadMine().filter((c) => c !== code), code]);
   justMade = code;
   setTimeout(showMap, 900);
+};
+$('btn-save').onclick = () => {
+  if (!game?.canSave) return;
+  const code = encodeToy(game.placements);
+  const list = loadToys();
+  const k = toyCode ? list.indexOf(toyCode) : -1;
+  if (k >= 0) list[k] = code; else list.push(code);
+  saveToys(list.filter((c, j) => c !== code || j === list.indexOf(code)));
+  toyCode = code;
+  justMade = code;
+  sfx.chime();
+  const b = $('btn-save');
+  b.classList.remove('kept');
+  void b.offsetWidth;
+  b.classList.add('kept');
 };
 $('btn-guess').onclick = () => game?.togglePencil();
 $('btn-slow').onclick = () => { if (game) { game.slow = !game.slow; syncButtons(); } };

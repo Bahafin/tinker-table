@@ -23,7 +23,7 @@ A calm chain-reaction puzzle game for ages 5–8 (younger children with a grown-
 9. **A slow-motion toggle** (snail button) is always available.
 10. **One voice line per level,** and the speaker button replays it.
 11. **Hints are ghosts, not words.** After two runs that didn't win (missed, or stopped with the stop button) a hint button pulses. Each tap shows a faint ghost of one missing part, in place and at its angle, for a few seconds.
-12. **Making puzzles uses taps, not menus.** In the toy box: tap what travels, tap where it goes, tap parts to pin them, then tap the tick. A puzzle that doesn't check out gets a wiggle and a hmm.
+12. **Making puzzles uses taps, not menus.** In the puzzle maker: tap what travels, tap where it goes, tap parts to pin them, then tap the tick. A puzzle that doesn't check out gets a wiggle and a hmm.
 
 ## World and physics
 - **The world is 16 × 10 cells,** and 1 cell = 1 physics unit (metre). The screen's y axis points down, and gravity is +10 in y.
@@ -177,14 +177,18 @@ The score is the first number plus half the second. The rooms are then laid out 
 STATS=46-belt-hammer,49-car-jump npx vitest run scripts/level-stats
 ```
 
-The front page is a **row of rooms you swipe along**, left to right in order of difficulty: five **rooms** of ten levels (Workshop, Playroom, Attic, Kitchen, Garden), then the **Toy box** at the end.
+The front page is a **row of rooms you swipe along**, left to right in order of difficulty: five **rooms** of ten levels (Workshop, Playroom, Attic, Kitchen, Garden), then the **Toy box** and the **Puzzle maker** at the end.
 - One room sits big in the middle and the next one peeks in from the side, so a child can see there is more. Big round arrows on both sides do the same as a swipe.
 - Each room shows its own things, one dot per level (filled in when the level is done) and its **name as a word label**. When a room comes to rest in the middle the voice says its name, and tapping the name says it again.
 - Tapping the room in the middle opens it; tapping a peeking room brings it to the middle first.
 - The row opens on the room the child was last in, or else on the first room with levels still to do.
 - The row stays clear of the screen's edges, where a swipe can mean "go back" in Safari.
 
-Inside a room, the banner shows the room's picture and name, with a back button. The puzzle maker and the puzzles made on this device live in the Toy box room.
+Inside a room, the banner shows the room's picture and name, with a back button.
+
+The **Toy box** and **Puzzle maker** rooms each start with a dashed card with a big plus, which starts something new. After it come the things kept on this device, as solid white "photo" cards: machines kept in the toy box (heart badge) and puzzles made in the maker (star badge).
+- **Toy box:** build freely, no goal. The heart button in the top bar keeps the machine. A kept machine opens with its parts on the table, and the heart saves changes to it rather than adding a copy. Up to 20 are kept.
+- **Puzzle maker:** every part, goals included. Build a machine, then tap the star button to make it a puzzle (see rule 12). Up to 20 puzzles are kept, and grown-ups can share them.
 
 Each room draws the same parts as its own things (`src/render/skins.ts`). The physics, size and outline never change, so a slope always looks like a slope and a target is always an open container:
 
@@ -202,7 +206,7 @@ Each room draws the same parts as its own things (`src/render/skins.ts`). The ph
 
 The spoken goal uses the room's words too (`roomVoice` in `src/levels/index.ts`), so in the garden "the ball" becomes "the apple". The hamster, cheese, fan, belt, spring, see-saw and pulley look the same everywhere.
 
-Plus the **toy box**: every part except the goal-only star and cheese, unlimited, no goal.
+Plus the **toy box**: every part except the goal-only star and cheese, unlimited, no goal. The **puzzle maker** has every part.
 
 ## Look: paper craft
 - **Background:** warm off-white paper with a faint dot grid.

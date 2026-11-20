@@ -123,8 +123,10 @@ export class Game {
   private wonAt = 0;
   private L = { scale: 1, ox: 0, oy: 0, trayTop: 0, trayH: 0, item: 0, itemX0: 0, itemY0: 0, cols: 1, cw: 0, ch: 0, dpr: 1 };
 
-  constructor(private canvas: HTMLCanvasElement, readonly level: Level) {
+  /** start: parts already on the table (a machine saved in the toy box). */
+  constructor(private canvas: HTMLCanvasElement, readonly level: Level, start: Placement[] = []) {
     this.fixed = level.fixed.map((p) => ({ ...p, fixed: true }));
+    this.placements = start.map((p) => ({ ...p }));
     canvas.addEventListener('pointerdown', this.down);
     canvas.addEventListener('pointermove', this.move);
     canvas.addEventListener('pointerup', this.up);
@@ -185,9 +187,14 @@ export class Game {
     return this.mode === 'build' && this.misses >= MISSES_BEFORE_HINT && !!this.level.solution;
   }
 
-  /** The toy box can become a puzzle once there's something on the table. */
+  /** In the puzzle maker, the machine can become a puzzle once there's something on the table. */
   get canMake() {
-    return this.level.id === 'toybox' && this.mode === 'build' && this.placements.length >= 2;
+    return this.level.id === 'maker' && this.mode === 'build' && this.placements.length >= 2;
+  }
+
+  /** A machine built in the toy box can be kept. */
+  get canSave() {
+    return this.level.id === 'toybox' && this.mode === 'build' && this.placements.length >= 1;
   }
 
   startMaking() {
