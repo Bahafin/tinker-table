@@ -189,13 +189,16 @@ const garden: Partial<Record<PartKind, DrawFn>> = {
   balloon: balloonIn('#f2c94c', '#f8e39a'),
 };
 
-// ---------- Kitchen: oranges, a melon, a cutting board, a pot, a fork, cereal boxes, a cookie ----------
+// ---------- Kitchen: bagels, a melon, a cutting board, a pot, a fork, cereal boxes, a cookie ----------
 const kitchen: Partial<Record<PartKind, DrawFn>> = {
+  // A sesame bagel (it goes in the toaster, after all), with a real hole in the middle.
   ball: body((ctx) => {
-    dot(ctx, 0, 0, 0.35, '#f08a24');
+    ctx.beginPath(); ctx.arc(0, 0, 0.35, 0, TAU); ctx.arc(0, 0, 0.11, TAU, 0, true); paper(ctx, '#c98a45');
     noShadow(ctx, () => {
-      for (const [x, y] of [[-0.15, 0.1], [0.12, 0.16], [0.05, -0.12], [-0.1, -0.18], [0.2, -0.02]]) dot(ctx, x, y, 0.022, '#d06f12');
-      ctx.beginPath(); ctx.ellipse(0.08, -0.36, 0.1, 0.045, -0.4, 0, TAU); paper(ctx, PAPER.leaf);
+      ctx.beginPath(); ctx.arc(0, 0, 0.23, Math.PI * 1.05, Math.PI * 1.75); ctx.strokeStyle = '#e2ad6a'; ctx.lineWidth = 0.09; ctx.lineCap = 'round'; ctx.stroke();
+      for (const [a, r] of [[0.3, 0.26], [1.4, 0.24], [2.3, 0.27], [3.3, 0.25], [4.2, 0.27], [5.2, 0.24]]) {
+        ctx.beginPath(); ctx.ellipse(Math.cos(a) * r, Math.sin(a) * r, 0.035, 0.018, a, 0, TAU); paper(ctx, '#fbf0d2');
+      }
     });
   }),
   heavyball: body((ctx) => {

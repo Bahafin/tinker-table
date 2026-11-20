@@ -165,7 +165,7 @@ Added with the move to ten levels a room, one more for each room's own part:
 
 46. **Belt and hammer** (Workshop): a ball falls far from the hammer. A belt carries it over to bump the hammer, which whacks the other ball into the toolbox.
 47. **Boing the can** (Garden): the can is up on a shelf. A tilted spring bounces the falling apple sideways into it, and the water falls on the flower.
-48. **Toaster and belt** (Kitchen): the toaster pops the orange up high, and a belt placed where it comes down carries it over a wall into the pot.
+48. **Toaster and belt** (Kitchen): the toaster pops the bagel up high, and a belt placed where it comes down carries it over a wall into the pot.
 49. **Car jump** (Playroom): a gap wider than one plank. A ramp tilted up at the edge lets the car jump across to the star.
 50. **Snip and boing** (Attic): snip the rope, and a spring where the marble lands bounces it over a wall into the trunk. Both parts are needed.
 
@@ -215,7 +215,7 @@ Each room draws the same parts as its own things (`src/render/skins.ts`). The ph
 
 | Part | Workshop | Garden | Kitchen | Playroom | Attic |
 |---|---|---|---|---|---|
-| Ball | steel ball | apple | orange | beach ball | marble |
+| Ball | steel ball | apple | bagel | beach ball | marble |
 | Heavy ball | (plain) | pumpkin | melon | bowling ball | globe |
 | Ramp | nailed plank | branch | cutting board | toy track | floorboard |
 | Block | wooden crate | hay bale | toast | toy block | cardboard box |

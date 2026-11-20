@@ -108,7 +108,7 @@ const WORDS: Record<string, [RegExp, string][]> = {
     [/\bpins\b/g, 'cactuses'], [/\bpin\b/g, 'cactus'], [/\bMake a ramp\b/g, 'Lay a branch'], [/\ba ramp\b/g, 'a branch'], [/\bramps\b/g, 'branches'], [/\bramp\b/g, 'branch'],
   ],
   kitchen: [
-    [/\b(big|heavy) ball\b/g, 'melon'], [/\ba ball\b/g, 'an orange'], [/\bballs\b/g, 'oranges'], [/\bball\b/g, 'orange'],
+    [/\b(big|heavy) ball\b/g, 'melon'], [/\ba ball\b/g, 'a bagel'], [/\bballs\b/g, 'bagels'], [/\bball\b/g, 'bagel'],
     [/\bbasket\b/g, 'pot'], [/\bstar\b/g, 'cookie'], [/\bdominoes\b/g, 'cereal boxes'],
     [/\bpins\b/g, 'forks'], [/\bpin\b/g, 'fork'], [/\bramps\b/g, 'cutting boards'], [/\bramp\b/g, 'cutting board'],
   ],
