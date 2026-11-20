@@ -76,6 +76,7 @@ The current game (ages 5–8): 60 levels in six rooms of ten (the sixth is the M
 - **Sticker book:**
   - A book button on the front page. Each finished level gives a sticker: the most special part in that level, drawn in its room's look on a round backing in the room's colours.
   - Drag stickers from the strip onto the page, anywhere. Drag one off the page to put it back. A red dot on the book means there are stickers waiting.
+  - The strip has a round tab for each room (a red dot where stickers are waiting). A room's stickers show once per kind, with a dot for each copy earned: filled while it's still to stick, hollow once it's on the page. The book opens on a room with stickers waiting.
   - It rewards finishing without scoring how well the child did. Kept on the device.
 
 ## Milestone 5.5: a front page to swipe, and first words (done)
@@ -92,6 +93,10 @@ The current game (ages 5–8): 60 levels in six rooms of ten (the sixth is the M
 - The toy box tray has room tabs and page arrows, and parts from different rooms can share the table, each in its room's look.
 - Dominoes stand on things, and no domino level can be won with a domino left out (checked by `scripts/domino-check`).
 - Look-alike levels were mirrored, and a test stops two levels from looking and playing the same.
+
+## Sounds by material (done)
+- Every knock sounds like what met: wood (planks, dominoes, blocks), metal (pins, hammer, toaster, pot), plastic (balls, hamster, car), a heavy thud (the heavy ball), the paper table, or barely anything (balloons, cheese, flowers).
+- The drum is a real tom (a beater click and a fast drop in pitch); the spring's boing now wobbles, so the two don't sound alike.
 
 ## Milestone 6: new things to play with
 - **Musical parts (done):**

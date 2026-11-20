@@ -1,5 +1,5 @@
 import './style.css';
-import { LEVELS, MAKER_BOX, ROOMS, roomOf, roomVoice, TOY_BOX, type Room } from './levels';
+import { LEVELS, MAKER_BOX, ROOM_PART, ROOMS, roomOf, roomVoice, TOY_BOX, type Room } from './levels';
 import { Sim } from './sim/sim';
 import { WORLD_H, WORLD_W, type Level, type Note, type PartKind, type Placement } from './sim/types';
 import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow, setSkin } from './render/draw';
@@ -99,7 +99,7 @@ function thumb(level: Level, toy = false, withSolution = false, room?: Room): HT
 const NOTE_PART: Record<Note, PartKind> = { c: 'xylo-c', d: 'xylo-d', e: 'xylo-e', g: 'xylo-g', a: 'xylo-a', bell: 'bell', drum: 'drum' };
 
 /** Each room's own part, shown on its tab in the toy box tray. */
-const ROOM_PART: Record<string, PartKind> = { workshop: 'hammer', playroom: 'car', attic: 'scissors', kitchen: 'toaster', garden: 'can', music: 'bell' };
+// ROOM_PART (each room's own part) lives in levels/index.ts.
 
 /**
  * The toy box tray's sets: one per room, with every part used in that room's levels, in the
@@ -643,7 +643,7 @@ async function sharePuzzle(code: string, btn: HTMLButtonElement) {
 function showBook() {
   $('map').classList.add('hidden');
   $('book').classList.remove('hidden');
-  renderBook($('book-page'), $('book-strip'), loadDone());
+  renderBook($('book-page'), $('book-strip'), loadDone(), true);
   sfx.place();
 }
 function hideBook() {

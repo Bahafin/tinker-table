@@ -1,7 +1,7 @@
 // The sticker book: every finished level gives a sticker (a part from that level,
 // drawn in its room's look), and the child places stickers anywhere on the page.
 // Nothing is scored: it's a page to decorate. Kept on this device only.
-import { LEVELS, roomOf } from '../levels';
+import { LEVELS, ROOM_PART, ROOMS, roomOf } from '../levels';
 import type { Level, PartKind } from '../sim/types';
 import { setSkin } from '../render/draw';
 import { drawIcon } from './game';
@@ -89,34 +89,115 @@ function stickerImage(index: number): string {
   return url;
 }
 
+/** The room whose stickers the strip shows (-1: pick one when the book opens). */
+let tab = -1;
+
 /**
- * Fill the book screen: the page with the placed stickers, and a strip of loose
- * ones underneath. Drag a sticker onto the page to stick it, drag it around to
- * move it, or drag it off the page to take it back.
+ * Fill the book screen: the page with the placed stickers, and under it a strip with
+ * a tab for each room and that room's stickers. Each kind of sticker shows once, with a
+ * dot for every copy earned: filled while it's still to be stuck, hollow once it's on the
+ * page. Drag a sticker onto the page to stick it, drag it around to move it, or drag it
+ * off the page to take it back.
  */
-export function renderBook(page: HTMLElement, strip: HTMLElement, done: Set<string>) {
+export function renderBook(page: HTMLElement, strip: HTMLElement, done: Set<string>, opening = false) {
   const book = loadBook();
   page.querySelectorAll('.stk').forEach((e) => e.remove());
   strip.innerHTML = '';
+  // Stickers on the page.
   LEVELS.forEach((level, i) => {
-    if (!done.has(level.id)) return;
-    const el = document.createElement('img');
-    el.className = 'stk';
-    el.src = stickerImage(i);
-    el.alt = '';
-    el.draggable = false;
     const spot = book[level.id];
-    if (spot) {
-      el.style.left = `${spot[0] * 100}%`;
-      el.style.top = `${spot[1] * 100}%`;
-      el.style.setProperty('--tilt', `${spot[2]}deg`);
-      page.append(el);
-    } else {
-      strip.append(el);
-    }
+    if (!done.has(level.id) || !spot) return;
+    const el = sticker(i);
+    el.style.left = `${spot[0] * 100}%`;
+    el.style.top = `${spot[1] * 100}%`;
+    el.style.setProperty('--tilt', `${spot[2]}deg`);
+    page.append(el);
     el.addEventListener('pointerdown', (e) => drag(e, el, level.id, page, strip, done));
   });
-  strip.classList.toggle('empty', !strip.children.length);
+  // Each room's stickers, grouped by kind.
+  const groups = ROOMS.map((room) => {
+    const byKind = new Map<PartKind, number[]>();
+    for (let i = room.first; i < room.first + room.count; i++) {
+      if (!done.has(LEVELS[i].id)) continue;
+      const k = stickerKind(LEVELS[i]);
+      byKind.set(k, [...(byKind.get(k) ?? []), i]);
+    }
+    return [...byKind.values()];
+  });
+  const loose = (g: number[]) => g.filter((i) => !book[LEVELS[i].id]);
+  const hasLoose = (r: number) => groups[r].some((g) => loose(g).length);
+  if (opening || tab < 0) {
+    tab = groups.findIndex((_, r) => hasLoose(r));
+    if (tab < 0) tab = Math.max(0, groups.findIndex((g) => g.length));
+  }
+  const tabs = document.createElement('div');
+  tabs.className = 'book-tabs';
+  ROOMS.forEach((room, r) => {
+    const b = document.createElement('button');
+    b.className = 'book-tab' + (r === tab ? ' on' : '') + (groups[r].length ? '' : ' none');
+    b.setAttribute('aria-label', room.name);
+    b.style.setProperty('--accent', room.accent);
+    b.style.setProperty('--paper', room.paper);
+    b.append(tabIcon(room.id));
+    if (hasLoose(r)) b.insertAdjacentHTML('beforeend', '<span class="new"></span>');
+    b.onclick = () => { if (tab !== r) { tab = r; sfx.place(); renderBook(page, strip, done); } };
+    tabs.append(b);
+  });
+  const shelf = document.createElement('div');
+  shelf.className = 'book-shelf';
+  shelf.style.setProperty('--accent', ROOMS[tab].accent);
+  for (const g of groups[tab]) {
+    const left = loose(g);
+    const stack = document.createElement('div');
+    stack.className = 'stack' + (left.length ? '' : ' used');
+    const el = sticker(g[0]);
+    stack.append(el);
+    const dots = document.createElement('span');
+    dots.className = 'dots';
+    // Filled dots first: the ones still to stick.
+    for (const i of [...left, ...g.filter((k) => !left.includes(k))]) {
+      const d = document.createElement('i');
+      if (left.includes(i)) d.className = 'on';
+      dots.append(d);
+    }
+    stack.append(dots);
+    if (left.length) el.addEventListener('pointerdown', (e) => drag(e, el, LEVELS[left[0]].id, page, strip, done));
+    else el.addEventListener('pointerdown', () => sfx.nope());
+    shelf.append(stack);
+  }
+  shelf.classList.toggle('empty', !groups[tab].length);
+  strip.append(tabs, shelf);
+}
+
+function sticker(index: number): HTMLImageElement {
+  const el = document.createElement('img');
+  el.className = 'stk';
+  el.src = stickerImage(index);
+  el.alt = '';
+  el.draggable = false;
+  return el;
+}
+
+const tabCache = new Map<string, string>();
+/** A room tab's picture: the room's own part on a round backing in its colours. */
+function tabIcon(roomId: string): HTMLImageElement {
+  let url = tabCache.get(roomId);
+  if (!url) {
+    const S = 96;
+    const c = document.createElement('canvas');
+    c.width = c.height = S;
+    const ctx = c.getContext('2d')!;
+    const kind = ROOM_PART[roomId];
+    setSkin(roomId);
+    drawIcon(ctx, kind, S / 2, S / 2, S * (kind === 'hammer' ? 1.6 : 0.82));
+    setSkin('');
+    url = c.toDataURL();
+    tabCache.set(roomId, url);
+  }
+  const img = document.createElement('img');
+  img.src = url;
+  img.alt = '';
+  return img;
 }
 
 function drag(e: PointerEvent, el: HTMLElement, id: string, page: HTMLElement, strip: HTMLElement, done: Set<string>) {

@@ -51,7 +51,7 @@ export interface Level {
 }
 
 export type SimEvent =
-  | { type: 'clack'; strength: number }
+  | { type: 'clack'; strength: number; mat: Material }
   | { type: 'pop'; x: number; y: number }
   | { type: 'boing' }
   | { type: 'whoosh' }
@@ -64,3 +64,6 @@ export type SimEvent =
 
 export const WORLD_W = 16;
 export const WORLD_H = 10;
+
+/** What a knock sounds like: the loudest material of the two things that met. */
+export type Material = 'metal' | 'heavy' | 'wood' | 'table' | 'plastic' | 'soft';

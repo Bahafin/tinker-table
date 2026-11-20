@@ -1,6 +1,6 @@
 import { World, Vec2, Edge, Body, Circle, type Contact } from 'planck';
 import { NOTE_OF, PARTS, type RuntimePart } from './parts';
-import { WORLD_H, WORLD_W, type Goal, type Note, type Placement, type SimEvent } from './types';
+import { WORLD_H, WORLD_W, type Goal, type Material, type Note, type PartKind, type Placement, type SimEvent } from './types';
 
 export const DT = 1 / 60;
 const MAX_TIME = 25;
@@ -36,6 +36,27 @@ const SWING_GRACE = 6;
 
 /** drop: a water drop poured by a watering can (rp is that can). */
 type Tag = { rp: RuntimePart; drop?: boolean };
+
+/** What each part sounds like when it knocks into something. */
+const MATERIAL: Partial<Record<PartKind, Material>> = {
+  pin: 'metal', hammer: 'metal', scissors: 'metal', toaster: 'metal', can: 'metal', basket: 'metal', pulley: 'metal',
+  heavyball: 'heavy',
+  ramp: 'wood', shortramp: 'wood', domino: 'wood', seesaw: 'wood', block: 'wood', star: 'wood',
+  ball: 'plastic', hamster: 'plastic', car: 'plastic', conveyor: 'plastic', fan: 'plastic', rope: 'plastic',
+  balloon: 'soft', cheese: 'soft', flower: 'soft',
+};
+const LOUDEST: Material[] = ['metal', 'heavy', 'wood', 'table', 'plastic', 'soft'];
+
+/**
+ * The sound of a knock between two things (undefined: the table's edge). Musical parts and
+ * springs make their own sound instead, and water just splashes quietly.
+ */
+function materialOf(a: PartKind | undefined, b: PartKind | undefined, water: boolean): Material | null {
+  if (water) return null;
+  for (const k of [a, b]) if (k && (NOTE_OF[k] || k === 'spring')) return null;
+  const mats = [a, b].map((k) => (k ? MATERIAL[k] ?? 'plastic' : 'table'));
+  return LOUDEST.find((m) => mats.includes(m)) ?? 'plastic';
+}
 
 /**
  * One run of a machine. Building it is cheap, so the build screen also creates a
@@ -158,7 +179,10 @@ export class Sim {
       }
     }
     const rel = a.getLinearVelocity().clone().sub(b.getLinearVelocity()).length();
-    if (rel > 1.2) this.events.push({ type: 'clack', strength: Math.min(1, rel / 8) });
+    if (rel > 1.2) {
+      const mat = materialOf(ra?.kind, rb?.kind, !!(ta?.drop || tb?.drop));
+      if (mat) this.events.push({ type: 'clack', strength: Math.min(1, rel / 8), mat });
+    }
   }
 
   /** Conveyor belts move whatever touches them along the belt. */
@@ -312,7 +336,7 @@ export class Sim {
       h.brake!.setMotorSpeed(h.state.dir! * HAMMER_SPEED);
       h.brake!.setMaxMotorTorque(HAMMER_TORQUE);
       h.bodies[0].setAwake(true);
-      this.events.push({ type: 'clack', strength: 0.6 });
+      this.events.push({ type: 'clack', strength: 0.6, mat: 'metal' });
     }
     this.releaseQueue = [];
     for (const d of this.dropsToRemove) {

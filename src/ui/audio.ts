@@ -1,4 +1,4 @@
-import type { Note } from '../sim/types';
+import type { Material, Note } from '../sim/types';
 
 let ac: AudioContext | null = null;
 let lastClack = 0;
@@ -29,9 +29,9 @@ function tone(freq: number, dur: number, type: OscillatorType, vol: number, at =
   o.stop(t + dur + 0.02);
 }
 
-function noise(dur: number, vol: number, filter: BiquadFilterType, freq: number) {
+function noise(dur: number, vol: number, filter: BiquadFilterType, freq: number, q = 1, at = 0) {
   if (!ac) return;
-  const t = ac.currentTime;
+  const t = ac.currentTime + at;
   const buf = ac.createBuffer(1, Math.ceil(ac.sampleRate * dur), ac.sampleRate);
   const d = buf.getChannelData(0);
   for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
@@ -40,10 +40,65 @@ function noise(dur: number, vol: number, filter: BiquadFilterType, freq: number)
   const f = ac.createBiquadFilter();
   f.type = filter;
   f.frequency.value = freq;
+  f.Q.value = q;
   const g = ac.createGain();
   g.gain.value = vol;
   src.connect(f).connect(g).connect(ac.destination);
   src.start(t);
+}
+
+/** Each material's knock. v: loudness 0..1, p: a little pitch wobble so repeats don't sound mechanical. */
+const KNOCK: Record<Material, (v: number, p: number) => void> = {
+  // Hollow and woody: a short low triangle note through a resonant band.
+  wood: (v, p) => { tone(420 * p, 0.08, 'triangle', 0.28 * v); noise(0.05, 0.35 * v, 'bandpass', 950 * p, 4); },
+  // Bright and ringing: two inharmonic partials that hang on a little.
+  metal: (v, p) => { tone(1850 * p, 0.22, 'sine', 0.1 * v); tone(2790 * p, 0.14, 'sine', 0.06 * v); noise(0.02, 0.18 * v, 'highpass', 4500); },
+  // A light tick.
+  plastic: (v, p) => { tone(1150 * p, 0.04, 'triangle', 0.12 * v); noise(0.025, 0.22 * v, 'bandpass', 2600 * p, 2); },
+  // A heavy ball: a low thud you feel.
+  heavy: (v, p) => { tone(120 * p, 0.2, 'sine', 0.5 * v, 0, 55); noise(0.09, 0.35 * v, 'lowpass', 320); },
+  // The paper table itself: a dull pat.
+  table: (v, p) => { noise(0.07, 0.4 * v, 'lowpass', 650 * p); tone(170 * p, 0.07, 'sine', 0.15 * v, 0, 100); },
+  // Balloons, cheese, flowers: barely a sound.
+  soft: (v) => noise(0.05, 0.12 * v, 'lowpass', 450),
+};
+
+/** A tone sliding from one pitch to another with a vibrato, for the spring. */
+function wobble(from: number, to: number, dur: number, type: OscillatorType, vol: number, rate: number, depth: number) {
+  if (!ac) return;
+  const t = ac.currentTime;
+  const o = ac.createOscillator(), g = ac.createGain(), lfo = ac.createOscillator(), lg = ac.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(from, t);
+  o.frequency.exponentialRampToValueAtTime(to, t + dur * 0.35);
+  lfo.frequency.value = rate;
+  lg.gain.value = to * depth;
+  lfo.connect(lg).connect(o.frequency);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g).connect(ac.destination);
+  o.start(t); lfo.start(t);
+  o.stop(t + dur + 0.02); lfo.stop(t + dur + 0.02);
+}
+
+/** A floor tom: a beater click, a fast drop in pitch, and the skin's thump. */
+function drum() {
+  if (!ac) return;
+  const t = ac.currentTime;
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = 'sine';
+  o.frequency.setValueAtTime(190, t);
+  o.frequency.exponentialRampToValueAtTime(78, t + 0.06);
+  o.frequency.exponentialRampToValueAtTime(64, t + 0.4);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.75, t + 0.004);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+  o.connect(g).connect(ac.destination);
+  o.start(t);
+  o.stop(t + 0.5);
+  noise(0.12, 0.45, 'bandpass', 220, 1.2);
+  noise(0.012, 0.3, 'highpass', 3000);
 }
 
 export const sfx = {
@@ -51,14 +106,16 @@ export const sfx = {
   pickup: () => tone(330, 0.08, 'sine', 0.2, 0, 440),
   rotate: () => tone(880, 0.05, 'triangle', 0.15),
   nope: () => { tone(300, 0.08, 'square', 0.06); tone(250, 0.1, 'square', 0.06, 0.09); },
-  clack: (s: number) => {
+  /** Two things knocking together, in the sound of the loudest material of the two. */
+  clack: (s: number, mat: Material = 'plastic') => {
     const now = performance.now();
     if (now - lastClack < 45) return;
     lastClack = now;
-    noise(0.05, 0.15 + s * 0.4, 'bandpass', 1800);
+    KNOCK[mat](0.35 + s * 0.65, 0.92 + Math.random() * 0.16);
   },
   pop: () => { noise(0.15, 0.9, 'highpass', 1200); tone(600, 0.1, 'sine', 0.2, 0, 150); },
-  boing: () => tone(180, 0.35, 'sine', 0.3, 0, 520),
+  /** A spring: a rising twang that wobbles, like a door stop. */
+  boing: () => wobble(150, 480, 0.45, 'triangle', 0.28, 22, 0.12),
   whoosh: () => noise(0.7, 0.35, 'lowpass', 900),
   go: () => { tone(392, 0.12, 'triangle', 0.2); tone(523, 0.16, 'triangle', 0.2, 0.1); },
   chime: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.5, 'sine', 0.3, i * 0.12)),
@@ -77,7 +134,7 @@ export const sfx = {
   /** A musical part: a wooden xylophone note, the bell, or the drum. */
   note: (n: Note) => {
     if (n === 'bell') { tone(1318, 1.4, 'sine', 0.22); tone(1318 * 2.76, 0.5, 'sine', 0.06); tone(1318 * 5.4, 0.25, 'sine', 0.03); return; }
-    if (n === 'drum') { tone(130, 0.35, 'sine', 0.55, 0, 50); noise(0.12, 0.3, 'lowpass', 400); return; }
+    if (n === 'drum') { drum(); return; }
     const f = NOTE_HZ[n];
     tone(f, 0.7, 'sine', 0.32);
     tone(f * 4, 0.12, 'sine', 0.07);

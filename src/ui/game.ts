@@ -716,7 +716,7 @@ export class Game {
       }
       for (const ev of s.events) {
         if (ev.type === 'pop' || (ev.type === 'note' && ev.note === 'bell')) this.bangs.push({ x: ev.x, y: ev.y, t: this.t });
-        if (ev.type === 'clack') sfx.clack(ev.strength);
+        if (ev.type === 'clack') sfx.clack(ev.strength, ev.mat);
         else if (ev.type === 'note') sfx.note(ev.note);
         else sfx[ev.type]();
       }

@@ -1,4 +1,4 @@
-import type { Level } from '../sim/types';
+import type { Level, PartKind } from '../sim/types';
 import l1 from './01-roll.json';
 import l2 from './02-dominoes.json';
 import l3 from './03-seesaw.json';
@@ -88,6 +88,9 @@ export const LEVELS = [
  * accent colour for its banner.
  */
 export interface Room { id: string; name: string; first: number; count: number; paper: string; accent: string }
+/** Each room's own part: on its toy box tray tab and its sticker book tab. */
+export const ROOM_PART: Record<string, PartKind> = { workshop: 'hammer', playroom: 'car', attic: 'scissors', kitchen: 'toaster', garden: 'can', music: 'bell' };
+
 export const ROOMS: Room[] = [
   { id: 'workshop', name: 'Workshop', first: 0, count: 10, paper: '#f4ecdc', accent: '#c79a5b' },
   { id: 'playroom', name: 'Playroom', first: 10, count: 10, paper: '#e6eef5', accent: '#5aa2d6' },
