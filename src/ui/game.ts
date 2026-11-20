@@ -126,7 +126,9 @@ export class Game {
   making: Making | null = null;
   private hint: { rp: RuntimePart; from: number } | null = null;
   /** Guess the path: the line the child drew before pressing Go (world units). */
-  guess: Pt[] = [];
+  guess: Pt[][] = [];
+  /** The line being drawn right now (also the last one in `guess`). */
+  private stroke: Pt[] = [];
   /** The pencil is out: the next stroke on the table draws a guess. */
   pencil = false;
   private drawing: number | null = null;
@@ -177,7 +179,7 @@ export class Game {
     this.mode = 'run';
     this.pencil = false;
     this.trail = [];
-    this.showTrail = this.guess.length > 1;
+    this.showTrail = this.guess.length > 0;
     this.film = [];
     this.lastShot = -1;
     sfx.go();
@@ -326,7 +328,10 @@ export class Game {
     return this.mode === 'build' && !!this.level.goal;
   }
 
-  /** Take out (or put away) the pencil. Taking it out rubs out the old guess; putting it away keeps it. */
+  /**
+   * Take out (or put away) the pencil. Taking it out rubs out the old guess; while it's out every
+   * line drawn is kept, and putting it away keeps them all.
+   */
   togglePencil() {
     if (!this.canGuess) return;
     this.pencil = !this.pencil;
@@ -478,7 +483,8 @@ export class Game {
       if (w.py > this.L.trayTop) return;
       this.canvas.setPointerCapture(e.pointerId);
       this.drawing = e.pointerId;
-      this.guess = [{ x: w.x, y: w.y }];
+      this.stroke = [{ x: w.x, y: w.y }];
+      this.guess.push(this.stroke);
       this.showTrail = false;
       return;
     }
@@ -527,9 +533,10 @@ export class Game {
   private move = (e: PointerEvent) => {
     if (this.drawing === e.pointerId) {
       const w = this.toWorld(e);
-      const last = this.guess[this.guess.length - 1];
+      const s = this.stroke;
+      const last = s[s.length - 1];
       const x = Math.max(0, Math.min(WORLD_W, w.x)), y = Math.max(0, Math.min(WORLD_H, w.y));
-      if (Math.hypot(x - last.x, y - last.y) > 0.12 && this.guess.length < 400) this.guess.push({ x, y });
+      if (Math.hypot(x - last.x, y - last.y) > 0.12 && s.length < 400) s.push({ x, y });
       return;
     }
     const d = this.drag;
@@ -550,14 +557,15 @@ export class Game {
   private up = (e: PointerEvent) => {
     if (this.drawing === e.pointerId) {
       this.drawing = null;
-      // A dot isn't a guess: keep the pencil out for another try.
       const w = this.toWorld(e);
-      const last = this.guess[this.guess.length - 1];
-      if (Math.hypot(w.x - last.x, w.y - last.y) > 0.05) this.guess.push({ x: Math.max(0, Math.min(WORLD_W, w.x)), y: Math.max(0, Math.min(WORLD_H, w.y)) });
+      const s = this.stroke;
+      const last = s[s.length - 1];
+      if (Math.hypot(w.x - last.x, w.y - last.y) > 0.05) s.push({ x: Math.max(0, Math.min(WORLD_W, w.x)), y: Math.max(0, Math.min(WORLD_H, w.y)) });
       let len = 0;
-      for (let i = 1; i < this.guess.length; i++) len += Math.hypot(this.guess[i].x - this.guess[i - 1].x, this.guess[i].y - this.guess[i - 1].y);
-      if (len < 0.8) { this.guess = []; return; }
-      // The pencil stays out until its button is tapped again; a new line replaces this one.
+      for (let i = 1; i < s.length; i++) len += Math.hypot(s[i].x - s[i - 1].x, s[i].y - s[i - 1].y);
+      // A tap or a dot isn't a line: drop just that one and keep the lines drawn before it.
+      if (len < 0.8) { this.guess = this.guess.filter((g) => g !== s); return; }
+      // The pencil stays out until its button is tapped again, and every line is kept.
       sfx.place();
       this.onChange();
       return;
@@ -658,7 +666,7 @@ export class Game {
   }
 
   private cancel = (e: PointerEvent) => {
-    if (this.drawing === e.pointerId) { this.drawing = null; this.guess = []; }
+    if (this.drawing === e.pointerId) { this.drawing = null; this.guess = this.guess.filter((g) => g !== this.stroke); }
     if (this.drag && e.pointerId === this.drag.pointerId) {
       this.drag = null;
       this.changed();
@@ -844,8 +852,8 @@ export class Game {
     ctx.save();
     ctx.shadowColor = 'transparent';
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    const g = this.guess;
-    if (g.length > 1) {
+    for (const g of this.guess) {
+      if (g.length < 2) continue;
       ctx.globalAlpha = 0.8;
       ctx.strokeStyle = PAPER.tomato;
       ctx.lineWidth = 0.14;
@@ -853,8 +861,8 @@ export class Game {
       ctx.moveTo(g[0].x, g[0].y);
       for (const p of g) ctx.lineTo(p.x, p.y);
       ctx.stroke();
-      // An arrow head where the guess ends, once it's drawn.
-      if (this.drawing === null) {
+      // An arrow head where each line ends, once it's drawn.
+      if (this.drawing === null || g !== this.stroke) {
         const a = g[g.length - 1], b = g[Math.max(0, g.length - 4)];
         const ang = Math.atan2(a.y - b.y, a.x - b.x);
         ctx.fillStyle = PAPER.tomato;

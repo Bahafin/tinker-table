@@ -69,7 +69,7 @@ The current game (ages 5–8): 60 levels in six rooms of ten (the sixth is the M
 
 ## Milestone 5: thinking out loud (done)
 - **Guess the path:**
-  - A pencil button sits in the top bar. Tap it, then draw with a finger where you think the ball will go. The pencil stays out until its button is tapped again (or Go is pressed), and drawing again replaces the line.
+  - A pencil button sits in the top bar. Tap it, then draw with a finger where you think the ball will go. The pencil stays out until its button is tapped again (or Go is pressed), and every line drawn while it's out is kept; a quick tap on the table is ignored. Taking the pencil out again starts a fresh guess.
   - While the machine runs, the real path appears as teal dots next to the red crayon guess, and both stay on the table after the run until something is moved.
   - It's the "guess, try, look" loop made visible, and it gives the grown-up something to talk about. There's no scoring.
 - **Film strip:** after a win, five snapshots of the run pop in as little photos, the last one with the confetti. The child tells the story of the machine, and tapping a photo replays the run slowly.
