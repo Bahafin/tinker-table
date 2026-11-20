@@ -665,3 +665,12 @@ svg .fill { fill: currentColor; stroke: none; }
 .photo-big canvas { display: block; width: min(86vw, (100dvh - 140px) * 1.6, 820px); aspect-ratio: 16 / 10; border-radius: 3px; }
 @keyframes photo-in { from { opacity: 0; } }
 @keyframes print-in { from { transform: rotate(0deg) scale(0.3); } }
+
+/* Puzzle maker: the star button is always there, faded until there's a machine, then it pulses. */
+.make:disabled { opacity: 0.4; }
+.make.ready { animation: hint-pulse 1.6s ease-in-out infinite; }
+/* Clear the table: the first tap turns the bin red and wiggles it; a second tap clears. */
+.clear .bin { fill: #e6ddd0; }
+.clear:disabled { opacity: 0.4; }
+.clear.sure { background: #f6c9bf; animation: nudge 0.3s ease-in-out 2; }
+.clear.sure .bin { fill: var(--stop); }
