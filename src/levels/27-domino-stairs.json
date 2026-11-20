@@ -9,73 +9,80 @@
   },
   "fixed": [
     {
+      "part": "block",
+      "x": 3.5,
+      "y": 9.5
+    },
+    {
       "part": "domino",
-      "x": 3,
-      "y": 9.25,
+      "x": 3.4,
+      "y": 8.25,
       "rot": 15
     },
     {
-      "part": "shortramp",
-      "x": 5,
-      "y": 9.5,
-      "rot": 0
+      "part": "block",
+      "x": 4.5,
+      "y": 9.25
     },
     {
-      "part": "shortramp",
-      "x": 7,
-      "y": 9,
-      "rot": 0
+      "part": "block",
+      "x": 5.5,
+      "y": 8.75
     },
     {
-      "part": "shortramp",
-      "x": 9,
-      "y": 8.5,
-      "rot": 0
+      "part": "block",
+      "x": 6.5,
+      "y": 8.25
+    },
+    {
+      "part": "block",
+      "x": 7.5,
+      "y": 7.75
+    },
+    {
+      "part": "block",
+      "x": 8.5,
+      "y": 7.25
     },
     {
       "part": "ball",
       "id": "ball1",
-      "x": 9.85,
-      "y": 8
+      "x": 8.9,
+      "y": 6.4
     },
     {
       "part": "basket",
       "id": "basket1",
-      "x": 11,
+      "x": 10.5,
       "y": 9.4
     }
   ],
   "tray": [
     {
       "part": "domino",
-      "count": 5
+      "count": 4
     }
   ],
   "solution": [
     {
       "part": "domino",
-      "x": 4,
-      "y": 8.5
-    },
-    {
-      "part": "domino",
-      "x": 5,
-      "y": 8.5
-    },
-    {
-      "part": "domino",
-      "x": 6,
+      "x": 4.5,
       "y": 8
     },
     {
       "part": "domino",
-      "x": 7,
-      "y": 8
-    },
-    {
-      "part": "domino",
-      "x": 8,
+      "x": 5.5,
       "y": 7.5
+    },
+    {
+      "part": "domino",
+      "x": 6.5,
+      "y": 7
+    },
+    {
+      "part": "domino",
+      "x": 7.5,
+      "y": 6.5
     }
   ]
 }

@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { LEVELS } from '../src/levels';
 import { Sim } from '../src/sim/sim';
-import { clampToWorld, overlapsAny } from '../src/sim/placement';
+import { clampToWorld, overlapsAny, settle } from '../src/sim/placement';
 import type { Level, Placement } from '../src/sim/types';
 
 const fixedOf = (l: Level): Placement[] => l.fixed.map((p) => ({ ...p, fixed: true }));
@@ -39,6 +39,8 @@ describe.each(LEVELS.map((l) => [l.id, l] as const))('level %s', (_id, level) =>
       expect(overlapsAny(p, placed)).toBe(false);
       const c = clampToWorld(p);
       expect([c.x, c.y], p.part + ' sticks out of the table').toEqual([p.x, p.y]);
+      const all = [...fixedOf(level), ...level.solution!.filter((o) => o !== p)];
+      expect(settle(p, all).y, `${p.part} at (${p.x}, ${p.y}) would drop when placed`).toBe(p.y);
       placed.push(p);
     }
   });

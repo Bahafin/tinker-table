@@ -11,7 +11,7 @@ import { appendFileSync } from 'node:fs';
 import { LEVELS } from '../src/levels';
 import { Sim } from '../src/sim/sim';
 import { PARTS } from '../src/sim/parts';
-import { overlapsAny, clampToWorld } from '../src/sim/placement';
+import { overlapsAny, clampToWorld, settle } from '../src/sim/placement';
 import type { Placement } from '../src/sim/types';
 
 const env = process.env;
@@ -31,6 +31,7 @@ test.skipIf(!env.STATS)('level stats', () => {
       for (let y = 0.5; y <= 9.5; y += 0.5) for (let x = 0.5; x <= 15.5; x += 0.5) for (const rot of rots) {
         const q = clampToWorld({ part: p.part, x, y, rot });
         if (q.x !== x || q.y !== y || overlapsAny(q, others)) continue;
+        if (settle(q, others).y !== q.y) continue; // the game would drop this domino lower
         tried++;
         if (new Sim([...others, q], level.goal).runHeadless()) wins++;
       }

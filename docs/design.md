@@ -42,7 +42,7 @@ A calm chain-reaction puzzle game for ages 5–8 (younger children with a grown-
 | Block | 1 × 1 | static | A wall or shelf. |
 | Basket | 1.6 × 1.2 | static, U shape | Goal: catches a ball. |
 | Star | Ø 1 | sensor | Goal: something touches it. |
-| Domino | 0.25 × 1.5 | dynamic | Topples and knocks the next one. |
+| Domino | 0.25 × 1.5 | dynamic | Topples and knocks the next one. Dominoes stand on things: one let go in mid-air drops onto whatever is below it, so it can't be dropped onto the machine from above. |
 | See-saw | 4 × 0.2 on a pivot | dynamic plank on a hinge | Tips when weight lands on one side. |
 | Balloon | Ø 0.9 | dynamic, floats | Rises and pops when it touches a pin. The bang wakes a sleeping hamster within 5 cells, and a dotted ring shows how far the bang reaches. |
 | Pin | 0.6 | static spike | Pops balloons. |
@@ -84,7 +84,7 @@ A run also ends when nothing has moved for 1.5 s, because a hamster or a fan can
 
 ## Milestone 1 levels
 1. **Roll:** guide a ball down to the basket using ramps.
-2. **Dominoes:** a ball rolls into a row of dominoes, and the last one tips into the basket area.
+2. **Dominoes:** stand one domino on each of three stepping stones; the chain knocks the ball off the last stone into the basket. A skipped stone leaves a gap too wide for a domino to reach across.
 3. **See-saw:** drop the heavy ball on a see-saw to launch the other ball.
 4. **Balloon:** guide a balloon up to the star.
 5. **Chain:** a three-step machine that combines what came before.
@@ -121,10 +121,10 @@ Levels 20–30 go further. Each brings a new idea or a new pairing of parts:
 24. **Under the belt:** a balloon floats up against the underside of belts, which carry it the *opposite* way to their arrows. Two belts, both turned around, take it past the pins.
 25. **Ski jump:** a steep ramp for speed and a short upturned plank to launch the ball over a wall.
 26. **Pop motor:** pin, then pop, then the hamster wakes and pushes a ball off a shelf. The child places both the pin and the hamster.
-27. **Domino stairs:** the chain climbs three steps, one domino at a time, and nudges a ball off the top step.
+27. **Domino stairs:** the chain climbs four one-block steps, one domino on each, and nudges a ball off the top step.
 28. **Hopscotch:** two holes in the floor, with a spring in each to hop over them.
 29. **Catch and carry:** drop the heavy ball on the see-saw to fling the little one, and catch it in the air with a belt that carries it into a basket on a tower.
-30. **Grand finale:** dominoes, fan, balloon, pin, hamster. The hamster sleeps on a shelf near the pin and rolls off onto the cheese tower. Three placements in one long chain.
+30. **Grand finale:** dominoes, fan, balloon, pin, hamster. The hamster sleeps on a shelf near the pin, under a low roof so nothing can be dropped on him, and rolls off onto the cheese tower. Three placements in one long chain.
 
 The Workshop's hammer levels:
 

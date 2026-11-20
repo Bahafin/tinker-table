@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import { LEVELS } from '../src/levels';
 import { Sim } from '../src/sim/sim';
 import { PARTS } from '../src/sim/parts';
-import { overlapsAny, clampToWorld } from '../src/sim/placement';
+import { overlapsAny, clampToWorld, settle } from '../src/sim/placement';
 import type { Level, Placement } from '../src/sim/types';
 
 const env = process.env;
@@ -33,6 +33,8 @@ export function fewerDominoWins(level: Level, stopAfter = Infinity): string[] {
         if (found.length >= stopAfter) return;
         const q = clampToWorld({ part: p.part, x, y, rot });
         if (Math.abs(q.x - x) > 0.25 || Math.abs(q.y - y) > 0.25 || overlapsAny(q, others)) continue;
+        // The game drops a domino let go in mid-air; that spot is tried on its own.
+        if (settle(q, others).y !== q.y) continue;
         if (new Sim([...others, q], level.goal).runHeadless()) found.push(`without #${i}: ${p.part} #${j} at (${q.x}, ${q.y}, ${rot})`);
       }
     });

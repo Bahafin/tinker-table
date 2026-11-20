@@ -1,6 +1,6 @@
 import { Sim, DT, HEAR_POP } from '../sim/sim';
 import { PARTS, type RuntimePart } from '../sim/parts';
-import { clampToWorld, hitTest, overlapsAny, turnOf } from '../sim/placement';
+import { clampToWorld, hitTest, overlapsAny, settle, turnOf } from '../sim/placement';
 import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from '../sim/types';
 import { drawFixedPin, drawPart, drawTable, PAPER, paperGrain, setPaperShadow, setSkin } from '../render/draw';
 import { sfx } from './audio';
@@ -584,7 +584,7 @@ export class Game {
       return;
     }
 
-    const snapped = clampToWorld(d.p);
+    const snapped = settle(clampToWorld(d.p), this.others(d.index));
     if (overlapsAny(snapped, this.others(d.index))) {
       sfx.nope();
       if (d.index >= 0) this.placements[d.index] = d.origin!; // slide back home
@@ -797,7 +797,7 @@ export class Game {
     if (this.drag?.moved) {
       const d = this.drag;
       const overTray = d.py > L.trayTop;
-      const snapped = clampToWorld(d.p);
+      const snapped = settle(clampToWorld(d.p), this.others(d.index));
       const bad = overlapsAny(snapped, this.others(d.index));
       const show = overTray ? d.p : snapped;
       const key = `${show.part}|${show.x}|${show.y}|${show.rot ?? 0}`;

@@ -1,7 +1,7 @@
 {
   "id": "02-dominoes",
-  "voice": "Line up the dominoes, so they knock the ball into the basket!",
-  "difficulty": 3.10,
+  "voice": "Stand one domino on each stepping stone, so they knock the ball into the basket!",
+  "difficulty": 3.1,
   "goal": {
     "type": "reach",
     "object": "ball1",
@@ -10,39 +10,53 @@
   "fixed": [
     {
       "part": "ramp",
-      "x": 5,
-      "y": 5.875,
-      "rot": 0
-    },
-    {
-      "part": "ramp",
-      "x": 8,
+      "x": 2.5,
       "y": 5.875,
       "rot": 0
     },
     {
       "part": "domino",
-      "x": 4,
+      "x": 3.5,
       "y": 5,
       "rot": 15
     },
     {
+      "part": "block",
+      "x": 5,
+      "y": 6.25
+    },
+    {
+      "part": "block",
+      "x": 6.5,
+      "y": 6.25
+    },
+    {
+      "part": "block",
+      "x": 8,
+      "y": 6.25
+    },
+    {
+      "part": "block",
+      "x": 9.5,
+      "y": 6.25
+    },
+    {
       "part": "ball",
       "id": "ball1",
-      "x": 9.45,
+      "x": 9.95,
       "y": 5.4
     },
     {
       "part": "basket",
       "id": "basket1",
-      "x": 10.5,
+      "x": 11.5,
       "y": 9.4
     }
   ],
   "tray": [
     {
       "part": "domino",
-      "count": 5
+      "count": 3
     }
   ],
   "solution": [
@@ -53,12 +67,7 @@
     },
     {
       "part": "domino",
-      "x": 6,
-      "y": 5
-    },
-    {
-      "part": "domino",
-      "x": 7,
+      "x": 6.5,
       "y": 5
     },
     {

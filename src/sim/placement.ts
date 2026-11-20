@@ -101,3 +101,18 @@ export function hitTest(p: Placement, x: number, y: number, minHalf: number): bo
   const ly = -dx * Math.sin(o.a) + dy * Math.cos(o.a);
   return Math.abs(lx) <= o.w && Math.abs(ly) <= o.h;
 }
+
+/**
+ * Dominoes stand on things: one let go in mid-air drops (a grid step at a time) until it
+ * would touch something below or the floor. So a domino can't be dropped from high up
+ * onto the machine, and every domino in a chain has to stand on its own spot.
+ */
+export function settle(p: Placement, others: Placement[]): Placement {
+  if (p.part !== 'domino') return p;
+  let q = p;
+  for (;;) {
+    const down = clampToWorld({ ...q, y: q.y + 0.5 });
+    if (down.y <= q.y || overlapsAny(down, others)) return q;
+    q = down;
+  }
+}

@@ -113,7 +113,13 @@ Run the search tool. It tries every grid position and angle for the tray parts, 
 - whether the reference solution works;
 - how many placements work.
 
-The level tests also fail if any one part of a solution can be removed and the level still works.
+The level tests also fail if any one part of a solution can be removed and the level still works, if a solution part sticks out of the table, or if a solution domino isn't standing on something.
+
+For levels with dominoes, also check that none can be left out (the remaining parts are moved everywhere to look for a way):
+
+```bash
+DOMINO=1 npx vitest run scripts/domino-check
+```
 
 ```bash
 TUNE=src/levels/10-boing.json npm run search
