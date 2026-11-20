@@ -107,6 +107,44 @@ The current game (ages 5–8): 60 levels in six rooms of ten (the sixth is the M
 - **Later parts:** a magnet, gears. A tune goal in the puzzle maker.
 - **A second character:** a friend for the hamster, to give levels little stories (the "why?" lesson from the first playtest).
 
+## Milestone 7: before the app store
+Safety first, then the wrapper, then the paperwork. The order inside each part is the order to build it in.
+
+### Safety for a child alone with the tablet
+- **Why:** a child left alone with the tablet wanders off into other apps and places they shouldn't be. Keeping them safely inside the game fits its calm, no-pressure feel.
+- **Grown-ups' PIN (first):**
+  - A 4-digit PIN, set by the parent the first time the app opens, replaces the press-and-hold gate.
+  - It guards the grown-ups' corner, sharing, clearing progress, and every setting below.
+  - The number pad shows digits (it's for grown-ups), and a forgotten PIN can be reset with a sum a young child can't do yet.
+- **Play timer that winds down (second):**
+  - The parent picks 15, 20 or 30 minutes, or no limit.
+  - No countdown is shown. When time is up, the hamster yawns, the machine finishes its run, the room "goes to sleep" with a lullaby, and only the PIN wakes it.
+- **Staying inside the game (third):**
+  - An app can't stop the home swipe on an iPad. The real lock is the device's own: **Guided Access** on iPad (triple-click the side button; leaving needs the parent's passcode) and **screen pinning** on Android (which the app can start itself, from a "lock" button in the grown-ups' corner).
+  - A first-launch card for parents, "Before you hand it over", shows how to switch these on, with pictures.
+- **Smaller ones:**
+  - An eye-rest break about every 20 minutes: the hamster stretches and invites the child to look out of the window for 20 seconds.
+  - Volume limit and a quiet mode in the grown-ups' settings.
+  - "Show me what you made": at the end of a session, a page of the film strips and kept machines to look at together.
+  - Nothing leaves the game without the grown-ups' gate: no ads, no links out, no tracking (already true; the app keeps it so).
+
+### Playtest on the iPad
+With a real finger, before wrapping: the Music room, the toy box tabs and arrows, the sticker book, the pencil, the new sounds, the bin and the puzzle maker.
+
+### The app wrapper (Capacitor)
+- Saved progress, stickers and kept machines move from browser storage to app storage (iOS can clear browser storage).
+- Check that sound starts after the first tap, and that the voice still picks a nice English voice inside the app.
+- Sharing uses the native share sheet.
+- Safe areas round the notch, orientation locked to landscape on phones, app icon and splash screen.
+- A test release through TestFlight (and Google's internal testing) for real play before going public.
+
+### Paperwork
+- Privacy page, logo letters as outlines, and store screenshots: done in the app-store prep branch, not merged yet.
+- Trademark check: "Tinker" (US serial 98471370, online games) still needs a proper look.
+- A support email for the privacy page and the store listings.
+- Apple's age questions and the Kids section rules (parental gate, no third-party analytics or ads).
+- Costs: $99 a year for Apple, $25 once for Google.
+
 ## Later
 - **The parent's recorded voice:**
   - A parent records each level's line, behind the grown-ups' gate.
@@ -117,10 +155,6 @@ The current game (ages 5–8): 60 levels in six rooms of ten (the sixth is the M
   - It could give a new machine every day, with no server.
 - **Tilt puzzles:** tilt the iPad to tilt the table.
 - **Art pass:** hand-drawn paper sprites in place of the flat shapes.
-- **App stores:**
-  - Wrap the game with Capacitor for iPad and Android.
-  - Costs: $99 a year for Apple, $25 once for Google.
-  - Before release: a privacy policy page, a trademark check on the name, logo letters turned into outlines, and screenshots.
 
 ## How new levels are made
 Run the search tool. It tries every grid position and angle for the tray parts, and reports:
