@@ -44,7 +44,8 @@ const MISSES_BEFORE_HINT = 2;
 const HINT_SECONDS = 3.2;
 /** Film strip: a snapshot every this many seconds of machine time, and the size of each. */
 const FILM_EVERY = 0.4;
-const FILM_W = 320, FILM_H = 200;
+// Big enough to show sharp when a photo is tapped and shown large; fewer kept so memory stays small.
+const FILM_W = 560, FILM_H = 350;
 /** Frames on the film strip shown after a win. */
 export const FILM_FRAMES = 5;
 
@@ -354,7 +355,7 @@ export class Game {
     c.getContext('2d')!.drawImage(this.canvas, L.ox * L.dpr, L.oy * L.dpr, WORLD_W * L.scale * L.dpr, WORLD_H * L.scale * L.dpr, 0, 0, FILM_W, FILM_H);
     this.film.push(c);
     // Long runs: keep every other frame, so memory stays small.
-    if (this.film.length > 80) this.film = this.film.filter((_, i) => i % 2 === 0 || i === this.film.length - 1);
+    if (this.film.length > 40) this.film = this.film.filter((_, i) => i % 2 === 0 || i === this.film.length - 1);
   }
 
   /** What the tray shows now: the level's parts, or the chosen room's set in the toy box. */

@@ -795,13 +795,37 @@ function showFilm() {
   frames.forEach((f, k) => {
     const b = document.createElement('button');
     b.className = 'frame';
-    b.setAttribute('aria-label', `Picture ${k + 1}: watch again`);
+    b.setAttribute('aria-label', `Picture ${k + 1}: look closer`);
     b.style.animationDelay = `${0.15 + k * 0.18}s`;
     b.style.setProperty('--tilt', `${[-3, 2, -1.5, 2.5, -2][k % 5]}deg`);
     b.append(f);
-    b.onclick = () => { $('won').classList.add('hidden'); game?.replay(); };
+    b.onclick = () => showPhoto(f, k);
     box.append(b);
   });
+}
+
+/**
+ * A photo from the film strip, big in the middle of the screen, for pointing at and telling
+ * the story. Tapping anywhere puts it back. (Watching the run again is the replay button.)
+ */
+function showPhoto(src: HTMLCanvasElement, k: number) {
+  document.querySelector('.photo-big')?.remove();
+  const cover = document.createElement('div');
+  cover.className = 'photo-big';
+  cover.setAttribute('role', 'button');
+  cover.setAttribute('aria-label', 'Close the picture');
+  const print = document.createElement('div');
+  print.className = 'print';
+  print.style.setProperty('--tilt', `${[-2, 1.5, -1, 2, -1.5][k % 5]}deg`);
+  const c = document.createElement('canvas');
+  c.width = src.width;
+  c.height = src.height;
+  c.getContext('2d')!.drawImage(src, 0, 0);
+  print.append(c);
+  cover.append(print);
+  cover.onclick = () => { cover.classList.add('out'); sfx.place(); setTimeout(() => cover.remove(), 180); };
+  $('play').append(cover);
+  sfx.pickup();
 }
 
 let madeGoalShown = false;

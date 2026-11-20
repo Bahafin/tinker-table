@@ -46,7 +46,7 @@ export const TIPS: string[] = [
   'Stop while it\'s still fun. Ten to fifteen minutes is plenty. Finishing with the toy box is a nice way to wind down.',
   'At the end, ask your child to tell you how their machine worked. Explaining it is where a lot of the learning happens.',
   'Try the pencil button before pressing Go: your child draws where they think the ball will go, and after the run the real path shows as dots next to it. "Where was your guess different? Why?"',
-  'After a win, the little photos tell the machine\'s story in order. Ask your child to tell it: "First... then... and then...". Tapping a photo plays it again.',
+  'After a win, the little photos tell the machine\'s story in order. Ask your child to tell it: "First... then... and then...". Tapping a photo shows it big, so you can both point at what was happening.',
   'Each room has its name written under its picture, and the voice says it. If your child is starting to read, point at the word together, or tap it and listen: "Kit-chen".',
 ];
 

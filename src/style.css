@@ -641,3 +641,27 @@ svg .fill { fill: currentColor; stroke: none; }
   #levels.in-room .card { padding: 7px; border-radius: 16px; }
   #levels.in-room .card .sticker { width: 40px; height: 40px; top: -8px; right: -8px; }
 }
+
+/* A film-strip photo shown big: a print on a dimmed screen. Tap anywhere to put it back. */
+.photo-big {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  background: rgba(59, 47, 42, 0.45);
+  cursor: pointer;
+  animation: photo-in 0.22s ease-out;
+}
+.photo-big.out { opacity: 0; transition: opacity 0.18s; }
+.photo-big .print {
+  padding: 14px 14px 44px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 12px 30px rgba(40, 25, 15, 0.4);
+  transform: rotate(var(--tilt, 0deg));
+  animation: print-in 0.3s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.photo-big canvas { display: block; width: min(86vw, (100dvh - 140px) * 1.6, 820px); aspect-ratio: 16 / 10; border-radius: 3px; }
+@keyframes photo-in { from { opacity: 0; } }
+@keyframes print-in { from { transform: rotate(0deg) scale(0.3); } }

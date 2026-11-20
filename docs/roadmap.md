@@ -72,7 +72,7 @@ The current game (ages 5–8): 60 levels in six rooms of ten (the sixth is the M
   - A pencil button sits in the top bar. Tap it, then draw with a finger where you think the ball will go. The pencil stays out until its button is tapped again (or Go is pressed), and every line drawn while it's out is kept; a quick tap on the table is ignored. Taking the pencil out again starts a fresh guess.
   - While the machine runs, the real path appears as teal dots next to the red crayon guess, and both stay on the table after the run until something is moved.
   - It's the "guess, try, look" loop made visible, and it gives the grown-up something to talk about. There's no scoring.
-- **Film strip:** after a win, five snapshots of the run pop in as little photos, the last one with the confetti. The child tells the story of the machine, and tapping a photo replays the run slowly.
+- **Film strip:** after a win, five snapshots of the run pop in as little photos, the last one with the confetti. The child tells the story of the machine, and tapping a photo shows it big in the middle of the screen (tap anywhere to put it back). The replay button watches the run again.
 - **Sticker book:**
   - A book button on the front page. Each finished level gives a sticker: the most special part in that level, drawn in its room's look on a round backing in the room's colours.
   - Drag stickers from the strip onto the page, anywhere. Drag one off the page to put it back. A red dot on the book means there are stickers waiting.
