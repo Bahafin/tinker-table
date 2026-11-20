@@ -27,16 +27,22 @@
       "rot": -15
     },
     {
-      "part": "hamster",
-      "id": "hamster1",
-      "x": 9.5,
-      "y": 9.5
-    },
-    {
       "part": "cheese",
       "id": "cheese1",
       "x": 15,
       "y": 9.4
+    },
+    {
+      "part": "ramp",
+      "x": 11.5,
+      "y": 3,
+      "rot": 0
+    },
+    {
+      "part": "hamster",
+      "id": "hamster1",
+      "x": 10.5,
+      "y": 2.5
     }
   ],
   "tray": [

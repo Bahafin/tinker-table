@@ -7,6 +7,8 @@ const MAX_TIME = 25;
 const GOAL_HOLD = 0.3;
 const FAN_REACH = 4.5;
 const FAN_FORCE = 14;
+/** How far away (cells) a sleeping hamster can hear a balloon pop. */
+export const HEAR_POP = 5;
 export const CONVEYOR_SPEED = 2.5;
 const HAMSTER_SPIN = 5;
 /** A released hammer's swing speed (rad/s) and strength. */
@@ -102,10 +104,11 @@ export class Sim {
       if (x?.kind === 'balloon' && (y?.kind === 'pin' || y?.kind === 'scissors') && !x.state.popped) {
         x.state.popped = true;
         this.toDestroy.push(x);
-        this.events.push({ type: 'pop' });
-        // The bang wakes every sleeping hamster.
+        // The bang wakes a sleeping hamster, but only one close enough to hear it.
+        const at = x.bodies[0].getPosition();
+        this.events.push({ type: 'pop', x: at.x, y: at.y });
         for (const h of this.parts) {
-          if (h.kind === 'hamster' && !h.state.on) {
+          if (h.kind === 'hamster' && !h.state.on && Vec2.distance(h.bodies[0].getPosition(), at) <= HEAR_POP) {
             h.state.on = true;
             h.bodies[0].setAwake(true);
             this.events.push({ type: 'squeak' });

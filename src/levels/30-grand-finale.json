@@ -45,18 +45,6 @@
       "y": 2.1
     },
     {
-      "part": "hamster",
-      "id": "hamster1",
-      "x": 6,
-      "y": 9.5
-    },
-    {
-      "part": "ramp",
-      "x": 6,
-      "y": 8.5,
-      "rot": 0
-    },
-    {
       "part": "block",
       "x": 12,
       "y": 9.5
@@ -79,8 +67,20 @@
     {
       "part": "cheese",
       "id": "cheese1",
-      "x": 14.5,
+      "x": 15,
       "y": 8.6
+    },
+    {
+      "part": "ramp",
+      "x": 12,
+      "y": 4.5,
+      "rot": 0
+    },
+    {
+      "part": "hamster",
+      "id": "hamster1",
+      "x": 11,
+      "y": 4
     }
   ],
   "tray": [
@@ -90,10 +90,6 @@
     },
     {
       "part": "pin",
-      "count": 1
-    },
-    {
-      "part": "ramp",
       "count": 1
     }
   ],
@@ -113,12 +109,6 @@
       "x": 11,
       "y": 1,
       "rot": 0
-    },
-    {
-      "part": "ramp",
-      "x": 10,
-      "y": 9.5,
-      "rot": -15
     }
   ]
 }

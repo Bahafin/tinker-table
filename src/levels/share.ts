@@ -3,7 +3,7 @@
 // checks every value and returns null for anything odd.
 import { clampToWorld } from '../sim/placement';
 import { PARTS } from '../sim/parts';
-import type { Level, PartKind, Placement } from '../sim/types';
+import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from '../sim/types';
 
 /** Stable part codes. Only ever append to this list: old links depend on the order. */
 const KINDS: PartKind[] = [
@@ -53,7 +53,7 @@ export function encodeLevel(level: Level): string {
 
 const isInt = (n: unknown): n is number => typeof n === 'number' && Number.isInteger(n);
 
-function unpack(a: unknown): Placement | null {
+function unpack(a: unknown, placed: boolean): Placement | null {
   if (!Array.isArray(a) || a.length !== 4 || !a.every(isInt)) return null;
   const [k, x2, y2, r] = a as number[];
   const part = KINDS[k];
@@ -65,10 +65,13 @@ function unpack(a: unknown): Placement | null {
   if (def.rotStep === 180 && Math.abs(rot) !== 180 && rot !== 0) return null;
   const p: Placement = { part, x: x2 / 2, y: y2 / 2 };
   if (rot) p.rot = rot;
-  // Must already be a spot the game itself would allow.
+  // Pinned parts only need to be on the table. Parts the solver places must be (within a
+  // grid step) where the game itself would let them go: flush against an edge they can
+  // sit between grid points, which the code rounds, so they are put back exactly there.
+  if (!placed) return p.x >= 0 && p.x <= WORLD_W && p.y >= 0 && p.y <= WORLD_H ? p : null;
   const c = clampToWorld(p);
-  if (c.x !== p.x || c.y !== p.y) return null;
-  return p;
+  if (Math.abs(c.x - p.x) > 0.5 || Math.abs(c.y - p.y) > 0.5) return null;
+  return c;
 }
 
 /** Unpack a code into a playable level, or null if anything is wrong with it. */
@@ -80,8 +83,8 @@ export function decodeLevel(code: string, voice = SHARED_VOICE): Level | null {
     if (!w || typeof w !== 'object' || w.v !== VERSION) return null;
     if (!Array.isArray(w.f) || !Array.isArray(w.s) || !Array.isArray(w.g) || w.g.length !== 2) return null;
     if (w.f.length + w.s.length > MAX_PARTS || w.s.length === 0) return null;
-    const fixed = w.f.map(unpack);
-    const solution = w.s.map(unpack);
+    const fixed = w.f.map((a) => unpack(a, false));
+    const solution = w.s.map((a) => unpack(a, true));
     if (fixed.some((p) => !p) || solution.some((p) => !p)) return null;
     const [oi, ti] = w.g;
     if (!isInt(oi) || !isInt(ti) || oi === ti) return null;

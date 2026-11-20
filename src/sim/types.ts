@@ -34,7 +34,7 @@ export interface Level {
 
 export type SimEvent =
   | { type: 'clack'; strength: number }
-  | { type: 'pop' }
+  | { type: 'pop'; x: number; y: number }
   | { type: 'boing' }
   | { type: 'whoosh' }
   | { type: 'squeak' }

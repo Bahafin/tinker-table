@@ -1,4 +1,4 @@
-import { Sim, DT } from '../sim/sim';
+import { Sim, DT, HEAR_POP } from '../sim/sim';
 import { PARTS, type RuntimePart } from '../sim/parts';
 import { clampToWorld, hitTest, overlapsAny, turnOf } from '../sim/placement';
 import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from '../sim/types';
@@ -91,6 +91,8 @@ export class Game {
   private last = 0;
   private endTimer = 0;
   private confetti: Confetti[] = [];
+  /** Rings spreading out from a pop, as far as a sleeping hamster can hear. */
+  private bangs: { x: number; y: number; t: number }[] = [];
   private wiggle: { index: number; until: number } | null = null;
   /** The placed part currently showing rotate buttons, if any. */
   private selected: number | null = null;
@@ -140,8 +142,10 @@ export class Game {
 
   // ---------- run control ----------
 
-  go() {
+  /** Run the machine. Every run the child starts counts towards a hint, however it ends. */
+  go(counted = true) {
     if (this.mode !== 'build') return;
+    if (counted) this.misses++;
     this.drag = null;
     this.selected = null;
     this.sim = new Sim([...this.fixed, ...this.placements], this.level.goal);
@@ -171,7 +175,7 @@ export class Game {
     this.mode = 'build';
     const wasSlow = this.slow;
     this.slow = true;
-    this.go();
+    this.go(false);
     this.replaySlowRestore = wasSlow;
   }
   private replaySlowRestore: boolean | null = null;
@@ -294,7 +298,7 @@ export class Game {
     return this.mode === 'build' && !!this.level.goal;
   }
 
-  /** Take out (or put away) the pencil. Taking it out rubs out the old guess. */
+  /** Take out (or put away) the pencil. Taking it out rubs out the old guess; putting it away keeps it. */
   togglePencil() {
     if (!this.canGuess) return;
     this.pencil = !this.pencil;
@@ -390,6 +394,7 @@ export class Game {
       this.canvas.setPointerCapture(e.pointerId);
       this.drawing = e.pointerId;
       this.guess = [{ x: w.x, y: w.y }];
+      this.showTrail = false;
       return;
     }
     const lift = e.pointerType === 'touch' ? 0.8 : 0;
@@ -459,7 +464,7 @@ export class Game {
       let len = 0;
       for (let i = 1; i < this.guess.length; i++) len += Math.hypot(this.guess[i].x - this.guess[i - 1].x, this.guess[i].y - this.guess[i - 1].y);
       if (len < 0.8) { this.guess = []; return; }
-      this.pencil = false;
+      // The pencil stays out until its button is tapped again; a new line replaces this one.
       sfx.place();
       this.onChange();
       return;
@@ -513,7 +518,8 @@ export class Game {
     const p = this.placements[index];
     const step = PARTS[p.part].rotStep ?? 15;
     const by = dir === 0 ? step : step * dir;
-    const rotated = { ...p, rot: ((((p.rot ?? 0) + by + 180) % 360) + 360) % 360 - 180 };
+    // Turning can swing an end past the edge, so the part is nudged back onto the table.
+    const rotated = clampToWorld({ ...p, rot: ((((p.rot ?? 0) + by + 180) % 360) + 360) % 360 - 180 });
     if (overlapsAny(rotated, this.others(index))) { sfx.nope(); this.doWiggle(index); return; }
     this.placements[index] = rotated;
     this.turnFlash = { dir, until: this.t + 0.2 };
@@ -608,6 +614,7 @@ export class Game {
         if (!last || Math.hypot(b.x - last.x, b.y - last.y) > 0.1) this.trail.push({ x: b.x, y: b.y });
       }
       for (const ev of s.events) {
+        if (ev.type === 'pop') this.bangs.push({ x: ev.x, y: ev.y, t: this.t });
         if (ev.type === 'clack') sfx.clack(ev.strength);
         else sfx[ev.type]();
       }
@@ -617,7 +624,6 @@ export class Game {
         this.endTimer += dt;
         if (this.endTimer > 0.9) {
           sfx.hmm();
-          this.misses++;
           this.restoreSlow();
           this.reset();
         }
@@ -712,6 +718,7 @@ export class Game {
     this.renderHint(ctx);
     ctx.shadowColor = 'transparent';
     this.drawGrain(ctx);
+    this.renderBangs(ctx);
     for (const c of this.confetti) {
       ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.a); ctx.fillStyle = c.c; ctx.fillRect(-0.1, -0.06, 0.2, 0.12); ctx.restore();
     }
@@ -910,6 +917,25 @@ export class Game {
   private getPreview() {
     if (!this.preview) this.preview = new Sim([...this.fixed, ...this.placements], this.level.goal);
     return this.preview;
+  }
+
+  private renderBangs(ctx: CanvasRenderingContext2D) {
+    const LIFE = 0.7;
+    this.bangs = this.bangs.filter((b) => this.t - b.t < LIFE);
+    for (const b of this.bangs) {
+      const k = (this.t - b.t) / LIFE;
+      ctx.save();
+      ctx.globalAlpha = 0.55 * (1 - k);
+      ctx.strokeStyle = PAPER.mustard;
+      ctx.lineWidth = 0.12;
+      ctx.setLineDash([0.3, 0.2]);
+      for (const f of [1, 0.6]) {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, HEAR_POP * f * Math.sqrt(k), 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
   }
 
   private renderTray(ctx: CanvasRenderingContext2D) {

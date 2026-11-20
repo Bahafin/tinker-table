@@ -22,7 +22,7 @@ A calm chain-reaction puzzle game for ages 5–8 (younger children with a grown-
 8. **Success = confetti, a chime and a slow replay.** Then three big icons appear: replay, next and home.
 9. **A slow-motion toggle** (snail button) is always available.
 10. **One voice line per level,** and the speaker button replays it.
-11. **Hints are ghosts, not words.** After two missed runs a hint button pulses. Each tap shows a faint ghost of one missing part, in place and at its angle, for a few seconds.
+11. **Hints are ghosts, not words.** After two runs that didn't win (missed, or stopped with the stop button) a hint button pulses. Each tap shows a faint ghost of one missing part, in place and at its angle, for a few seconds.
 12. **Making puzzles uses taps, not menus.** In the toy box: tap what travels, tap where it goes, tap parts to pin them, then tap the tick. A puzzle that doesn't check out gets a wiggle and a hmm.
 
 ## World and physics
@@ -44,7 +44,7 @@ A calm chain-reaction puzzle game for ages 5–8 (younger children with a grown-
 | Star | Ø 1 | sensor | Goal: something touches it. |
 | Domino | 0.25 × 1.5 | dynamic | Topples and knocks the next one. |
 | See-saw | 4 × 0.2 on a pivot | dynamic plank on a hinge | Tips when weight lands on one side. |
-| Balloon | Ø 0.9 | dynamic, floats | Rises and pops when it touches a pin. The bang wakes any sleeping hamster. |
+| Balloon | Ø 0.9 | dynamic, floats | Rises and pops when it touches a pin. The bang wakes a sleeping hamster within 5 cells, and a dotted ring shows how far the bang reaches. |
 | Pin | 0.6 | static spike | Pops balloons. |
 | Fan | 1 × 1 | static | Starts when anything bumps it, then blows along its facing (4 cells reach). |
 | Spring pad | 1.4 × 0.3 | static, very bouncy | Throws things back up. |
@@ -61,6 +61,8 @@ A calm chain-reaction puzzle game for ages 5–8 (younger children with a grown-
 | Scissors | 0.9 × 0.6 | static sensor | Cuts any rope that touches its blades (anywhere along them), and pops balloons like a pin. Things pass through them. The Attic's own part. |
 
 Parts that only face left or right (hamster, conveyor, car, hammer, toaster, watering can) get one ↔ flip button instead of the two turn buttons.
+
+Parts are kept wholly on the table, at whatever angle they are turned to: at an edge a part slides in until it touches the edge.
 
 A run also ends when nothing has moved for 1.5 s, because a hamster or a fan can keep pushing something against a wall forever.
 
@@ -97,7 +99,7 @@ Added in Milestone 3. Each one teaches an idea no earlier level does:
 
 9. **Bridge:** fill the gap between two shelves with a short plank so the ball can roll across.
 10. **Boing:** a wall is too tall to roll past, so put the spring pad where the ball lands and bounce it over.
-11. **Pop:** a loud pop wakes the sleeping hamster, who rolls to the cheese. The balloon floats along two slanted ceilings, so guess its path and put the pin in its way. (The first version had popping as the goal itself. In the first playtest the child asked "why?", so now the pop has a job to do.)
+11. **Pop:** a loud pop wakes the hamster asleep on a high shelf, and he rolls off it to the cheese. The balloon floats along two slanted ceilings, so guess its path and put the pin in its way. (The first version had popping as the goal itself. In the first playtest the child asked "why?", so now the pop has a job to do.)
 12. **Uphill:** a bump wakes the hamster, and a ramp lets him climb *up* onto the cheese shelf (ramps so far only went down).
 13. **Wind:** place the fan where a falling ball switches it on, and point it at the other ball to blow it off the shelf into the basket.
 14. **Lift:** put a block in the ball's way so it drops into the pulley bucket. The bucket goes down and the weight goes up to the star.
@@ -122,7 +124,7 @@ Levels 20–30 go further. Each brings a new idea or a new pairing of parts:
 27. **Domino stairs:** the chain climbs three steps, one domino at a time, and nudges a ball off the top step.
 28. **Hopscotch:** two holes in the floor, with a spring in each to hop over them.
 29. **Catch and carry:** drop the heavy ball on the see-saw to fling the little one, and catch it in the air with a belt that carries it into a basket on a tower.
-30. **Grand finale:** dominoes, fan, balloon, pin, hamster, ramp. Four placements in one long chain.
+30. **Grand finale:** dominoes, fan, balloon, pin, hamster. The hamster sleeps on a shelf near the pin and rolls off onto the cheese tower. Three placements in one long chain.
 
 The Workshop's hammer levels:
 

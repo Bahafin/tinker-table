@@ -31,6 +31,7 @@ const SOLID: Record<PartKind, { w: number; h: number; dy?: number }> = {
 };
 
 const SHRINK = 0.03;
+const EDGE_SLACK = 0.05;
 
 interface Obb { cx: number; cy: number; w: number; h: number; a: number }
 
@@ -71,12 +72,24 @@ export function snap(v: number) {
   return Math.round(v * 2) / 2;
 }
 
-/** Keep the snapped centre on the table. */
+/**
+ * Snap a part to the grid and keep all of it on the table, at the angle it is turned to.
+ * At an edge the centre may sit off the grid so the part touches the edge exactly.
+ */
 export function clampToWorld(p: Placement): Placement {
-  const s = SOLID[p.part];
-  const r = Math.max(s.w, s.h);
-  const m = Math.min(r, 1);
-  return { ...p, x: Math.min(WORLD_W - m, Math.max(m, snap(p.x))), y: Math.min(WORLD_H - Math.min(s.h, 0.5), Math.max(0.5, snap(p.y))) };
+  const o = obb(p, SOLID[p.part]);
+  // A hair of slack, too small to see, so a part can rest right on an edge.
+  const ex = Math.abs(Math.cos(o.a)) * o.w + Math.abs(Math.sin(o.a)) * o.h - EDGE_SLACK;
+  const ey = Math.abs(Math.sin(o.a)) * o.w + Math.abs(Math.cos(o.a)) * o.h - EDGE_SLACK;
+  const offX = o.cx - p.x, offY = o.cy - p.y;
+  // A hanging rope is held from its top, which must be on the table too.
+  const top = p.part === 'rope' ? 0.5 : -Infinity;
+  const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+  return {
+    ...p,
+    x: clamp(snap(p.x), ex - offX, WORLD_W - ex - offX),
+    y: clamp(snap(p.y), Math.max(top, ey - offY, 0.5), WORLD_H - ey - offY),
+  };
 }
 
 /** Is the point (cells) on this part? Hit boxes are padded to stay finger-sized. */
