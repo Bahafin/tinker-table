@@ -227,7 +227,8 @@ svg .fill { fill: currentColor; stroke: none; }
   .pinpad-wrap .pin-keys { grid-column: 2; grid-row: 1 / span 4; }
   .pinpad-wrap .pin-keys button { height: 52px; }
   .pinpad-wrap .pinpad h3 { margin: 4px 0; }
-  .welcome-wrap .welcome { width: min(720px, 100%); padding: 16px 22px 12px; }
+  .welcome-wrap .welcome { width: min(720px, 100%); padding: 14px 22px 10px; font-size: 15px; line-height: 1.4; }
+  .welcome-wrap .welcome h3 { font-size: 21px; margin-bottom: 4px; }
   .welcome-wrap .welcome li .acts { display: inline-flex; margin: 0 0 0 10px; vertical-align: middle; }
   .welcome-wrap .welcome li { margin-bottom: 8px; }
   /* The front page fits without scrolling. */
