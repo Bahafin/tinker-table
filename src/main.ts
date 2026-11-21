@@ -1119,15 +1119,19 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) {
 // iOS: stop pinch zoom gestures from scaling the page.
 document.addEventListener('gesturestart', (e) => e.preventDefault());
 
-showMap();
 // A shared puzzle link (…/#p=<code>) opens straight into the puzzle. Bad codes are ignored.
-function openSharedFromHash() {
-  const m = /^#p=([A-Za-z0-9_-]{1,4000})$/.exec(location.hash);
+function openSharedFromHash(hash = location.hash) {
+  const m = /^#p=([A-Za-z0-9_-]{1,4000})$/.exec(hash);
   if (!m) return;
   const lv = decodeLevel(m[1], SHARED_VOICE);
-  if (lv) startLevel(-2, lv);
+  if (!lv) return;
+  if (location.hash !== hash) history.replaceState(null, '', hash); // so a reload keeps the puzzle
+  startLevel(-2, lv);
 }
-openSharedFromHash();
-if (!location.hash.startsWith('#p=')) showWelcome();
-window.addEventListener('hashchange', openSharedFromHash);
+// Read the link before showMap(), which clears a #p= from the address bar.
+const startHash = location.hash;
+showMap();
+openSharedFromHash(startHash);
+if (!startHash.startsWith('#p=')) showWelcome();
+window.addEventListener('hashchange', () => openSharedFromHash());
 (window as unknown as { tinker: () => Game | null }).tinker = () => game;
