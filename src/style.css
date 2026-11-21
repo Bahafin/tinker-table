@@ -14,6 +14,9 @@
 html, body {
   margin: 0;
   height: 100%;
+  /* iOS enlarges text when a phone turns sideways; the layout already sizes itself. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   background: var(--bg);
   color: var(--ink);
   font-family: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
