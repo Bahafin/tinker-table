@@ -1,0 +1,120 @@
+# The iPad/iPhone app, built on GitHub's Macs (there's no Mac here). See docs/app.md.
+# - Every push to main that touches the game: build for the simulator, run it on an iPad and
+#   an iPhone simulator, and keep screenshots as the "bumpity-ios-screens" artifact.
+# - Run by hand with "Send to TestFlight" ticked: sign it and upload it to App Store Connect.
+#   That needs the Apple secrets described in docs/app.md.
+name: iOS app
+
+on:
+  push:
+    branches: [main]
+    paths: ['src/**', 'public/**', 'index.html', 'ios/**', 'capacitor.config.ts', 'package*.json', '.github/workflows/ios.yml']
+  workflow_dispatch:
+    inputs:
+      testflight:
+        description: Send to TestFlight
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  simulator:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx cap sync ios
+      - name: Build for the simulator
+        run: |
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO build | tail -n 30
+          test -d build/Build/Products/Debug-iphonesimulator/App.app
+      - name: Run it on an iPad and an iPhone, and take screenshots
+        run: |
+          APP=build/Build/Products/Debug-iphonesimulator/App.app
+          mkdir -p shots
+          shoot() {
+            UDID=$(xcrun simctl list devices available -j | jq -r --arg p "$1" '[.devices[][] | select(.name | test($p))][0].udid')
+            NAME=$(xcrun simctl list devices available -j | jq -r --arg u "$UDID" '[.devices[][] | select(.udid == $u)][0].name')
+            echo "Using $NAME ($UDID)"
+            xcrun simctl boot "$UDID"
+            xcrun simctl bootstatus "$UDID" -b
+            xcrun simctl install "$UDID" "$APP"
+            xcrun simctl launch "$UDID" app.bumpity.game
+            sleep 15
+            # First launch shows the grown-ups' "Before you hand it over" card over the front page.
+            xcrun simctl io "$UDID" screenshot "shots/$2-first-launch.png"
+            # The web view's console, in case something failed to start.
+            xcrun simctl spawn "$UDID" log show --last 1m --style compact \
+              --predicate 'subsystem CONTAINS "capacitor" OR process == "App"' > "shots/$2-log.txt" 2>&1 || true
+            xcrun simctl shutdown "$UDID"
+          }
+          shoot 'iPad' ipad
+          shoot '^iPhone' iphone
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bumpity-ios-screens
+          path: shots
+          retention-days: 14
+
+  testflight:
+    if: github.event_name == 'workflow_dispatch' && inputs.testflight
+    needs: simulator
+    runs-on: macos-latest
+    env:
+      TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+    steps:
+      - name: Check the Apple secrets are set
+        run: |
+          for v in TEAM_ID ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_P8; do
+            if [ -z "${!v}" ]; then echo "::error::Missing secret for $v (see docs/app.md)"; exit 1; fi
+          done
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npx cap sync ios
+      - name: Archive, sign and upload to App Store Connect
+        run: |
+          KEY="$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8"
+          printf '%s' "$ASC_KEY_P8" > "$KEY"
+          AUTH=(-allowProvisioningUpdates -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID")
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic \
+            CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
+            "${AUTH[@]}" archive | tail -n 30
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$TEAM_ID</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict></plist>
+          EOF
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" -exportPath "$RUNNER_TEMP/export" \
+            "${AUTH[@]}"
+          rm -f "$KEY"
