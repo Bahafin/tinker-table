@@ -140,7 +140,7 @@ With a real finger, before wrapping: the Music room, the toy box tabs and arrows
    - The voice uses a text-to-speech plugin (Android's in-app browser has no speech), sharing uses the native share sheet, and the offline cache is off inside the app.
    - Android's back button goes back a screen. A "lock" button in the Safety section starts Android's screen pinning.
    - Phones locked to landscape; app icon, splash screen, full screen.
-3. **iPad and iPhone without a Mac.** GitHub's macOS runners (free for this public repo) build, sign and upload to TestFlight. Signing keys live in GitHub secrets.
+3. **iPad and iPhone without a Mac: built, waiting for the Apple account.** The iOS project exists; GitHub's macOS runners (free for this public repo) build it, run it on iPad and iPhone simulators with screenshots, and (once the Apple secrets are set) sign and upload it to TestFlight. See [app.md](app.md).
 4. **Own domain and links into the app.** Share links always point at the website (`https://<domain>/play#p=<code>`; old `#p=` links keep working), so anyone can play in a browser. Universal Links (iOS) and App Links (Android) open them in the app when it's installed; both need files at the domain's root, which a `github.io/tinker-table` address can't serve.
 5. **Store submission.** A test release through TestFlight and Google's internal testing for real play before going public.
 
