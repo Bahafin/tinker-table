@@ -1,3 +1,5 @@
+import { TextToSpeech } from '@capacitor-community/text-to-speech';
+import { PLATFORM } from '../platform';
 import type { Material, Note } from '../sim/types';
 
 let ac: AudioContext | null = null;
@@ -188,7 +190,20 @@ try {
   pickVoice();
 } catch { /* no speech */ }
 
+/** Stop the voice mid-sentence (leaving a level, say). */
+export function stopSpeaking() {
+  if (PLATFORM === 'android') { TextToSpeech.stop().catch(() => {}); return; }
+  try { window.speechSynthesis?.cancel(); } catch { /* none */ }
+}
+
 export function speak(text: string) {
+  // Android's in-app browser has no voices of its own, so the app uses the phone's speech engine.
+  if (PLATFORM === 'android') {
+    TextToSpeech.stop()
+      .then(() => TextToSpeech.speak({ text, lang: 'en-US', rate: 0.95, pitch: 1.05, category: 'ambient' }))
+      .catch(() => { /* no speech engine */ });
+    return;
+  }
   try {
     const s = window.speechSynthesis;
     if (!s) return;

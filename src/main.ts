@@ -5,9 +5,12 @@ import { WORLD_H, WORLD_W, type Level, type Note, type PartKind, type Placement 
 import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow, setSkin } from './render/draw';
 import { Game, drawIcon, type TraySet } from './ui/game';
 import { ALL_PARTS, TOY_PARTS } from './sim/parts';
-import { sfx, speak, unlockAudio } from './ui/audio';
+import { sfx, speak, stopSpeaking, unlockAudio } from './ui/audio';
 import { INTRO, MADE_TALK, MAKER_HOW, ROUTINE, SKILLS, TALK, TIPS, TOYS_HOW } from './parents/content';
 import { decodeLevel, decodeToy, encodeLevel, encodeToy, MADE_VOICE, SHARED_VOICE } from './levels/share';
+import { Share } from '@capacitor/share';
+import { gameAddress, NATIVE, PLATFORM } from './platform';
+import { ScreenLock } from './app-lock';
 import { BOOK_KEY, looseStickers, renderBook } from './ui/book';
 import { Pin } from './ui/pin';
 import { askPin, newPin } from './ui/pinpad';
@@ -168,7 +171,7 @@ function showMap() {
   game = null;
   // Leaving a shared puzzle: drop the link from the address bar so a reload shows the map.
   if (location.hash.startsWith('#p=')) history.replaceState(null, '', location.pathname + location.search);
-  try { speechSynthesis.cancel(); } catch { /* none */ }
+  stopSpeaking();
   $('play').classList.add('hidden');
   $('map').classList.remove('hidden');
   const box = $('levels');
@@ -545,7 +548,10 @@ function buildGrownups() {
       <div class="gu-card" id="gu-lock">
         <h4>Keep your child inside the game</h4>
         <p>No app can stop a child swiping out to the home screen. The tablet itself can: lock it to Bumpity before you hand it over, and only your passcode unlocks it.</p>
-        ${lockGuideHtml(guessPlatform())}
+        ${PLATFORM === 'android' ? `
+        <div class="acts"><button class="text-btn" id="gu-lock-now">Lock Bumpity on the screen now</button></div>
+        <p class="note">Android asks you to confirm first. To make leaving need the tablet's PIN, turn on <b>Ask for PIN before unpinning</b> once (step 1 below).</p>` : ''}
+        ${lockGuideHtml(PLATFORM === 'android' ? 'android' : guessPlatform())}
       </div>
     </section>
     <section class="gu-sec" data-sec="play">
@@ -615,6 +621,8 @@ function buildGrownups() {
     $('gu-tips-more').textContent = open ? 'Show fewer tips' : `Show all ${TIPS.length} tips`;
   };
   wireLockGuide($('gu-lock'));
+  const lockNow = document.getElementById('gu-lock-now');
+  if (lockNow) lockNow.onclick = () => { hideGrownups(); ScreenLock.start().catch(() => { /* pinning not available */ }); };
   $('gu-made-tabs').onclick = (e) => {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-made]');
     if (b) { madeTab = b.dataset.made as typeof madeTab; renderMade(); }
@@ -795,15 +803,17 @@ function showWelcome() {
 
 /** Share a made puzzle as a link: the share sheet if there is one, else copy it. */
 async function sharePuzzle(code: string, btn: HTMLButtonElement) {
-  const url = `${location.origin}${location.pathname}#p=${code}`;
+  // Always the public web address, so it plays in any browser (and in the app, once links open it).
+  const url = `${gameAddress()}#p=${code}`;
   const label = btn.textContent;
   const flash = (t: string) => { btn.textContent = t; setTimeout(() => { btn.textContent = label; }, 2200); };
   try {
+    if (NATIVE) { await Share.share({ title: 'A Bumpity puzzle', url, dialogTitle: 'Share this puzzle' }); return; }
     if (navigator.share) { await navigator.share({ title: 'A Bumpity puzzle', url }); return; }
     await navigator.clipboard.writeText(url);
     flash('Link copied!');
   } catch (e) {
-    if ((e as Error)?.name === 'AbortError') return; // the share sheet was closed
+    if ((e as Error)?.name === 'AbortError' || NATIVE) return; // the share sheet was closed
     // Copying isn't allowed here: show the link to copy by hand.
     window.prompt('Copy this link:', url);
   }
@@ -1135,7 +1145,8 @@ $('btn-replay').onclick = () => { $('won').classList.add('hidden'); game?.replay
 $('btn-next').onclick = () => startLevel(current + 1 < LEVELS.length ? current + 1 : -1);
 // Offline play once installed. Service workers only run on https or localhost,
 // and only in the built app (the dev server reloads too often for caching).
-if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+// The apps carry their files with them, so they don't need one.
+if (import.meta.env.PROD && !NATIVE && 'serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => { /* fine: plays online */ });
 }
 // Turning the device can move the buttons between the top bar and the side strip,

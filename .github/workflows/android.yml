@@ -1,0 +1,47 @@
+# Builds the Android app (a debug test build) on every push to main that touches the game,
+# and on demand. The APK is attached to the run as "bumpity-android": download it from the
+# run's page and install it on an Android tablet or phone to try it (see docs/app.md).
+name: Android app
+
+on:
+  push:
+    branches: [main]
+    paths: ['src/**', 'public/**', 'index.html', 'android/**', 'capacitor.config.ts', 'package*.json', '.github/workflows/android.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      # Copies the built game and the plugins' native code into the Android project.
+      - run: npx cap sync android
+      - name: Build the test app
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bumpity-android
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30

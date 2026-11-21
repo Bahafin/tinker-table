@@ -135,7 +135,7 @@ With a real finger, before wrapping: the Music room, the toy box tabs and arrows
 
 ### Phones and tablets, as apps (plan agreed 20 November 2026)
 1. **Phone layout: done.** On a phone turned sideways the buttons move to a strip down the left, Go floats at the top right, and the tray becomes a column (two in the toy box) down the right, so the table gets the full height: about 600×380 px on an iPhone instead of 300×180. Held upright, a phone shows a "turn me" picture during play (Home stays). The front page and the sticker book fit without scrolling. Tablets keep their layout.
-2. **App wrapper (Capacitor) and Android.** The same code as an iOS and an Android project.
+2. **App wrapper (Capacitor) and Android: done, waiting for a test on a real Android device.** The same code as an Android project (iOS next), built by GitHub. See [app.md](app.md).
    - Saved progress, stickers and kept machines are mirrored into app storage (iOS can clear browser storage); the `tinker.` keys carry over.
    - The voice uses a text-to-speech plugin (Android's in-app browser has no speech), sharing uses the native share sheet, and the offline cache is off inside the app.
    - Android's back button goes back a screen. A "lock" button in the Safety section starts Android's screen pinning.
