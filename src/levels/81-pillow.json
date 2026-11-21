@@ -1,0 +1,44 @@
+{
+  "id": "81-pillow",
+  "voice": "The ball flies right over the basket! A soft pillow stops anything that hits it. Where should the pillow go?",
+  "difficulty": 1.98,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 1.5,
+      "y": 1.5
+    },
+    {
+      "part": "ramp",
+      "x": 2.5,
+      "y": 3.5,
+      "rot": 30
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 5,
+      "y": 9.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "pillow",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "pillow",
+      "x": 6,
+      "y": 5.5,
+      "rot": 90
+    }
+  ]
+}

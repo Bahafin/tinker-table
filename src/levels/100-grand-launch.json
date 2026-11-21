@@ -1,0 +1,69 @@
+{
+  "id": "100-grand-launch",
+  "voice": "The grand launch! Ramp, spring, rocket, fan: roll the ball to the spring, bump the rocket, and blow it onto the star as it floats down.",
+  "difficulty": 7.69,
+  "goal": {
+    "type": "reach",
+    "object": "rocket1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 5.5,
+      "y": 1
+    },
+    {
+      "part": "ramp",
+      "x": 11,
+      "y": 7,
+      "rot": 0
+    },
+    {
+      "part": "rocket",
+      "id": "rocket1",
+      "x": 10.5,
+      "y": 6.5
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 13.5,
+      "y": 4
+    }
+  ],
+  "tray": [
+    {
+      "part": "ramp",
+      "count": 1
+    },
+    {
+      "part": "spring",
+      "count": 1
+    },
+    {
+      "part": "fan",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "ramp",
+      "x": 6,
+      "y": 2.5,
+      "rot": -15
+    },
+    {
+      "part": "spring",
+      "x": 2,
+      "y": 6,
+      "rot": 15
+    },
+    {
+      "part": "fan",
+      "x": 10,
+      "y": 4.5,
+      "rot": 45
+    }
+  ]
+}

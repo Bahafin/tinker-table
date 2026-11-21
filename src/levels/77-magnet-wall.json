@@ -1,0 +1,78 @@
+{
+  "id": "77-magnet-wall",
+  "voice": "A wall is in the way! Roll the ball to the spring, bounce it right over the wall, and catch it on the star with the magnet.",
+  "difficulty": 7.97,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 2,
+      "y": 2
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 13,
+      "y": 4.5
+    },
+    {
+      "part": "block",
+      "x": 9.5,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 9.5,
+      "y": 8.5
+    },
+    {
+      "part": "block",
+      "x": 9.5,
+      "y": 7.5
+    },
+    {
+      "part": "block",
+      "x": 9.5,
+      "y": 6.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "ramp",
+      "count": 1
+    },
+    {
+      "part": "spring",
+      "count": 1
+    },
+    {
+      "part": "magnet",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "ramp",
+      "x": 3,
+      "y": 4.5,
+      "rot": 15
+    },
+    {
+      "part": "spring",
+      "x": 7,
+      "y": 8,
+      "rot": 0
+    },
+    {
+      "part": "magnet",
+      "x": 13,
+      "y": 3,
+      "rot": 90
+    }
+  ]
+}

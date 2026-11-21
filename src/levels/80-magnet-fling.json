@@ -1,0 +1,53 @@
+{
+  "id": "80-magnet-fling",
+  "voice": "Drop the big ball on the see-saw to fling the little ball up high, then catch it on the star with the magnet!",
+  "difficulty": 4.94,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "seesaw",
+      "x": 8.5,
+      "y": 8.6,
+      "rot": -25
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 6.75,
+      "y": 7.9
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 11,
+      "y": 2
+    }
+  ],
+  "tray": [
+    {
+      "part": "heavyball",
+      "count": 1
+    },
+    {
+      "part": "magnet",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "heavyball",
+      "x": 9.5,
+      "y": 3
+    },
+    {
+      "part": "magnet",
+      "x": 12,
+      "y": 2,
+      "rot": 180
+    }
+  ]
+}

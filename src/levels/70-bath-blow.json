@@ -1,0 +1,71 @@
+{
+  "id": "70-bath-blow",
+  "voice": "Soap, fan, ball! Make the soap squirt into the fan, so the fan blows the ball off its shelf and into the basket.",
+  "difficulty": 5.21,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "heavyball",
+      "x": 1.5,
+      "y": 0.5
+    },
+    {
+      "part": "ramp",
+      "x": 2,
+      "y": 2.5,
+      "rot": 30
+    },
+    {
+      "part": "ramp",
+      "x": 6.5,
+      "y": 7,
+      "rot": 0
+    },
+    {
+      "part": "ramp",
+      "x": 10.5,
+      "y": 6,
+      "rot": 0
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 9.5,
+      "y": 5.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 13.5,
+      "y": 9.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "soap",
+      "count": 1
+    },
+    {
+      "part": "fan",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "soap",
+      "x": 6.5,
+      "y": 6.5,
+      "rot": 0
+    },
+    {
+      "part": "fan",
+      "x": 9,
+      "y": 7,
+      "rot": 30
+    }
+  ]
+}

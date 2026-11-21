@@ -1,0 +1,59 @@
+{
+  "id": "67-soap-roll",
+  "voice": "Use the ramp to roll the ball onto the soap, and the soap will knock the other ball into the basket!",
+  "difficulty": 4.75,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 9,
+      "y": 1
+    },
+    {
+      "part": "ramp",
+      "x": 4,
+      "y": 6,
+      "rot": 0
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 5,
+      "y": 5.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 9.5,
+      "y": 9.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "soap",
+      "count": 1
+    },
+    {
+      "part": "ramp",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "soap",
+      "x": 3,
+      "y": 5.5,
+      "rot": 0
+    },
+    {
+      "part": "ramp",
+      "x": 8,
+      "y": 3,
+      "rot": -30
+    }
+  ]
+}

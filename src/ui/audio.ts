@@ -132,6 +132,12 @@ export const sfx = {
   drip: () => { const now = performance.now(); if (now - lastClack < 60) return; lastClack = now; tone(900, 0.07, 'sine', 0.12, 0, 1400); },
   /** Scissors cutting a rope. */
   snip: () => { noise(0.04, 0.5, 'highpass', 3000); noise(0.05, 0.4, 'highpass', 2500); },
+  /** Soap squirting away: a wet squelch and a squeak. */
+  squish: () => { noise(0.12, 0.3, 'bandpass', 900, 2); tone(700, 0.15, 'sine', 0.12, 0.03, 1500); },
+  /** Something landing on a pillow: a soft flump. */
+  puff: () => { noise(0.18, 0.3, 'lowpass', 380); tone(110, 0.12, 'sine', 0.12, 0, 70); },
+  /** A rocket taking off: a rising roar and a whistle. */
+  blast: () => { noise(0.9, 0.35, 'bandpass', 700, 0.8); tone(300, 0.7, 'triangle', 0.08, 0, 1200); },
   hmm: () => { tone(330, 0.25, 'sine', 0.18); tone(262, 0.35, 'sine', 0.18, 0.22); },
   /** A musical part: a wooden xylophone note, the bell, or the drum. */
   note: (n: Note) => {

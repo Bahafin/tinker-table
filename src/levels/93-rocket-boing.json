@@ -1,0 +1,49 @@
+{
+  "id": "93-rocket-boing",
+  "voice": "The rocket is up on a shelf. Bounce the ball off the spring to bump it, and fly it to the star!",
+  "difficulty": 2.92,
+  "goal": {
+    "type": "reach",
+    "object": "rocket1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 2,
+      "y": 1
+    },
+    {
+      "part": "ramp",
+      "x": 11,
+      "y": 7,
+      "rot": 0
+    },
+    {
+      "part": "rocket",
+      "id": "rocket1",
+      "x": 10.5,
+      "y": 6.5
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 10.5,
+      "y": 1
+    }
+  ],
+  "tray": [
+    {
+      "part": "spring",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "spring",
+      "x": 2,
+      "y": 6,
+      "rot": 15
+    }
+  ]
+}

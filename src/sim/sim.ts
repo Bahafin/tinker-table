@@ -33,17 +33,33 @@ export const CAN_TILT = Math.PI / 4;
 const SNIP_REACH = 0.15;
 /** After this long, a ball swinging on an uncut rope no longer keeps the run going. */
 const SWING_GRACE = 6;
+/** Magnet: how far from its face (cells) it pulls, and how hard. */
+export const MAGNET_REACH = 4;
+const MAGNET_FORCE = 28;
+const MAGNET_GRAB = 1.1;
+/** What a magnet pulls: the little balls (a ball on a rope too). The big ball is too heavy. */
+const MAGNETIC = new Set<PartKind>(['ball', 'rope']);
+/** A pillow keeps this much of the speed of whatever lands on it. */
+const PILLOW_KEEP = 0.15;
+/** Soap: how fast something has to land on it to make it squirt away, and how fast it goes. */
+const SOAP_SQUIRT_HIT = 1.5;
+const SOAP_SQUIRT = 9;
+/** Rocket: how long it burns, how hard it pushes (times its weight), and its parachute. */
+export const ROCKET_BURN = 0.7;
+const ROCKET_THRUST = 2.4;
+const CHUTE_GRAVITY = 0.5;
+const CHUTE_DRAG = 2;
 
 /** drop: a water drop poured by a watering can (rp is that can). */
 type Tag = { rp: RuntimePart; drop?: boolean };
 
 /** What each part sounds like when it knocks into something. */
 const MATERIAL: Partial<Record<PartKind, Material>> = {
-  pin: 'metal', hammer: 'metal', scissors: 'metal', toaster: 'metal', can: 'metal', basket: 'metal', pulley: 'metal',
+  pin: 'metal', hammer: 'metal', scissors: 'metal', toaster: 'metal', can: 'metal', basket: 'metal', pulley: 'metal', magnet: 'metal', rocket: 'metal',
   heavyball: 'heavy',
   ramp: 'wood', shortramp: 'wood', domino: 'wood', seesaw: 'wood', block: 'wood', star: 'wood',
   ball: 'plastic', hamster: 'plastic', car: 'plastic', conveyor: 'plastic', fan: 'plastic', rope: 'plastic',
-  balloon: 'soft', cheese: 'soft', flower: 'soft',
+  balloon: 'soft', cheese: 'soft', flower: 'soft', pillow: 'soft', soap: 'soft',
 };
 const LOUDEST: Material[] = ['metal', 'heavy', 'wood', 'table', 'plastic', 'soft'];
 
@@ -53,7 +69,7 @@ const LOUDEST: Material[] = ['metal', 'heavy', 'wood', 'table', 'plastic', 'soft
  */
 function materialOf(a: PartKind | undefined, b: PartKind | undefined, water: boolean): Material | null {
   if (water) return null;
-  for (const k of [a, b]) if (k && (NOTE_OF[k] || k === 'spring')) return null;
+  for (const k of [a, b]) if (k && (NOTE_OF[k] || k === 'spring' || k === 'pillow')) return null;
   const mats = [a, b].map((k) => (k ? MATERIAL[k] ?? 'plastic' : 'table'));
   return LOUDEST.find((m) => mats.includes(m)) ?? 'plastic';
 }
@@ -147,6 +163,27 @@ export class Sim {
         this.events.push({ type: 'whoosh' });
       }
       if (x?.kind === 'spring' && yb.isDynamic()) this.events.push({ type: 'boing' });
+      // A pillow takes the speed out of whatever lands on it.
+      if (x?.kind === 'pillow' && yb.isDynamic() && !yt?.drop) {
+        const v = yb.getLinearVelocity();
+        if (v.length() > 1.5) this.events.push({ type: 'puff' });
+        yb.setLinearVelocity(v.clone().mul(PILLOW_KEEP));
+        yb.setAngularVelocity(yb.getAngularVelocity() * PILLOW_KEEP);
+      }
+      // Land on the soap and it squirts out from under, the way it points.
+      if (x?.kind === 'soap' && !x.state.on && yb.isDynamic() && !yt?.drop) {
+        const sb = x.bodies[0];
+        if (yb.getPosition().y < sb.getPosition().y - 0.2 && yb.getLinearVelocity().y > SOAP_SQUIRT_HIT) {
+          x.state.on = true;
+          sb.setLinearVelocity(new Vec2(SOAP_SQUIRT * x.state.dir!, -1.5));
+          this.events.push({ type: 'squish' });
+        }
+      }
+      // A bump lights the rocket (not its own stand, which it rests on).
+      if (x?.kind === 'rocket' && !x.state.on && yb.isDynamic() && yt?.rp !== x && !yt?.drop) {
+        x.state.on = true;
+        this.events.push({ type: 'blast' });
+      }
       // A bump lets the hammer go: the brake comes off and it tips over the way it faces.
       if (x?.kind === 'hammer' && !x.state.on && yb.isDynamic() && yb !== x.bodies[0]) this.releaseQueue.push(x);
       if (x?.kind === 'hamster' && !x.state.on && yb.isDynamic()) {
@@ -185,11 +222,12 @@ export class Sim {
     }
   }
 
-  /** Conveyor belts move whatever touches them along the belt. */
+  /** Conveyor belts move whatever touches them along the belt; pillows never bounce. */
   private onPreSolve(c: Contact) {
     const fa = c.getFixtureA(), fb = c.getFixtureB();
     const ra = (fa.getBody().getUserData() as Tag | null)?.rp;
     const rb = (fb.getBody().getUserData() as Tag | null)?.rp;
+    if (ra?.kind === 'pillow' || rb?.kind === 'pillow') c.setRestitution(0);
     if (ra?.kind === 'conveyor') c.setTangentSpeed(-CONVEYOR_SPEED * ra.state.dir!);
     else if (rb?.kind === 'conveyor') c.setTangentSpeed(CONVEYOR_SPEED * rb.state.dir!);
   }
@@ -201,6 +239,45 @@ export class Sim {
       const b = h.bodies[0];
       const target = HAMSTER_SPIN * h.state.dir!;
       b.applyTorque((target - b.getAngularVelocity()) * b.getInertia() * 8, true);
+    }
+  }
+
+  /** Magnets pull balls and the car that are in front of them, harder the closer they are. */
+  private applyMagnets() {
+    for (const m of this.parts) {
+      if (m.kind !== 'magnet') continue;
+      const mb = m.bodies[0];
+      const face = mb.getWorldPoint(new Vec2(0.45, 0));
+      for (const rp of this.parts) {
+        if (!MAGNETIC.has(rp.kind) || rp.state.popped) continue;
+        const b = rp.kind === 'rope' ? rp.bodies[1] : rp.bodies[0];
+        // It pulls what is in front of it (and a little to the sides), harder the closer it is.
+        if (mb.getLocalPoint(b.getPosition()).x < -0.2) continue;
+        const d = face.clone().sub(b.getPosition());
+        const len = d.length();
+        if (len < 0.05 || len > MAGNET_REACH) continue;
+        // Strong enough to beat gravity anywhere in reach, so a pulled ball comes straight at it.
+        const k = MAGNET_FORCE * (1 - 0.4 * len / MAGNET_REACH);
+        b.applyForceToCenter(d.mul(k * b.getMass() / len), true);
+        // Close up it grabs: whatever comes within a cell of its face is held there.
+        if (len < MAGNET_GRAB) b.setLinearVelocity(b.getLinearVelocity().mul(0.8));
+      }
+    }
+  }
+
+  /** A lit rocket pushes itself along the way it points, then opens its parachute. */
+  private applyRockets() {
+    for (const r of this.parts) {
+      if (r.kind !== 'rocket' || !r.state.on || r.state.chute) continue;
+      const b = r.bodies[0];
+      r.state.load! += DT;
+      if (r.state.load! >= ROCKET_BURN) {
+        r.state.chute = true;
+        b.setGravityScale(CHUTE_GRAVITY);
+        b.setLinearDamping(CHUTE_DRAG);
+        continue;
+      }
+      b.applyForceToCenter(b.getWorldVector(new Vec2(0, -1)).mul(ROCKET_THRUST * 10 * b.getMass()), true);
     }
   }
 
@@ -325,6 +402,8 @@ export class Sim {
     this.applyToasters();
     this.applyCans();
     this.applyScissors();
+    this.applyMagnets();
+    this.applyRockets();
     this.stepCount++;
     this.applyHamsters();
     this.world.step(DT, 8, 3);

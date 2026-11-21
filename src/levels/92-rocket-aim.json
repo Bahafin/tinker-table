@@ -1,0 +1,55 @@
+{
+  "id": "92-rocket-aim",
+  "voice": "The ball rolls along the floor. Put the rocket in its way, and aim it at the ball up on the shelf, to knock it into the basket!",
+  "difficulty": 3.54,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 1.8,
+      "y": 6.5
+    },
+    {
+      "part": "ramp",
+      "x": 2.5,
+      "y": 8.5,
+      "rot": 30
+    },
+    {
+      "part": "ramp",
+      "x": 11,
+      "y": 7,
+      "rot": 0
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 9.7,
+      "y": 6.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 14.5,
+      "y": 9.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "rocket",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "rocket",
+      "x": 7,
+      "y": 9,
+      "rot": 30
+    }
+  ]
+}

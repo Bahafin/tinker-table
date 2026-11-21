@@ -1,0 +1,37 @@
+{
+  "id": "91-rocket",
+  "voice": "A rocket! Bump it and it blasts off. Drop the ball on it, and fly the rocket up to the star!",
+  "difficulty": 1.66,
+  "goal": {
+    "type": "reach",
+    "object": "rocket1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "rocket",
+      "id": "rocket1",
+      "x": 8,
+      "y": 9.5
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 8,
+      "y": 3.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "ball",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "ball",
+      "x": 8.5,
+      "y": 6
+    }
+  ]
+}

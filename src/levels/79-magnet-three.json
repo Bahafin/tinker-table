@@ -1,0 +1,58 @@
+{
+  "id": "79-magnet-three",
+  "voice": "Ramp, spring and magnet! Roll the ball to the spring, bounce it high, and catch it on the star.",
+  "difficulty": 6.73,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 2,
+      "y": 2
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 12.5,
+      "y": 2.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "ramp",
+      "count": 1
+    },
+    {
+      "part": "spring",
+      "count": 1
+    },
+    {
+      "part": "magnet",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "ramp",
+      "x": 3,
+      "y": 4.5,
+      "rot": 15
+    },
+    {
+      "part": "spring",
+      "x": 7,
+      "y": 9.5,
+      "rot": 0
+    },
+    {
+      "part": "magnet",
+      "x": 13.5,
+      "y": 2.5,
+      "rot": 180
+    }
+  ]
+}

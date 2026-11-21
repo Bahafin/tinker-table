@@ -11,8 +11,9 @@ const KINDS: PartKind[] = [
   'balloon', 'pin', 'fan', 'spring', 'pulley', 'hamster', 'conveyor', 'cheese',
   'car', 'hammer', 'toaster', 'can', 'flower', 'rope', 'scissors',
   'xylo-c', 'xylo-d', 'xylo-e', 'xylo-g', 'xylo-a', 'bell', 'drum',
+  'soap', 'magnet', 'pillow', 'rocket',
 ];
-export const GOAL_OBJECTS = new Set<PartKind>(['ball', 'heavyball', 'balloon', 'hamster', 'pulley', 'car', 'can', 'rope']);
+export const GOAL_OBJECTS = new Set<PartKind>(['ball', 'heavyball', 'balloon', 'hamster', 'pulley', 'car', 'can', 'rope', 'soap', 'rocket']);
 export const GOAL_TARGETS = new Set<PartKind>(['basket', 'star', 'cheese', 'flower']);
 
 const MAX_PARTS = 40;
@@ -20,7 +21,7 @@ const MAX_CODE = 4000;
 const VERSION = 1;
 
 /** Room looks a toy-box part can have. Only ever append: saved codes depend on the order. */
-const SKINS = ['', 'workshop', 'playroom', 'attic', 'kitchen', 'garden', 'music'];
+const SKINS = ['', 'workshop', 'playroom', 'attic', 'kitchen', 'garden', 'music', 'bathroom', 'garage', 'bedroom', 'space'];
 
 /** [kind, x*2, y*2, rot/15] and, for a part in a room's look, that look's place in SKINS. */
 type Packed = [number, number, number, number] | [number, number, number, number, number];

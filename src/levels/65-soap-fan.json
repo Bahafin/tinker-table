@@ -1,0 +1,61 @@
+{
+  "id": "65-soap-fan",
+  "voice": "When the soap squirts into the fan, the fan switches on. Point the fan at the ball, and blow it into the basket!",
+  "difficulty": 3.88,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 14,
+      "y": 4
+    },
+    {
+      "part": "ramp",
+      "x": 12.5,
+      "y": 7,
+      "rot": 0
+    },
+    {
+      "part": "soap",
+      "x": 14,
+      "y": 6.5,
+      "rot": 180
+    },
+    {
+      "part": "ramp",
+      "x": 5.5,
+      "y": 6,
+      "rot": 0
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 6.5,
+      "y": 5.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 2.5,
+      "y": 9.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "fan",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "fan",
+      "x": 10,
+      "y": 7,
+      "rot": -165
+    }
+  ]
+}

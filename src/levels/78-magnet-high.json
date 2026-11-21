@@ -1,0 +1,54 @@
+{
+  "id": "78-magnet-high",
+  "voice": "Bounce the ball off the spring, and let the magnet catch it on the star!",
+  "difficulty": 5.22,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 13.8,
+      "y": 3.5
+    },
+    {
+      "part": "ramp",
+      "x": 13,
+      "y": 4.5,
+      "rot": -15
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 2,
+      "y": 4.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "spring",
+      "count": 1
+    },
+    {
+      "part": "magnet",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "spring",
+      "x": 9.5,
+      "y": 8,
+      "rot": -15
+    },
+    {
+      "part": "magnet",
+      "x": 0.5,
+      "y": 4.5,
+      "rot": 0
+    }
+  ]
+}

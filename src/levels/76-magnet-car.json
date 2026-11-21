@@ -1,0 +1,44 @@
+{
+  "id": "76-magnet-car",
+  "voice": "The toy car carries the ball right under the star. Can the magnet lift the ball off the car and onto the star?",
+  "difficulty": 2.65,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "car",
+      "x": 1.5,
+      "y": 9.5,
+      "rot": 0
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 1.5,
+      "y": 9
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 12,
+      "y": 6
+    }
+  ],
+  "tray": [
+    {
+      "part": "magnet",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "magnet",
+      "x": 12,
+      "y": 5,
+      "rot": 90
+    }
+  ]
+}

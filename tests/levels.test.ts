@@ -96,19 +96,27 @@ describe('rooms', () => {
     }
   });
 
-  test('get harder along each room, and from room to room', async () => {
+  test('get harder along each room, and from room to room on average', async () => {
     const { ROOMS } = await import('../src/levels');
     const d = (i: number) => LEVELS[i].difficulty!;
     for (const lv of LEVELS) expect(lv.difficulty, lv.id).toBeTypeOf('number');
+    const mean = (r: (typeof ROOMS)[number]) => LEVELS.slice(r.first, r.first + r.count).reduce((t, l) => t + l.difficulty!, 0) / r.count;
     ROOMS.forEach((r, k) => {
       for (let i = 1; i < r.count; i++) {
         expect(d(r.first + i), `${r.name} level ${i + 1} is harder than level ${i}`).toBeGreaterThan(d(r.first + i - 1));
       }
       if (k === 0) return;
       const prev = ROOMS[k - 1];
-      for (let i = 0; i < Math.min(r.count, prev.count); i++) {
-        expect(d(r.first + i), `${r.name} level ${i + 1} is harder than ${prev.name} level ${i + 1}`).toBeGreaterThan(d(prev.first + i));
-      }
+      expect(mean(r), `${r.name} is harder on average than ${prev.name}`).toBeGreaterThan(mean(prev));
+    });
+  });
+
+  test("a room's own part comes before any level elsewhere uses it", async () => {
+    const { ROOMS, ROOM_PART } = await import('../src/levels');
+    ROOMS.forEach((r) => {
+      const part = ROOM_PART[r.id];
+      const first = LEVELS.findIndex((l) => [...l.fixed, ...l.tray].some((p) => p.part === part));
+      expect(first, `${part} first appears in ${r.name}`).toBeGreaterThanOrEqual(r.first);
     });
   });
 

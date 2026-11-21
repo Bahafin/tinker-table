@@ -1,0 +1,55 @@
+{
+  "id": "69-soap-lift",
+  "voice": "Squirt the soap into the bucket. It is just heavy enough to lift the weight up to the star!",
+  "difficulty": 3.38,
+  "goal": {
+    "type": "reach",
+    "object": "lift1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 3.5,
+      "y": 0.5
+    },
+    {
+      "part": "ramp",
+      "x": 3,
+      "y": 4.5,
+      "rot": 0
+    },
+    {
+      "part": "ramp",
+      "x": 10.5,
+      "y": 5.5,
+      "rot": 0
+    },
+    {
+      "part": "pulley",
+      "id": "lift1",
+      "x": 11,
+      "y": 7.5
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 12,
+      "y": 6.3
+    }
+  ],
+  "tray": [
+    {
+      "part": "soap",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "soap",
+      "x": 3.5,
+      "y": 4,
+      "rot": 0
+    }
+  ]
+}

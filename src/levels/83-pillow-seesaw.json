@@ -1,0 +1,49 @@
+{
+  "id": "83-pillow-seesaw",
+  "voice": "The see-saw flings the ball up high. Catch it softly on the pillow, right on the star!",
+  "difficulty": 2.91,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "seesaw",
+      "x": 8.5,
+      "y": 8.6,
+      "rot": -25
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 6.75,
+      "y": 7.9
+    },
+    {
+      "part": "heavyball",
+      "x": 9.5,
+      "y": 3
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 14,
+      "y": 4
+    }
+  ],
+  "tray": [
+    {
+      "part": "pillow",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "pillow",
+      "x": 14,
+      "y": 5,
+      "rot": 0
+    }
+  ]
+}

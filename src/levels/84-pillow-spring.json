@@ -1,0 +1,48 @@
+{
+  "id": "84-pillow-spring",
+  "voice": "Bounce the ball up with the spring, then catch it on the pillow, right on the star!",
+  "difficulty": 5.29,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 14,
+      "y": 3
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 6,
+      "y": 4.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "spring",
+      "count": 1
+    },
+    {
+      "part": "pillow",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "spring",
+      "x": 13.5,
+      "y": 9.5,
+      "rot": -15
+    },
+    {
+      "part": "pillow",
+      "x": 7,
+      "y": 5.5,
+      "rot": 0
+    }
+  ]
+}

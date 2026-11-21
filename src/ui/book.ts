@@ -11,6 +11,7 @@ export const BOOK_KEY = 'tinker.book';
 
 /** Which part a level's sticker shows: the most special thing in it, in this order. */
 const PRIORITY: PartKind[] = [
+  'rocket', 'magnet', 'soap', 'pillow',
   'car', 'hammer', 'toaster', 'can', 'scissors', 'rope', 'flower', 'bell', 'drum', 'xylo-g', 'xylo-e', 'xylo-c',
   'hamster', 'pulley', 'fan', 'balloon', 'spring', 'seesaw', 'conveyor',
   'heavyball', 'domino', 'star', 'basket', 'ball',

@@ -2,7 +2,8 @@ export type PartKind =
   | 'ball' | 'heavyball' | 'ramp' | 'shortramp' | 'block' | 'basket' | 'star'
   | 'domino' | 'seesaw' | 'balloon' | 'pin' | 'fan' | 'spring' | 'pulley'
   | 'hamster' | 'conveyor' | 'cheese' | 'car' | 'hammer' | 'toaster' | 'can' | 'flower' | 'rope' | 'scissors'
-  | 'bell' | 'drum' | 'xylo-c' | 'xylo-d' | 'xylo-e' | 'xylo-g' | 'xylo-a';
+  | 'bell' | 'drum' | 'xylo-c' | 'xylo-d' | 'xylo-e' | 'xylo-g' | 'xylo-a'
+  | 'soap' | 'magnet' | 'pillow' | 'rocket';
 
 /** A sound a musical part makes: one of the five xylophone notes, the bell or the drum. */
 export type Note = 'c' | 'd' | 'e' | 'g' | 'a' | 'bell' | 'drum';
@@ -60,6 +61,9 @@ export type SimEvent =
   | { type: 'pour' }
   | { type: 'drip' }
   | { type: 'snip' }
+  | { type: 'puff' }
+  | { type: 'squish' }
+  | { type: 'blast' }
   | { type: 'note'; note: Note; x: number; y: number };
 
 export const WORLD_W = 16;

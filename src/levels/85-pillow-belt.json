@@ -1,0 +1,55 @@
+{
+  "id": "85-pillow-belt",
+  "voice": "The belt throws the ball too far! Stop it with the pillow, so it drops into the basket.",
+  "difficulty": 2.96,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 12.5,
+      "y": 3.5
+    },
+    {
+      "part": "conveyor",
+      "x": 12.5,
+      "y": 4.5,
+      "rot": 180
+    },
+    {
+      "part": "conveyor",
+      "x": 9.5,
+      "y": 4.5,
+      "rot": 180
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 5,
+      "y": 8.4
+    },
+    {
+      "part": "block",
+      "x": 5,
+      "y": 9.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "pillow",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "pillow",
+      "x": 7,
+      "y": 6.5,
+      "rot": -15
+    }
+  ]
+}

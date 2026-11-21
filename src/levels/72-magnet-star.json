@@ -1,0 +1,44 @@
+{
+  "id": "72-magnet-star",
+  "voice": "The ball flies right past the star! Put the magnet where it can catch the ball and hold it on the star.",
+  "difficulty": 2.645,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 2.2,
+      "y": 2.5
+    },
+    {
+      "part": "ramp",
+      "x": 3,
+      "y": 4,
+      "rot": 30
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 7.5,
+      "y": 6
+    }
+  ],
+  "tray": [
+    {
+      "part": "magnet",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "magnet",
+      "x": 8.5,
+      "y": 6,
+      "rot": 180
+    }
+  ]
+}

@@ -59,45 +59,100 @@ import l57 from './57-xylophone-bridge.json';
 import l58 from './58-hamster-song.json';
 import l59 from './59-toaster-tune.json';
 import l60 from './60-grand-concert.json';
+import l61 from './61-soap-squirt.json';
+import l62 from './62-soap-push.json';
+import l63 from './63-soap-turn.json';
+import l64 from './64-soap-slide.json';
+import l65 from './65-soap-fan.json';
+import l66 from './66-soap-hamster.json';
+import l67 from './67-soap-roll.json';
+import l68 from './68-soap-two.json';
+import l69 from './69-soap-lift.json';
+import l70 from './70-bath-blow.json';
+import l71 from './71-magnet.json';
+import l72 from './72-magnet-star.json';
+import l73 from './73-magnet-seesaw.json';
+import l74 from './74-magnet-boing.json';
+import l75 from './75-magnet-wake.json';
+import l76 from './76-magnet-car.json';
+import l77 from './77-magnet-wall.json';
+import l78 from './78-magnet-high.json';
+import l79 from './79-magnet-three.json';
+import l80 from './80-magnet-fling.json';
+import l81 from './81-pillow.json';
+import l82 from './82-pillow-boing.json';
+import l83 from './83-pillow-seesaw.json';
+import l84 from './84-pillow-spring.json';
+import l85 from './85-pillow-belt.json';
+import l86 from './86-pillow-ramp.json';
+import l87 from './87-pillow-fling.json';
+import l88 from './88-pillow-three.json';
+import l89 from './89-pillow-belt-two.json';
+import l90 from './90-pillow-bedtime.json';
+import l91 from './91-rocket.json';
+import l92 from './92-rocket-aim.json';
+import l93 from './93-rocket-boing.json';
+import l94 from './94-rocket-fan.json';
+import l95 from './95-rocket-land.json';
+import l96 from './96-rocket-seesaw.json';
+import l97 from './97-rocket-hamster.json';
+import l98 from './98-rocket-two.json';
+import l99 from './99-rocket-ramp.json';
+import l100 from './100-grand-launch.json';
 import { ALL_PARTS, TOY_PARTS } from '../sim/parts';
 
 /**
  * Ten levels per room, easiest first. Every level has a `difficulty` score (see
  * scripts/level-stats.test.ts and docs/design.md), and the order keeps two rules,
  * checked by tests/levels.test.ts: inside a room each level is harder than the one
- * before, and each room's Nth level is harder than the previous room's Nth level.
+ * before, and each room is harder on average than the room before it.
  */
 export const LEVELS = [
   // Workshop
   l6, l34, l1, l46, l10, l13, l16, l36, l3, l35,
   // Playroom
   l31, l11, l8, l5, l20, l12, l49, l17, l32, l33,
+  // Bathroom
+  l61, l64, l63, l66, l68, l62, l69, l65, l67, l70,
   // Attic
   l43, l4, l2, l44, l22, l14, l27, l45, l50, l18,
+  // Space
+  l91, l97, l93, l95, l94, l92, l96, l98, l99, l100,
   // Kitchen
   l37, l9, l7, l48, l38, l23, l21, l26, l39, l30,
+  // Bedroom
+  l81, l82, l83, l85, l89, l86, l87, l84, l88, l90,
   // Garden
   l40, l42, l47, l15, l41, l24, l28, l25, l29, l19,
+  // Garage
+  l71, l72, l76, l73, l75, l80, l78, l74, l79, l77,
   // Music room
   l51, l52, l53, l55, l56, l54, l58, l57, l59, l60,
 ] as Level[];
 
 /**
- * Rooms on the map, in order of difficulty: ten levels each, four of them using the
- * room's own part. Each room has its own paper tint (cards and the table) and an
+ * Rooms on the map, in order of difficulty: ten levels each, at least four of them using
+ * the room's own part (all ten in the four newest rooms and the Music room). Each room has its own paper tint (cards and the table) and an
  * accent colour for its banner.
  */
 export interface Room { id: string; name: string; first: number; count: number; paper: string; accent: string }
 /** Each room's own part: on its toy box tray tab and its sticker book tab. */
-export const ROOM_PART: Record<string, PartKind> = { workshop: 'hammer', playroom: 'car', attic: 'scissors', kitchen: 'toaster', garden: 'can', music: 'bell' };
+export const ROOM_PART: Record<string, PartKind> = {
+  workshop: 'hammer', playroom: 'car', attic: 'scissors', kitchen: 'toaster', garden: 'can',
+  bathroom: 'soap', garage: 'magnet', bedroom: 'pillow', space: 'rocket', music: 'bell',
+};
 
 export const ROOMS: Room[] = [
   { id: 'workshop', name: 'Workshop', first: 0, count: 10, paper: '#f4ecdc', accent: '#c79a5b' },
   { id: 'playroom', name: 'Playroom', first: 10, count: 10, paper: '#e6eef5', accent: '#5aa2d6' },
-  { id: 'attic', name: 'Attic', first: 20, count: 10, paper: '#ece7f1', accent: '#3d4a73' },
-  { id: 'kitchen', name: 'Kitchen', first: 30, count: 10, paper: '#f7e7dc', accent: '#e5583f' },
-  { id: 'garden', name: 'Garden', first: 40, count: 10, paper: '#edf1dc', accent: '#7cae4e' },
-  { id: 'music', name: 'Music room', first: 50, count: 10, paper: '#f6e9ef', accent: '#b5527f' },
+  { id: 'bathroom', name: 'Bathroom', first: 20, count: 10, paper: '#e3f1f4', accent: '#3aa6b9' },
+  { id: 'attic', name: 'Attic', first: 30, count: 10, paper: '#ece7f1', accent: '#3d4a73' },
+  { id: 'space', name: 'Space', first: 40, count: 10, paper: '#dfe8ef', accent: '#6b3fa0' },
+  { id: 'kitchen', name: 'Kitchen', first: 50, count: 10, paper: '#f7e7dc', accent: '#e5583f' },
+  { id: 'bedroom', name: 'Bedroom', first: 60, count: 10, paper: '#eef0fb', accent: '#6a72c9' },
+  { id: 'garden', name: 'Garden', first: 70, count: 10, paper: '#edf1dc', accent: '#7cae4e' },
+  { id: 'garage', name: 'Garage', first: 80, count: 10, paper: '#ebe7e1', accent: '#d9822b' },
+  { id: 'music', name: 'Music room', first: 90, count: 10, paper: '#f6e9ef', accent: '#b5527f' },
 ];
 /**
  * Each room draws some parts as its own things (see render/skins.ts), so the spoken goal
@@ -118,6 +173,20 @@ const WORDS: Record<string, [RegExp, string][]> = {
   playroom: [
     [/\b(big|heavy) ball\b/g, 'bowling ball'], [/\bbasket\b/g, 'toy chest'], [/\bdominoes\b/g, 'crayons'],
     [/\bpins\b/g, 'drawing pins'], [/\bpin\b/g, 'drawing pin'], [/\bramps\b/g, 'tracks'], [/\bramp\b/g, 'track'],
+  ],
+  bathroom: [
+    [/\b(big|heavy) ball\b/g, 'sponge'], [/\ba ball\b/g, 'a duck'], [/\bballs\b/g, 'ducks'], [/\bball\b/g, 'duck'],
+    [/\bbasket\b/g, 'bathtub'], [/\bstar\b/g, 'starfish'], [/\bdominoes\b/g, 'bottles'],
+    [/\bballoons\b/g, 'bubbles'], [/\bballoon\b/g, 'bubble'],
+  ],
+  garage: [
+    [/\b(big|heavy) ball\b/g, 'tyre'], [/\bbasket\b/g, 'bucket'], [/\bdominoes\b/g, 'oil cans'],
+    [/\bpins\b/g, 'nails'], [/\bpin\b/g, 'nail'],
+  ],
+  bedroom: [[/\b(big|heavy) ball\b/g, 'teddy'], [/\bbasket\b/g, 'laundry basket']],
+  space: [
+    [/\b(big|heavy) ball\b/g, 'planet'], [/\ba ball\b/g, 'a moon rock'], [/\bballs\b/g, 'moon rocks'], [/\bball\b/g, 'moon rock'],
+    [/\bdominoes\b/g, 'robots'],
   ],
   attic: [
     [/\b(big|heavy) ball\b/g, 'globe'], [/\bballs\b/g, 'marbles'], [/\bball\b/g, 'marble'],

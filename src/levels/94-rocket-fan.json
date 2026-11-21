@@ -1,0 +1,53 @@
+{
+  "id": "94-rocket-fan",
+  "voice": "The rocket floats down on its parachute. Can a fan blow it over into the basket?",
+  "difficulty": 3.42,
+  "goal": {
+    "type": "reach",
+    "object": "rocket1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 3.4,
+      "y": 7
+    },
+    {
+      "part": "rocket",
+      "id": "rocket1",
+      "x": 4,
+      "y": 9.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 6.5,
+      "y": 7.4
+    },
+    {
+      "part": "block",
+      "x": 6.5,
+      "y": 8.5
+    },
+    {
+      "part": "block",
+      "x": 6.5,
+      "y": 9.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "fan",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "fan",
+      "x": 3,
+      "y": 8.5,
+      "rot": -45
+    }
+  ]
+}

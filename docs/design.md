@@ -62,10 +62,14 @@ A calm chain-reaction puzzle game for ages 5–8 (younger children with a grown-
 | Xylophone bars | 1.5 × 0.2 | static, a little bouncy | Five colours, five notes (red C, orange D, yellow E, green G, blue A: a pentatonic scale, so any order sounds nice). A bar plays its note when something hits it faster than 0.8 cells/s, at most once per 0.15 s, so a ball resting on it stays quiet. It flashes as it plays. Turns in 15° steps. The Music room's part. |
 | Bell | 0.9 × 0.9 | static | Rings when hit and swings a little. Like a pop, the ring wakes a sleeping hamster within 5 cells, and a dotted ring shows how far it reaches. |
 | Drum | 1.2 × 0.8 | static, bouncy skin | Booms when hit, and bounces what lands on it back up (restitution 0.85). |
+| Soap | 0.8 × 0.36 | dynamic, no friction | So slippery it slides down any slope and keeps going on the flat (drag stops it after about 11 cells). Land something on it (falling faster than 1.5 cells/s, from above) and it squirts out from under, 9 cells/s the way its thin end points. A tap flips its facing. The Bathroom's own part. |
+| Magnet | 0.8 × 0.9 | static | A horseshoe magnet, always on. It pulls little balls (and a ball on a rope) that are in front of it and within 4 cells of its face, hard enough to beat gravity, and holds anything that comes within about a cell. It doesn't pull the big ball (too heavy) or anything behind it, and it pulls through other parts. Turns in 15° steps all the way round. The Garage's own part. |
+| Pillow | 1.6 × 0.45 | static, soft | Anything that lands on it or hits it keeps only 15% of its speed and doesn't bounce at all, with a soft flump. Standing on its end it makes a soft wall. Turns in 15° steps. The Bedroom's own part. |
+| Rocket | 0.8 × 1 (with its stand) | dynamic rocket in a static stand | Sits in its stand until anything bumps it (the rocket or the stand). Then it blasts off the way it points for 0.7 s, rises about 6 cells straight up, and floats down on a parachute at about 2.5 cells/s; slow enough for a fan to blow it sideways. It doesn't turn in flight. A ball resting on its nose weighs it down, so a bump from the side works best. Turns in 15° steps. The Space room's own part. |
 
 **Tune goals.** A music level's goal can be a tune instead of a target: the notes played, in order, must end with the tune (the same note twice in a row counts once). The goal picture shows the tune as the parts that play it. Tunes can't be made in the puzzle maker yet.
 
-Parts that only face left or right (hamster, conveyor, car, hammer, toaster, watering can) get one ↔ flip button instead of the two turn buttons.
+Parts that only face left or right (hamster, conveyor, car, hammer, toaster, watering can, soap) get one ↔ flip button instead of the two turn buttons.
 
 Parts are kept wholly on the table, at whatever angle they are turned to: at an edge a part slides in until it touches the edge.
 
@@ -182,6 +186,62 @@ The Music room, after the Garden (the hardest room):
 59. **Toaster tune:** catch the falling ball in the toaster; it pops up into the bell, rolls down the red bar and lands on the drum. The bell must stay out of the way of the falling ball.
 60. **Grand concert:** the car plays red and yellow across the bridge and pushes a ball onto the bell; the ring wakes the hamster (placed facing the drum), who runs and plays the drum. A basket catches the ball so only the hamster can reach the drum.
 
+Levels 61–100 bring four new rooms, each with its own part (Milestone 8, "a hundred levels"):
+
+The Bathroom's soap levels:
+
+61. **Soap squirt:** drop a duck on the soap and it squirts off the shelf into the bathtub. Teaches "land on it and it shoots away".
+62. **Soap push:** a ramp guides the falling duck onto the soap, which squirts along the shelf and pushes the other duck in.
+63. **Turn the soap:** place the soap where the duck drops, pointing back toward the duck on the shelf.
+64. **Soap slide:** the soap squirts the wrong way; a ramp under its flight slides it back into the tub.
+65. **Soap and fan:** the soap squirts into the fan and switches it on; aim the fan to blow the duck off its shelf.
+66. **Soap wake:** the hamster sleeps under a shelf, so the soap has to slide along the floor to wake him.
+67. **Roll to the soap:** place a ramp to send the falling duck sideways and the soap where it lands. Two parts.
+68. **Two soaps:** the first soap lands on the second, which squirts back the other way into the duck.
+69. **Soap lift:** squirt the soap in under a roof into the pulley bucket, which lifts the weight to the starfish.
+70. **Bath blow:** the sponge rolls onto the soap, the soap squirts into the fan, the fan blows the duck into the tub.
+
+The Garage's magnet levels:
+
+71. **Magnet:** put the magnet behind the star, facing the ball, and it pulls the ball onto the star.
+72. **Catch it:** the ball flies past the star; a magnet beside it catches and holds it there.
+73. **Fling and catch:** the see-saw flings the little ball high, and the magnet catches it on the star (the big ball isn't magnetic).
+74. **Boing and catch:** the star is out of reach, so a spring bounces the ball up close, and the magnet catches it. Two parts.
+75. **Magnet wake:** the magnet pulls the ball off its shelf, and on the way it bumps the sleeping hamster awake.
+76. **Magnet car:** the car carries the ball along, and a magnet lifts it off onto the star as it passes.
+77. **Over the wall:** ramp, spring and magnet again, with a wall in the way: the bounce has to clear it before the magnet can catch the ball on the star.
+78. **High catch:** the spring puzzle the other way round, with the star on the left.
+79. **Ramp, spring, magnet:** three parts in order: roll, bounce, catch.
+80. **Drop and catch:** drop the tyre on the see-saw yourself, and place the magnet to catch the flung ball.
+
+The Bedroom's pillow levels:
+
+81. **Pillow:** the ball flies past the basket; a pillow standing on its end stops it dead so it drops in.
+82. **Soft landing:** the spring keeps the ball bouncing past the star; a pillow under the star stops it there.
+83. **See-saw landing:** catch the flung ball on a pillow on the star.
+84. **Bounce and land:** a spring to bounce the falling ball up, and a pillow to land it on the star. Two opposites.
+85. **Belt stop:** the belts throw the ball too far; a tilted pillow drops it into the basket.
+86. **Throw and stop:** a ramp throws the falling ball sideways and the pillow stops it over the basket on the tower.
+87. **Teddy drop:** drop the teddy on the see-saw to fling the ball, then catch it on a pillow on the star.
+88. **Ramp, spring, pillow:** steer, bounce, land. Three parts.
+89. **Belt and pillow:** a belt to catch the falling ball (pointing the right way), and a tilted pillow to drop it in the basket.
+90. **Bedtime:** ramp, spring and pillow to get the ball over a wall and tuck it in on the star.
+
+The Space room's rocket levels:
+
+91. **Rocket:** drop a moon rock beside the rocket and it blasts off to the star above.
+92. **Aim the rocket:** place the rocket where the rolling ball bumps it, tilted to knock the ball off the end of a shelf into the basket.
+93. **Rocket on a shelf:** a spring bounces the ball up to bump the rocket on its shelf.
+94. **Parachute wind:** the rocket floats down on its parachute, and a fan blows it over into the basket.
+95. **Landing ramp:** the rocket lands beside the basket; a ramp under its landing spot slides it in.
+96. **See-saw launch:** drop the planet on the see-saw; the flung moon rock bumps the rocket, which blasts off to the star.
+97. **Hamster launch:** a ramp sends the ball to the hamster, who wakes and rolls into the rocket.
+98. **Bounce launch:** a ramp to the spring, and the spring to the rocket on its shelf. Two parts.
+99. **Roll and aim:** a ramp for the falling ball, and the rocket it bumps, aimed at the ball on the shelf.
+100. **Grand launch:** ramp, spring, rocket and fan. The rocket bumps the fan on its way up, and the fan blows it onto the star as it floats down.
+
+Tried and dropped: a magnet under a basket pulling a flying ball in (it worked from too many spots to be a puzzle, and it was too easy for any room after the Garage), soap on a spring or a see-saw (it is too light and tumbles in the air, so it barely bounces or tips anything), a ball pulled across a gap by a magnet into a basket in front of it (a magnet holds what it pulls, so it lands against the magnet, not in the basket), a toy car climbing from the floor onto a ramp (it can't get over the plank's end), and a domino line to bump the rocket (the rolling ball reached the rocket by itself).
+
 **Mirrored to look different:** some levels that looked too like another were flipped left to right (the machine runs right to left): 09, 12, 15, 17, 32, 44, 46 and 48. A test now fails if two levels have the same goal, nearly the same start and end spots, and the same kinds of parts to place.
 
 Tried and dropped: a fan blowing a ball uphill (its reach is too short to climb a real slope), a falling domino used as a bridge (too chaotic: random placements won), the hammer knocking a ball uphill (a whacked ball rolls fast but climbs less than one cell), and a car stopping suddenly to throw its ball forward (the cab holds the ball in).
@@ -191,13 +251,19 @@ Every level has a `difficulty` score in its file. It adds two things:
 - **How many ideas the child has to put together** (rated by hand, 1–4): one step like "a ramp guides the ball" scores 1, a chain of three or four cause-and-effect steps scores 3–4, and a turn or flip that has to be worked out adds a little.
 - **How exact the answer is**, measured by `scripts/level-stats.test.ts`. Each part of the solution is moved over the whole table at every angle, with the other parts left in place, and the share of spots that still work is counted. Fewer working spots means harder. Spare parts in the tray and more kinds of things on the table add a little too.
 
-The score is the first number plus half the second. The rooms are then laid out so that, checked by a test, each room's levels get harder from first to last, and each room's Nth level is harder than the previous room's Nth level. That needed the room order Workshop, Playroom, Attic, Kitchen, Garden: the toy car's first level is so easy that the Playroom has to come second. The Music room comes last. Each room keeps its four own-part levels (all ten in the Music room); the general levels are shared out between the first five rooms so both rules hold, which moved six of them when the music levels were added. The scores are a guide, not a promise; playtests should move levels that feel out of place.
+The score is the first number plus half the second. The rooms are laid out so that, checked by a test, each room's levels get harder from first to last, and each room is harder on average than the room before it. (Until the four newest rooms came, the rule was stricter: each room's Nth level harder than the previous room's Nth. With ten rooms that can't hold, because every room opens with an easy first level.) A test also checks that no level uses a room's own part before that room. The order is Workshop, Playroom, Bathroom, Attic, Space, Kitchen, Bedroom, Garden, Garage, Music room. The scores are a guide, not a promise; playtests should move levels that feel out of place.
+
+New levels are checked, and their exactness measured, with `scripts/level-check.test.ts` before they join the game:
+
+```bash
+CHECK=src/levels/61-soap-squirt.json MEASURE=1 npx vitest run scripts/level-check
+```
 
 ```bash
 STATS=46-belt-hammer,49-car-jump npx vitest run scripts/level-stats
 ```
 
-The front page is a **row of rooms you swipe along**, left to right in order of difficulty: six **rooms** of ten levels (Workshop, Playroom, Attic, Kitchen, Garden, Music room), then the **Toy box** and the **Puzzle maker** at the end.
+The front page is a **row of rooms you swipe along**, left to right in order of difficulty: ten **rooms** of ten levels (Workshop, Playroom, Bathroom, Attic, Space, Kitchen, Bedroom, Garden, Garage, Music room), then the **Toy box** and the **Puzzle maker** at the end.
 - One room sits big in the middle and the next one peeks in from the side, so a child can see there is more. Big round arrows on both sides do the same as a swipe.
 - Each room shows its own things, one dot per level (filled in when the level is done) and its **name as a word label**. When a room comes to rest in the middle the voice says its name, and tapping the name says it again.
 - Tapping the room in the middle opens it; tapping a peeking room brings it to the middle first.

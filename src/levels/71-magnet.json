@@ -1,0 +1,44 @@
+{
+  "id": "71-magnet",
+  "voice": "A magnet pulls balls toward it, and holds on tight! Put the magnet by the star, to pull the ball onto it.",
+  "difficulty": 2.3,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ramp",
+      "x": 3,
+      "y": 6,
+      "rot": 0
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 4,
+      "y": 5.5
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 7,
+      "y": 5.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "magnet",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "magnet",
+      "x": 8,
+      "y": 5.5,
+      "rot": 180
+    }
+  ]
+}

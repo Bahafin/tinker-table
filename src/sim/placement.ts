@@ -35,6 +35,10 @@ const SOLID: Record<PartKind, { w: number; h: number; dy?: number }> = {
   'xylo-a': { w: 0.75, h: 0.1 },
   bell: { w: 0.42, h: 0.4 },
   drum: { w: 0.6, h: 0.4 },
+  soap: { w: 0.4, h: 0.18 },
+  magnet: { w: 0.4, h: 0.45 },
+  pillow: { w: 0.8, h: 0.22 },
+  rocket: { w: 0.36, h: 0.47, dy: 0.03 },
 };
 
 const SHRINK = 0.03;

@@ -1,0 +1,44 @@
+{
+  "id": "82-pillow-boing",
+  "voice": "Boing! The spring bounces the ball up high, but it never stops on the star. Put the pillow where it can catch it!",
+  "difficulty": 2.7,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 2,
+      "y": 3
+    },
+    {
+      "part": "spring",
+      "x": 2.5,
+      "y": 9.5,
+      "rot": 15
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 10,
+      "y": 5.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "pillow",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "pillow",
+      "x": 10,
+      "y": 6.5,
+      "rot": 0
+    }
+  ]
+}

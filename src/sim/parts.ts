@@ -20,7 +20,8 @@ export interface RuntimePart {
   /** on: fan blowing / hamster awake. dir: +1 right, -1 left (conveyor, hamster). */
   /** load: toaster wait, watering can pour time, or drops a flower has drunk. drops: drops poured so far. */
   /** hit: when a musical part last played (performance.now ms; only for drawing it ring). */
-  state: { on?: boolean; popped?: boolean; dir?: number; load?: number; drops?: number; hit?: number; hitAt?: number };
+  /** chute: a rocket that has burnt out and floats down on its parachute. */
+  state: { on?: boolean; popped?: boolean; dir?: number; load?: number; drops?: number; hit?: number; hitAt?: number; chute?: boolean };
   /** The hammer's hinge, held still until something bumps the hammer. */
   brake?: RevoluteJoint;
   /** A rope part's rope, until the scissors cut it. */
@@ -332,6 +333,59 @@ export const PARTS: Record<PartKind, PartDef> = {
       rp.bodies.push(b);
     },
   },
+  soap: {
+    // A bar of soap, as slippery as it gets: it slides down any slope and keeps going on the
+    // flat. Land something on it and it squirts away the way it points (see Sim.onContact).
+    hit: { w: 0.45, h: 0.25 },
+    rotatable: true,
+    rotStep: 180,
+    build(world, p, rp) {
+      const b = world.createBody({ type: 'dynamic', position: new Vec2(p.x, p.y), angularDamping: 0.5, linearDamping: 0.8 });
+      b.createFixture(new Box(0.4, 0.18), { density: 1.5, friction: 0, restitution: 0.05 });
+      rp.bodies.push(b);
+      rp.state.dir = Math.abs(p.rot ?? 0) === 180 ? -1 : 1;
+      rp.state.on = false;
+    },
+  },
+  magnet: {
+    // A horseshoe magnet, always on. It pulls little balls in front of it and holds them (see Sim.applyMagnets).
+    hit: { w: 0.5, h: 0.5 },
+    rotatable: true,
+    build(world, p, rp) {
+      const b = staticBody(world, p);
+      b.createFixture(new Box(0.4, 0.45), { friction: 0.6, restitution: 0 });
+      rp.bodies.push(b);
+    },
+  },
+  pillow: {
+    // A soft pillow: whatever lands on it stops dead, with no bounce at all (see Sim.onPreSolve).
+    hit: { w: 0.85, h: 0.3 },
+    rotatable: true,
+    build(world, p, rp) {
+      const b = staticBody(world, p);
+      b.createFixture(new Box(0.8, 0.22), { friction: 0.9, restitution: 0 });
+      rp.bodies.push(b);
+    },
+  },
+  rocket: {
+    // A toy rocket on its launch stand. Bump it and it blasts off the way it points, then
+    // floats down on a parachute (see Sim.applyRockets). The placement point is the middle of
+    // the whole thing; the stand's foot is half a cell below it, so it stands on the grid.
+    hit: { w: 0.4, h: 0.5 },
+    rotatable: true,
+    build(world, p, rp) {
+      const stand = staticBody(world, p);
+      stand.createFixture(new Box(0.36, 0.08, new Vec2(0, 0.42)), { friction: 0.5 });
+      stand.createFixture(new Box(0.04, 0.1, new Vec2(-0.25, 0.24)), { friction: 0.1 });
+      stand.createFixture(new Box(0.04, 0.1, new Vec2(0.25, 0.24)), { friction: 0.1 });
+      const at = stand.getWorldPoint(new Vec2(0, -0.05));
+      const r = world.createBody({ type: 'dynamic', position: at, angle: ang(p), fixedRotation: true });
+      r.createFixture(new Box(0.18, 0.38), { density: 2, friction: 0.3, restitution: 0.1 });
+      rp.bodies.push(r, stand);
+      rp.state.on = false;
+      rp.state.load = 0;
+    },
+  },
   cheese: {
     hit: { w: 0.5, h: 0.4 },
     rotatable: false,
@@ -392,6 +446,7 @@ export const ALL_PARTS: PartKind[] = [
   'ball', 'heavyball', 'ramp', 'shortramp', 'block', 'domino', 'seesaw',
   'balloon', 'pin', 'fan', 'spring', 'conveyor', 'hamster', 'car', 'hammer', 'toaster', 'can', 'rope', 'scissors', 'pulley', 'basket', 'star', 'cheese', 'flower',
   'xylo-c', 'xylo-d', 'xylo-e', 'xylo-g', 'xylo-a', 'bell', 'drum',
+  'soap', 'magnet', 'pillow', 'rocket',
 ];
 
 /** Parts offered in the toy box (goal-only parts like the star and cheese are left out). */

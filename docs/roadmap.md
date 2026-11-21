@@ -5,7 +5,7 @@ What we plan to build next, in order. Every feature has to keep three rules:
 - **No fail state.** Nothing scores, times or tells the child off.
 - **Free to run.** No servers, no accounts and no analytics. Everything stays on the device or inside a link.
 
-The current game (ages 5–8): 60 levels in six rooms of ten (the sixth is the Music room), a front page you swipe along, the toy box, guess the path, the film strip, the sticker book, the grown-ups' corner, offline play, and the web version on GitHub Pages. See [design.md](design.md).
+The current game (ages 5–8): 100 levels in ten rooms of ten (Workshop, Playroom, Bathroom, Attic, Space, Kitchen, Bedroom, Garden, Garage, Music room), a front page you swipe along, the toy box, guess the path, the film strip, the sticker book, the grown-ups' corner, offline play, and the web version on GitHub Pages. See [design.md](design.md).
 
 ## Decisions so far
 - **The web version stays the main home.** A store app later wraps the same code with Capacitor.
@@ -104,8 +104,19 @@ The current game (ages 5–8): 60 levels in six rooms of ten (the sixth is the M
   - In the toy box, machines become songs (the Music room tab), and a kept machine keeps its song.
   - The Music room: ten levels after the Garden, most with a tune as the goal.
 - **Room parts** (rope and scissors, toy car and the others) moved to Milestone 4.5.
-- **Later parts:** a magnet, gears. A tune goal in the puzzle maker.
+- **Later parts:** gears. A tune goal in the puzzle maker. (The magnet came in Milestone 8.)
 - **A second character:** a friend for the hamster, to give levels little stories (the "why?" lesson from the first playtest).
+
+## Milestone 8: a hundred levels (done)
+- Four new rooms, each with its own part and ten levels that use it:
+  - **Bathroom:** soap. It slides on anything, and when something lands on it, it squirts away the way it points.
+  - **Garage:** a magnet. It pulls little balls in front of it (not the big ball) and holds them.
+  - **Bedroom:** a pillow. Whatever lands on it stops dead, with no bounce.
+  - **Space:** a rocket. Bump it and it blasts off the way it points, then floats down on a parachute.
+- **A new ordering rule (agreed 2026-11-21):** inside each room the levels still go from easiest to hardest, and each room is harder *on average* than the room before. The old rule (each room's Nth level harder than the previous room's Nth) can't hold with ten rooms, because every room starts with an easy first level.
+- The rooms are now in the order Workshop, Playroom, Bathroom, Attic, Space, Kitchen, Bedroom, Garden, Garage, Music room. The old rooms keep their levels; progress is kept by level, so finished levels stay finished.
+- New tool: `scripts/level-check.test.ts` checks a level being made (and measures its difficulty) without adding it to the game.
+- Not yet tried with a real finger: all forty new levels.
 
 ## Milestone 7: before the app store
 Safety first, then the wrapper, then the paperwork. The order inside each part is the order to build it in.

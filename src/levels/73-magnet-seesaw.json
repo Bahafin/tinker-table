@@ -1,0 +1,49 @@
+{
+  "id": "73-magnet-seesaw",
+  "voice": "The see-saw flings the little ball high into the air. Can the magnet catch it on the star?",
+  "difficulty": 2.73,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "seesaw",
+      "x": 8.5,
+      "y": 8.6,
+      "rot": -25
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 6.75,
+      "y": 7.9
+    },
+    {
+      "part": "heavyball",
+      "x": 9.5,
+      "y": 3
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 13,
+      "y": 3.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "magnet",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "magnet",
+      "x": 14,
+      "y": 3.5,
+      "rot": 180
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "61-soap-squirt",
+  "voice": "Drop a ball on the soap, and whoosh! It squirts away. Can you send the soap into the basket?",
+  "difficulty": 2.0,
+  "goal": {
+    "type": "reach",
+    "object": "soap1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ramp",
+      "x": 3.5,
+      "y": 6,
+      "rot": 0
+    },
+    {
+      "part": "soap",
+      "id": "soap1",
+      "x": 3,
+      "y": 5.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 10,
+      "y": 9.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "ball",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "ball",
+      "x": 3,
+      "y": 3
+    }
+  ]
+}

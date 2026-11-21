@@ -1,0 +1,49 @@
+{
+  "id": "64-soap-slide",
+  "voice": "The soap squirts the wrong way! Catch it with a ramp, and slide it back into the basket.",
+  "difficulty": 2.6,
+  "goal": {
+    "type": "reach",
+    "object": "soap1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 3,
+      "y": 1
+    },
+    {
+      "part": "ramp",
+      "x": 3.5,
+      "y": 4,
+      "rot": 0
+    },
+    {
+      "part": "soap",
+      "id": "soap1",
+      "x": 3,
+      "y": 3.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 4.5,
+      "y": 9.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "ramp",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "ramp",
+      "x": 8,
+      "y": 4,
+      "rot": -30
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "id": "86-pillow-ramp",
+  "voice": "Use the ramp to throw the ball across the room, and the pillow to stop it over the basket!",
+  "difficulty": 4.19,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 2,
+      "y": 1
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 7,
+      "y": 7.4
+    },
+    {
+      "part": "block",
+      "x": 7,
+      "y": 8.5
+    },
+    {
+      "part": "block",
+      "x": 7,
+      "y": 9.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "ramp",
+      "count": 1
+    },
+    {
+      "part": "pillow",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "ramp",
+      "x": 2.5,
+      "y": 4,
+      "rot": 15
+    },
+    {
+      "part": "pillow",
+      "x": 5,
+      "y": 5.5,
+      "rot": 0
+    }
+  ]
+}

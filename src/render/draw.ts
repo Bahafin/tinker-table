@@ -430,6 +430,103 @@ const DRAW: Record<string, (ctx: Ctx, rp: RuntimePart, t: number) => void> = {
       noShadow(ctx, () => { rrect(ctx, -0.62, -0.38, 1.24, 0.08, 0.04); paper(ctx, PAPER.mustard); });
     });
   },
+  soap(ctx, rp, t) {
+    withBody(ctx, rp.bodies[0], () => {
+      ctx.scale(rp.state.dir ?? 1, 1);
+      // Shaped like a bar worn thin at the front, so you can see which way it will squirt.
+      ctx.beginPath(); ctx.moveTo(-0.4, -0.04); ctx.quadraticCurveTo(-0.4, -0.18, -0.22, -0.18); ctx.lineTo(0.2, -0.18);
+      ctx.quadraticCurveTo(0.36, -0.16, 0.42, 0.04); ctx.quadraticCurveTo(0.44, 0.18, 0.28, 0.18); ctx.lineTo(-0.26, 0.18);
+      ctx.quadraticCurveTo(-0.4, 0.18, -0.4, -0.04); ctx.closePath(); paper(ctx, '#f4a7b9');
+      noShadow(ctx, () => {
+        rrect(ctx, -0.28, -0.1, 0.56, 0.2, 0.08); paper(ctx, '#f8c4d0');
+        line(ctx, -0.26, -0.12, 0.1, -0.12, 'rgba(255,255,255,0.8)', 0.04);
+        // A few bubbles drifting over the bar.
+        for (const [x, r, k] of [[-0.18, 0.07, 0], [0.08, 0.05, 1.7], [0.24, 0.08, 3.1]] as const) {
+          const y = -0.3 - ((t * 0.4 + k * 0.3) % 0.25);
+          ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.strokeStyle = 'rgba(109, 179, 224, 0.7)'; ctx.lineWidth = 0.02; ctx.stroke();
+        }
+      });
+    });
+  },
+  magnet(ctx, rp, t) {
+    withBody(ctx, rp.bodies[0], () => {
+      // A horseshoe opening to the front (+x), with silver tips.
+      ctx.beginPath();
+      ctx.moveTo(0.45, -0.45); ctx.lineTo(0, -0.45); ctx.arc(0, 0, 0.45, -Math.PI / 2, Math.PI / 2, true);
+      ctx.lineTo(0.45, 0.45); ctx.lineTo(0.45, 0.2); ctx.lineTo(0, 0.2); ctx.arc(0, 0, 0.2, Math.PI / 2, -Math.PI / 2);
+      ctx.lineTo(0.45, -0.2); ctx.closePath();
+      paper(ctx, PAPER.tomato);
+      noShadow(ctx, () => {
+        for (const y of [-0.45, 0.2]) { rrect(ctx, 0.22, y, 0.23, 0.25, 0.02); paper(ctx, '#c3c9ce'); }
+        line(ctx, -0.3, -0.25, -0.12, -0.38, 'rgba(255,255,255,0.45)', 0.04);
+        // Its pull, drawn as faint arcs drifting toward it.
+        ctx.strokeStyle = 'rgba(229, 88, 63, 0.35)'; ctx.lineWidth = 0.03;
+        for (let i = 0; i < 2; i++) {
+          const r = 0.75 + ((t * 0.8 + i * 0.5) % 1) * -0.25 + 0.25;
+          ctx.beginPath(); ctx.arc(0.45, 0, r, -0.6, 0.6); ctx.stroke();
+        }
+      });
+    });
+  },
+  pillow(ctx, rp) {
+    withBody(ctx, rp.bodies[0], () => {
+      // Puffy: the middle bulges, the corners are pinched.
+      ctx.beginPath();
+      ctx.moveTo(-0.8, -0.18);
+      ctx.quadraticCurveTo(0, -0.34, 0.8, -0.18);
+      ctx.quadraticCurveTo(0.74, 0, 0.8, 0.2);
+      ctx.quadraticCurveTo(0, 0.32, -0.8, 0.2);
+      ctx.quadraticCurveTo(-0.74, 0, -0.8, -0.18);
+      ctx.closePath();
+      paper(ctx, '#cfe0f5');
+      noShadow(ctx, () => {
+        ctx.setLineDash([0.06, 0.05]);
+        ctx.beginPath(); ctx.moveTo(-0.66, -0.12); ctx.quadraticCurveTo(0, -0.24, 0.66, -0.12);
+        ctx.quadraticCurveTo(0.62, 0, 0.66, 0.14); ctx.quadraticCurveTo(0, 0.24, -0.66, 0.14); ctx.quadraticCurveTo(-0.62, 0, -0.66, -0.12);
+        ctx.strokeStyle = '#8fb1da'; ctx.lineWidth = 0.025; ctx.stroke();
+        ctx.setLineDash([]);
+      });
+    });
+  },
+  rocket(ctx, rp, t) {
+    const [r, stand] = rp.bodies;
+    withBody(ctx, stand, () => {
+      rrect(ctx, -0.36, 0.34, 0.72, 0.16, 0.04); paper(ctx, PAPER.grey);
+      for (const x of [-0.25, 0.25]) { rrect(ctx, x - 0.04, 0.14, 0.08, 0.22, 0.02); paper(ctx, PAPER.grey); }
+    });
+    if (rp.state.chute) {
+      // The parachute, always upright above the rocket, swaying a little.
+      const p = r.getPosition();
+      noShadow(ctx, () => {
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(Math.sin(t * 2) * 0.08);
+        for (const x of [-0.5, 0, 0.5]) line(ctx, x, -1.1, 0, -0.35, PAPER.ink, 0.02);
+        ctx.restore();
+      });
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(Math.sin(t * 2) * 0.08);
+      ctx.beginPath(); ctx.arc(0, -1.1, 0.6, Math.PI, 0); ctx.quadraticCurveTo(0.3, -1.2, 0, -1.1); ctx.quadraticCurveTo(-0.3, -1.2, -0.6, -1.1); paper(ctx, PAPER.mustard);
+      noShadow(ctx, () => { ctx.beginPath(); ctx.moveTo(0, -1.7); ctx.lineTo(-0.2, -1.12); ctx.lineTo(0.2, -1.12); ctx.closePath(); paper(ctx, PAPER.tomato); });
+      ctx.restore();
+    }
+    withBody(ctx, r, () => {
+      // A flame while it burns.
+      if (rp.state.on && !rp.state.chute) {
+        noShadow(ctx, () => {
+          const f = 0.35 + Math.sin(t * 40) * 0.08;
+          ctx.beginPath(); ctx.moveTo(-0.13, 0.36); ctx.quadraticCurveTo(0, 0.36 + f * 2, 0.13, 0.36); paper(ctx, PAPER.mustard);
+          ctx.beginPath(); ctx.moveTo(-0.07, 0.36); ctx.quadraticCurveTo(0, 0.36 + f * 1.2, 0.07, 0.36); paper(ctx, PAPER.tomato);
+        });
+      }
+      // Fins, body, nose cone and a round window.
+      for (const s of [-1, 1]) { ctx.beginPath(); ctx.moveTo(s * 0.16, 0.05); ctx.lineTo(s * 0.3, 0.36); ctx.lineTo(s * 0.12, 0.3); ctx.closePath(); paper(ctx, PAPER.tomato); }
+      rrect(ctx, -0.17, -0.2, 0.34, 0.56, 0.06); paper(ctx, PAPER.cream);
+      ctx.beginPath(); ctx.moveTo(-0.17, -0.18); ctx.quadraticCurveTo(-0.14, -0.36, 0, -0.44); ctx.quadraticCurveTo(0.14, -0.36, 0.17, -0.18); ctx.closePath(); paper(ctx, PAPER.tomato);
+      noShadow(ctx, () => {
+        ctx.beginPath(); ctx.arc(0, -0.02, 0.09, 0, Math.PI * 2); paper(ctx, PAPER.sky);
+        ctx.beginPath(); ctx.arc(0, -0.02, 0.09, 0, Math.PI * 2); ctx.strokeStyle = PAPER.grey; ctx.lineWidth = 0.03; ctx.stroke();
+        line(ctx, -0.17, 0.26, 0.17, 0.26, PAPER.tomato, 0.05);
+      });
+    });
+  },
 };
 
 /** 1 just after a musical part played, fading to 0 over a third of a second. */

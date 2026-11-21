@@ -1,0 +1,54 @@
+{
+  "id": "74-magnet-boing",
+  "voice": "The star is too far for the magnet to reach the ball. Bounce the ball up with the spring, and let the magnet catch it on the star!",
+  "difficulty": 5.34,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 2.2,
+      "y": 3.5
+    },
+    {
+      "part": "ramp",
+      "x": 3,
+      "y": 4.5,
+      "rot": 15
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 12.5,
+      "y": 2.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "spring",
+      "count": 1
+    },
+    {
+      "part": "magnet",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "spring",
+      "x": 7,
+      "y": 9.5,
+      "rot": 0
+    },
+    {
+      "part": "magnet",
+      "x": 13.5,
+      "y": 2.5,
+      "rot": 180
+    }
+  ]
+}

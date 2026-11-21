@@ -1,0 +1,44 @@
+{
+  "id": "95-rocket-land",
+  "voice": "The rocket flies off and floats down on its parachute, but it misses the basket. Put a ramp where it lands, to slide it in!",
+  "difficulty": 3.23,
+  "goal": {
+    "type": "reach",
+    "object": "rocket1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 2.4,
+      "y": 7
+    },
+    {
+      "part": "rocket",
+      "id": "rocket1",
+      "x": 3,
+      "y": 9,
+      "rot": 30
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 10.5,
+      "y": 9.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "ramp",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "ramp",
+      "x": 9,
+      "y": 7,
+      "rot": 30
+    }
+  ]
+}

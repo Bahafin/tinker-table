@@ -1,0 +1,55 @@
+{
+  "id": "96-rocket-seesaw",
+  "voice": "Drop the big ball on the see-saw. The little ball flies up and bumps the rocket, and the rocket blasts off to the star!",
+  "difficulty": 3.7,
+  "goal": {
+    "type": "reach",
+    "object": "rocket1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "seesaw",
+      "x": 8.5,
+      "y": 8.6,
+      "rot": -25
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 6.75,
+      "y": 7.9
+    },
+    {
+      "part": "ramp",
+      "x": 13,
+      "y": 5.125,
+      "rot": 0
+    },
+    {
+      "part": "rocket",
+      "id": "rocket1",
+      "x": 12.5,
+      "y": 4.5
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 12.5,
+      "y": 1
+    }
+  ],
+  "tray": [
+    {
+      "part": "heavyball",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "heavyball",
+      "x": 9.5,
+      "y": 2
+    }
+  ]
+}

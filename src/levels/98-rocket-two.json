@@ -1,0 +1,59 @@
+{
+  "id": "98-rocket-two",
+  "voice": "Roll the ball down a ramp onto the spring. It bounces up and bumps the rocket, and the rocket flies to the star!",
+  "difficulty": 4.88,
+  "goal": {
+    "type": "reach",
+    "object": "rocket1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 5.5,
+      "y": 1
+    },
+    {
+      "part": "ramp",
+      "x": 11,
+      "y": 7,
+      "rot": 0
+    },
+    {
+      "part": "rocket",
+      "id": "rocket1",
+      "x": 10.5,
+      "y": 6.5
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 10.5,
+      "y": 1
+    }
+  ],
+  "tray": [
+    {
+      "part": "ramp",
+      "count": 1
+    },
+    {
+      "part": "spring",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "ramp",
+      "x": 6,
+      "y": 2.5,
+      "rot": -15
+    },
+    {
+      "part": "spring",
+      "x": 2,
+      "y": 6,
+      "rot": 15
+    }
+  ]
+}

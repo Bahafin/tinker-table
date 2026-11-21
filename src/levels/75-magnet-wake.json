@@ -1,0 +1,56 @@
+{
+  "id": "75-magnet-wake",
+  "voice": "Pull the ball with the magnet so it bumps the sleeping hamster on the way. Then he can roll to the cheese!",
+  "difficulty": 3.35,
+  "goal": {
+    "type": "reach",
+    "object": "hamster1",
+    "target": "cheese1"
+  },
+  "fixed": [
+    {
+      "part": "ramp",
+      "x": 4,
+      "y": 5,
+      "rot": 0
+    },
+    {
+      "part": "ball",
+      "x": 4.5,
+      "y": 4.5
+    },
+    {
+      "part": "ramp",
+      "x": 9,
+      "y": 8,
+      "rot": 0
+    },
+    {
+      "part": "hamster",
+      "id": "hamster1",
+      "x": 8,
+      "y": 9.5,
+      "rot": 180
+    },
+    {
+      "part": "cheese",
+      "id": "cheese1",
+      "x": 1.5,
+      "y": 9.6
+    }
+  ],
+  "tray": [
+    {
+      "part": "magnet",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "magnet",
+      "x": 5.5,
+      "y": 7.5,
+      "rot": 180
+    }
+  ]
+}

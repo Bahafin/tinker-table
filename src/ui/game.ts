@@ -60,7 +60,7 @@ export const FILM_FRAMES = 5;
 
 type Pt = { x: number; y: number };
 /** Tall, thin parts read better drawn bigger in a round tab. */
-const TALL_ICONS = new Set<PartKind>(['hammer', 'rope', 'domino']);
+const TALL_ICONS = new Set<PartKind>(['hammer', 'rope', 'domino', 'rocket']);
 
 /** One room's parts for the toy box tray, drawn in that room's look. */
 export interface TraySet { skin: string; accent: string; paper: string; icon: PartKind; parts: PartKind[] }

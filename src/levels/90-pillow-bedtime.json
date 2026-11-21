@@ -1,0 +1,73 @@
+{
+  "id": "90-pillow-bedtime",
+  "voice": "Bedtime! Roll the ball down, bounce it off the spring, over the wall, and tuck it in softly on the star.",
+  "difficulty": 6.96,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 4,
+      "y": 1
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 10,
+      "y": 4.5
+    },
+    {
+      "part": "block",
+      "x": 8,
+      "y": 9.5
+    },
+    {
+      "part": "block",
+      "x": 8,
+      "y": 8.5
+    },
+    {
+      "part": "block",
+      "x": 8,
+      "y": 7.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "ramp",
+      "count": 1
+    },
+    {
+      "part": "spring",
+      "count": 1
+    },
+    {
+      "part": "pillow",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "ramp",
+      "x": 5.5,
+      "y": 1.5,
+      "rot": -30
+    },
+    {
+      "part": "spring",
+      "x": 2.5,
+      "y": 9.5,
+      "rot": 15
+    },
+    {
+      "part": "pillow",
+      "x": 9,
+      "y": 5.5,
+      "rot": 0
+    }
+  ]
+}

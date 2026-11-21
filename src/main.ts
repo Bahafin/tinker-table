@@ -49,6 +49,10 @@ const ROOM_ICONS: Record<string, string> = {
   playroom: '<rect x="8" y="26" width="14" height="14" rx="2" class="accent"/><rect x="24" y="26" width="14" height="14" rx="2" class="petal"/><rect x="16" y="11" width="14" height="14" rx="2" class="leaf"/>',
   music: '<path d="M18 34V12l20-5v22"/><ellipse cx="13.5" cy="34.5" rx="5.5" ry="4.5" class="accent"/><ellipse cx="33.5" cy="29.5" rx="5.5" ry="4.5" class="accent"/><path d="M18 18l20-5"/>',
   attic: '<path d="M30 9a13 13 0 1 0 9 22A11 11 0 0 1 30 9z" class="accent"/><path d="M13 11l1.5 3 3.2.5-2.3 2.2.6 3.2-3-1.6-2.9 1.6.6-3.2-2.3-2.2 3.2-.5z" class="petal"/>',
+  bathroom: '<path d="M6 24h36v4a10 10 0 0 1-10 10H16A10 10 0 0 1 6 28z" class="accent"/><path d="M13 38l-2 4M35 38l2 4"/><circle cx="16" cy="16" r="4" class="petal"/><circle cx="25" cy="12" r="5" class="petal"/><circle cx="33" cy="17" r="3" class="petal"/>',
+  garage: '<path d="M13 9h8v15a3 3 0 0 0 6 0V9h8v15a11 11 0 0 1-22 0z" class="accent"/><path d="M13 9h8v6h-8zM27 9h8v6h-8z" class="petal"/>',
+  bedroom: '<path d="M6 38V14M42 38V27"/><path d="M6 31h36"/><rect x="9" y="20" width="12" height="7" rx="3.5" class="petal"/><path d="M21 27h21v-3a4 4 0 0 0-4-4H21z" class="accent"/>',
+  space: '<path d="M24 5c7 6 8 15 6 25H18c-2-10-1-19 6-25z" class="accent"/><circle cx="24" cy="17" r="3.5" class="petal"/><path d="M18 23l-6 9 6-1.5M30 23l6 9-6-1.5" class="pink"/><path d="M21 33l3 9 3-9" class="petal"/>',
 };
 
 /** The puzzle maker's picture: a star with a pin through it. */
@@ -148,6 +152,10 @@ function roomScene(room: Room): HTMLCanvasElement {
   if (room.id === 'attic') { things[2] = ['rope', 10.4, 3.4, 6.4]; things[1] = ['scissors', 5, 2.4, 2.4]; }
   if (room.id === 'kitchen') things[2] = ['toaster', 10.2, 3.6, 3.2];
   if (room.id === 'workshop') things[2] =['hammer', 10.3, 3.6, 5.6];
+  if (room.id === 'bathroom') things[2] = ['soap', 10.2, 3.8, 2.6];
+  if (room.id === 'garage') things[2] = ['magnet', 10.2, 3.6, 2.6];
+  if (room.id === 'bedroom') things[2] = ['pillow', 10.4, 3.8, 4];
+  if (room.id === 'space') things[2] = ['rocket', 10.3, 3.4, 4.4];
   if (room.id === 'music') {
     things[2] = ['bell', 10.4, 3.4, 2.8];
     things[4] = ['drum', 2.8, 7.8, 3.2];

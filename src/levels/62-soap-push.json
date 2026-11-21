@@ -1,0 +1,54 @@
+{
+  "id": "62-soap-push",
+  "voice": "The soap squirts so fast it can push things! Roll the ball onto the soap, so it knocks the other ball into the basket.",
+  "difficulty": 3.1,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 1,
+      "y": 1
+    },
+    {
+      "part": "ramp",
+      "x": 4,
+      "y": 6,
+      "rot": 0
+    },
+    {
+      "part": "soap",
+      "x": 3,
+      "y": 5.5
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 5,
+      "y": 5.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 9.5,
+      "y": 9.4
+    }
+  ],
+  "tray": [
+    {
+      "part": "ramp",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "ramp",
+      "x": 1.5,
+      "y": 4.5,
+      "rot": 45
+    }
+  ]
+}

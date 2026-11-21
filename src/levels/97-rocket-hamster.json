@@ -1,0 +1,49 @@
+{
+  "id": "97-rocket-hamster",
+  "voice": "Wake the hamster, and he will roll over and bump the rocket. Then off it goes to the star!",
+  "difficulty": 2.75,
+  "goal": {
+    "type": "reach",
+    "object": "rocket1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 13,
+      "y": 1
+    },
+    {
+      "part": "hamster",
+      "x": 6,
+      "y": 9.5,
+      "rot": 180
+    },
+    {
+      "part": "rocket",
+      "id": "rocket1",
+      "x": 2,
+      "y": 9.5
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 2,
+      "y": 3.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "ramp",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "ramp",
+      "x": 12.5,
+      "y": 3.0,
+      "rot": -30
+    }
+  ]
+}

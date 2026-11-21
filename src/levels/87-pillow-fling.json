@@ -1,0 +1,53 @@
+{
+  "id": "87-pillow-fling",
+  "voice": "Drop the teddy on the see-saw to fling the ball up, then catch it on the pillow, right on the star!",
+  "difficulty": 4.73,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "star1"
+  },
+  "fixed": [
+    {
+      "part": "seesaw",
+      "x": 8.5,
+      "y": 8.6,
+      "rot": -25
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 6.75,
+      "y": 7.9
+    },
+    {
+      "part": "star",
+      "id": "star1",
+      "x": 12.5,
+      "y": 3
+    }
+  ],
+  "tray": [
+    {
+      "part": "heavyball",
+      "count": 1
+    },
+    {
+      "part": "pillow",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "heavyball",
+      "x": 9.5,
+      "y": 3
+    },
+    {
+      "part": "pillow",
+      "x": 13.5,
+      "y": 2.5,
+      "rot": 90
+    }
+  ]
+}

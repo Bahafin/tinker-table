@@ -372,4 +372,183 @@ const attic: Partial<Record<PartKind, DrawFn>> = {
   balloon: balloonIn('#9a7bc9', '#cdbbe6'),
 };
 
-const SKINS: Record<string, Partial<Record<PartKind, DrawFn>>> = { workshop, garden, kitchen, playroom, attic };
+// ---------- Bathroom: rubber ducks, a sponge, glass shelves, a bathtub, a starfish, bottles, bubbles ----------
+const bathroom: Partial<Record<PartKind, DrawFn>> = {
+  // A rubber duck's round head, with a beak, so it still rolls like a ball.
+  ball: body((ctx) => {
+    dot(ctx, 0, 0, 0.35, PAPER.mustard);
+    noShadow(ctx, () => {
+      ctx.beginPath(); ctx.ellipse(0.32, 0.06, 0.14, 0.07, 0.2, 0, TAU); paper(ctx, '#ef8a2f');
+      dot(ctx, 0.1, -0.1, 0.05, PAPER.ink);
+      dot(ctx, -0.14, -0.16, 0.06, 'rgba(255,255,255,0.6)');
+    });
+  }),
+  // A round yellow sponge full of holes.
+  heavyball: body((ctx) => {
+    dot(ctx, 0, 0, 0.45, '#f2cf5b');
+    noShadow(ctx, () => {
+      for (const [x, y, r] of [[-0.18, -0.15, 0.07], [0.15, -0.2, 0.05], [0.05, 0.12, 0.08], [-0.2, 0.18, 0.05], [0.25, 0.1, 0.05]]) dot(ctx, x, y, r, '#d9ae3a');
+    });
+  }),
+  ...boards('#6fb2cc', (ctx, hw) => {
+    line(ctx, -hw + 0.15, -0.06, hw - 0.15, -0.06, 'rgba(255,255,255,0.8)', 0.03);
+    for (const x of [-hw + 0.12, hw - 0.12]) dot(ctx, x, 0, 0.045, PAPER.grey);
+  }),
+  block: body((ctx) => {
+    rrect(ctx, -0.5, -0.5, 1, 1, 0.06); paper(ctx, '#ffffff');
+    noShadow(ctx, () => { line(ctx, 0, -0.48, 0, 0.48, '#8cc6d6', 0.04); line(ctx, -0.48, 0, 0.48, 0, '#8cc6d6', 0.04); });
+  }),
+  // A white bathtub on little feet, full of bubbles.
+  basket: targetIn('#ffffff', (ctx, t) => {
+    rrect(ctx, -0.74, 0.44, 1.48, 0.16, 0.03); paper(ctx, '#3aa6b9');
+    for (const x of [-0.72, 0.72]) { rrect(ctx, x - 0.08, -0.6, 0.16, 0.12, 0.03); paper(ctx, '#3aa6b9'); }
+    for (const x of [-0.55, 0.55]) dot(ctx, x, 0.62, 0.07, PAPER.brass);
+    for (const [x, r] of [[-0.4, 0.12], [-0.12, 0.15], [0.2, 0.11], [0.44, 0.13]]) {
+      ctx.beginPath(); ctx.arc(x, -0.5 + Math.sin(t * 2 + x * 5) * 0.03, r, 0, TAU);
+      ctx.strokeStyle = 'rgba(109, 179, 224, 0.8)'; ctx.lineWidth = 0.025; ctx.stroke();
+    }
+  }),
+  // The target star becomes a bath-toy starfish.
+  star: body((ctx, _rp, t) => {
+    ctx.rotate(Math.sin(t * 1.5) * 0.1);
+    star(ctx, 0.55); paper(ctx, '#f08a5d');
+    noShadow(ctx, () => {
+      for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + (i * TAU) / 5; dot(ctx, Math.cos(a) * 0.28, Math.sin(a) * 0.28, 0.05, '#fbd1bd'); }
+    });
+  }),
+  // Shampoo bottles standing in a row.
+  domino: body((ctx, rp) => {
+    const fill = pick(rp, ['#5aa2d6', '#e5583f', '#7cb45a', '#9a7bc9']);
+    ctx.beginPath(); ctx.moveTo(-0.125, 0.75); ctx.lineTo(-0.125, -0.45); ctx.quadraticCurveTo(-0.125, -0.58, -0.05, -0.6);
+    ctx.lineTo(-0.05, -0.75); ctx.lineTo(0.05, -0.75); ctx.lineTo(0.05, -0.6); ctx.quadraticCurveTo(0.125, -0.58, 0.125, -0.45);
+    ctx.lineTo(0.125, 0.75); ctx.closePath();
+    paper(ctx, fill);
+    noShadow(ctx, () => { rrect(ctx, -0.09, -0.2, 0.18, 0.5, 0.03); paper(ctx, PAPER.cream); line(ctx, -0.05, 0, 0.05, 0, fill, 0.03); });
+  }),
+  // The balloon is a big soap bubble.
+  balloon: (ctx, rp) => {
+    if (rp.state.popped) return;
+    withBody(ctx, rp.bodies[0], () => {
+      ctx.beginPath(); ctx.arc(0, 0, 0.45, 0, TAU); paper(ctx, 'rgba(207, 232, 246, 0.55)');
+      noShadow(ctx, () => {
+        ctx.beginPath(); ctx.arc(0, 0, 0.45, 0, TAU); ctx.strokeStyle = 'rgba(154, 123, 201, 0.7)'; ctx.lineWidth = 0.03; ctx.stroke();
+        ctx.beginPath(); ctx.arc(-0.05, -0.05, 0.3, 3.6, 4.4); ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 0.05; ctx.stroke();
+      });
+    });
+  },
+};
+
+// ---------- Garage: ball bearings, a tyre, metal plates, a toolbox, a bucket, nails, oil cans ----------
+const garage: Partial<Record<PartKind, DrawFn>> = {
+  ball: body((ctx) => {
+    dot(ctx, 0, 0, 0.35, '#aeb6bd');
+    noShadow(ctx, () => { dot(ctx, -0.1, -0.1, 0.16, '#d5dadf'); dot(ctx, -0.13, -0.13, 0.06, '#ffffff'); });
+  }),
+  // A little black tyre.
+  heavyball: body((ctx) => {
+    dot(ctx, 0, 0, 0.45, '#3b3b3f');
+    noShadow(ctx, () => {
+      dot(ctx, 0, 0, 0.22, '#c3c9ce'); dot(ctx, 0, 0, 0.08, '#6f767b');
+      for (let i = 0; i < 8; i++) { const a = (i * TAU) / 8; line(ctx, Math.cos(a) * 0.3, Math.sin(a) * 0.3, Math.cos(a) * 0.42, Math.sin(a) * 0.42, '#55555b', 0.05); }
+    });
+  }),
+  ...boards('#9aa1a6', (ctx, hw) => {
+    for (let x = -hw + 0.3; x < hw - 0.2; x += 0.3) line(ctx, x, -0.07, x + 0.12, 0.07, '#7d858a', 0.025);
+    for (const x of [-hw + 0.12, hw - 0.12]) dot(ctx, x, 0, 0.045, '#c3c9ce');
+  }),
+  block: body((ctx) => {
+    rrect(ctx, -0.5, -0.5, 1, 1, 0.05); paper(ctx, '#d9822b');
+    noShadow(ctx, () => { rrect(ctx, -0.3, -0.42, 0.6, 0.12, 0.04); paper(ctx, PAPER.ink); line(ctx, -0.5, -0.05, 0.5, -0.05, '#b5661c', 0.04); });
+  }),
+  // A metal bucket with a handle.
+  basket: targetIn('#aeb6bd', (ctx) => {
+    for (const y of [-0.3, 0.2]) line(ctx, -0.7, y, 0.7, y, '#8d969c', 0.04);
+    ctx.beginPath(); ctx.arc(0, -0.6, 0.72, Math.PI, 0); ctx.strokeStyle = '#6f767b'; ctx.lineWidth = 0.04; ctx.stroke();
+  }),
+  // A nail, point up.
+  pin: body((ctx) => {
+    ctx.beginPath(); ctx.moveTo(0, -0.35); ctx.lineTo(0.05, -0.2); ctx.lineTo(0.05, 0.24); ctx.lineTo(-0.05, 0.24); ctx.lineTo(-0.05, -0.2); ctx.closePath(); paper(ctx, '#8d969c');
+    rrect(ctx, -0.16, 0.22, 0.32, 0.08, 0.03); paper(ctx, '#6f767b');
+  }),
+  // Tall oil cans.
+  domino: body((ctx, rp) => {
+    tall(ctx, pick(rp, ['#e5583f', '#2f9c95', PAPER.mustard]));
+    noShadow(ctx, () => { rrect(ctx, -0.125, -0.75, 0.25, 0.12, 0.03); paper(ctx, '#8d969c'); rrect(ctx, -0.08, -0.2, 0.16, 0.35, 0.03); paper(ctx, PAPER.cream); });
+  }),
+};
+
+// ---------- Bedroom: balls of wool, a teddy, a wicker basket, sleepy stars ----------
+const bedroom: Partial<Record<PartKind, DrawFn>> = {
+  ball: body((ctx) => {
+    dot(ctx, 0, 0, 0.35, '#e98fae');
+    noShadow(ctx, () => {
+      ctx.strokeStyle = '#c96a8b'; ctx.lineWidth = 0.025;
+      for (const a of [0.3, 1.2, 2.2]) { ctx.beginPath(); ctx.ellipse(0, 0, 0.3, 0.12, a, 0, TAU); ctx.stroke(); }
+    });
+  }),
+  // A round teddy bear's head.
+  heavyball: body((ctx) => {
+    for (const x of [-0.3, 0.3]) dot(ctx, x, -0.32, 0.14, '#b98a5a');
+    dot(ctx, 0, 0, 0.45, '#b98a5a');
+    noShadow(ctx, () => {
+      dot(ctx, 0, 0.12, 0.17, '#e2c39b');
+      dot(ctx, 0, 0.06, 0.05, PAPER.ink);
+      for (const x of [-0.15, 0.15]) dot(ctx, x, -0.1, 0.045, PAPER.ink);
+    });
+  }),
+  ...boards('#c9b8e8', (ctx, hw) => { line(ctx, -hw + 0.15, 0, hw - 0.15, 0, '#a993d6', 0.03); }),
+  // A wicker laundry basket.
+  basket: targetIn('#d8b47a', (ctx) => {
+    for (const y of [-0.35, -0.05, 0.25]) line(ctx, -0.7, y, 0.7, y, '#b48d52', 0.035);
+    for (const x of [-0.4, 0, 0.4]) line(ctx, x, -0.55, x, 0.55, '#b48d52', 0.025);
+  }),
+  // A sleepy smiling star.
+  star: body((ctx, _rp, t) => {
+    ctx.rotate(Math.sin(t * 1.2) * 0.1);
+    star(ctx, 0.55); paper(ctx, '#f6d65b');
+    noShadow(ctx, () => {
+      for (const x of [-0.12, 0.12]) dot(ctx, x, -0.04, 0.04, PAPER.ink);
+      ctx.beginPath(); ctx.arc(0, 0.06, 0.1, 0.3, Math.PI - 0.3); ctx.strokeStyle = PAPER.ink; ctx.lineWidth = 0.03; ctx.stroke();
+    });
+  }),
+  balloon: balloonIn('#6a72c9', '#b3b8ea'),
+};
+
+// ---------- Space: moon rocks, a planet, metal planks, a space basket, robots ----------
+const space: Partial<Record<PartKind, DrawFn>> = {
+  ball: body((ctx) => {
+    dot(ctx, 0, 0, 0.35, '#a7a2b8');
+    noShadow(ctx, () => { dot(ctx, -0.12, -0.08, 0.08, '#8a8499'); dot(ctx, 0.14, 0.1, 0.06, '#8a8499'); dot(ctx, 0.08, -0.17, 0.04, '#8a8499'); });
+  }),
+  // A planet with a ring.
+  heavyball: body((ctx) => {
+    dot(ctx, 0, 0, 0.45, '#e07b39');
+    noShadow(ctx, () => {
+      line(ctx, -0.42, -0.12, 0.42, -0.12, '#f2a971', 0.06);
+      line(ctx, -0.38, 0.16, 0.38, 0.16, '#c45f22', 0.05);
+      ctx.beginPath(); ctx.ellipse(0, 0, 0.62, 0.14, -0.35, 0.1, Math.PI - 0.1); ctx.strokeStyle = PAPER.mustard; ctx.lineWidth = 0.05; ctx.stroke();
+    });
+  }),
+  ...boards('#8e93b8', (ctx, hw) => {
+    for (const x of [-hw + 0.12, hw - 0.12]) dot(ctx, x, 0, 0.045, '#d5dadf');
+    line(ctx, -hw + 0.3, 0, hw - 0.3, 0, '#6d7299', 0.03);
+  }),
+  // A silver space basket with a blinking antenna.
+  basket: targetIn('#c3c9ce', (ctx, t) => {
+    line(ctx, -0.7, 0.1, 0.7, 0.1, '#8d969c', 0.04);
+    line(ctx, 0.72, -0.6, 0.9, -0.85, PAPER.ink, 0.025);
+    dot(ctx, 0.9, -0.85, 0.05 + Math.sin(t * 4) * 0.01, PAPER.tomato);
+  }),
+  // Little robots standing in a row.
+  domino: body((ctx, rp) => {
+    tall(ctx, pick(rp, ['#8d969c', '#6db3e0', '#b7bec4']));
+    noShadow(ctx, () => {
+      rrect(ctx, -0.09, -0.62, 0.18, 0.16, 0.03); paper(ctx, PAPER.ink);
+      for (const x of [-0.04, 0.04]) dot(ctx, x, -0.54, 0.025, '#7ef0e0');
+      for (const [y, c] of [[-0.1, PAPER.tomato], [0.05, PAPER.mustard], [0.2, PAPER.leaf]] as const) dot(ctx, 0, y, 0.035, c);
+    });
+  }),
+  balloon: balloonIn('#7cb45a', '#bfe3a6'),
+};
+
+const SKINS: Record<string, Partial<Record<PartKind, DrawFn>>> = { workshop, garden, kitchen, playroom, attic, bathroom, garage, bedroom, space };

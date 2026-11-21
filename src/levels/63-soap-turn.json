@@ -1,0 +1,54 @@
+{
+  "id": "63-soap-turn",
+  "voice": "The basket is on the other side! Put the soap where the ball drops, pointing the right way, to knock the other ball in.",
+  "difficulty": 2.9,
+  "goal": {
+    "type": "reach",
+    "object": "ball1",
+    "target": "basket1"
+  },
+  "fixed": [
+    {
+      "part": "ball",
+      "x": 9,
+      "y": 1
+    },
+    {
+      "part": "ramp",
+      "x": 8,
+      "y": 6,
+      "rot": 0
+    },
+    {
+      "part": "ball",
+      "id": "ball1",
+      "x": 7,
+      "y": 5.5
+    },
+    {
+      "part": "basket",
+      "id": "basket1",
+      "x": 3,
+      "y": 8.4
+    },
+    {
+      "part": "block",
+      "x": 3,
+      "y": 9.5
+    }
+  ],
+  "tray": [
+    {
+      "part": "soap",
+      "count": 1
+    }
+  ],
+  "solution": [
+    {
+      "part": "soap",
+      "x": 9,
+      "y": 5.5,
+      "rot": 180
+    }
+  ]
+}
