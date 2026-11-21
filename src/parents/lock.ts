@@ -1,4 +1,4 @@
-// "Keep your child inside the game": how to lock the tablet to Tinker Table with the
+// "Keep your child inside the game": how to lock the tablet to Bumpity with the
 // device's own tools. An app can't stop the home swipe; Guided Access (iPad) and app
 // pinning (Android) can, and leaving them needs the grown-up's passcode.
 
@@ -27,14 +27,14 @@ const tripleTop = (end = false) => `<svg ${S}>
   <text x="44" y="11" class="big">3×</text>
   ${end
     ? '<g transform="translate(52 40)"><circle cx="0" cy="8" r="4" class="dot" /><circle cx="14" cy="8" r="4" class="dot" /><circle cx="28" cy="8" r="4" class="dot" /><circle cx="42" cy="8" r="4" class="dot" /><text x="4" y="32">passcode</text></g>'
-    : '<text x="46" y="58">Tinker Table</text>'}
+    : '<text x="46" y="58">Bumpity</text>'}
 </svg>`;
 /** Guided Access's Start button, top right. */
 const startBtn = `<svg ${S}>
   ${TAB}
   <rect x="30" y="26" width="30" height="10" rx="2" class="row" /><text x="33" y="34">Options</text>
   <rect x="100" y="26" width="30" height="10" rx="2" class="row hl" /><text x="106" y="34">Start</text>
-  <rect x="38" y="44" width="84" height="34" rx="4" class="row" /><text x="56" y="64">Tinker Table</text>
+  <rect x="38" y="44" width="84" height="34" rx="4" class="row" /><text x="56" y="64">Bumpity</text>
 </svg>`;
 /** Android's recent apps, with the pin item in an app's menu. */
 const recents = `<svg ${S}>
@@ -56,14 +56,14 @@ interface LockStep { pic: string; text: string }
 
 const IPAD: LockStep[] = [
   { pic: settingsRow('Guided Access'), text: 'Open <b>Settings › Accessibility › Guided Access</b> and turn it on. Under <b>Passcode Settings</b>, set a Guided Access passcode your child doesn\'t know. You only do this once.' },
-  { pic: tripleTop(), text: 'Open Tinker Table, then press the <b>top button</b> three times quickly (on iPads with a Home button, press that three times).' },
+  { pic: tripleTop(), text: 'Open Bumpity, then press the <b>top button</b> three times quickly (on iPads with a Home button, press that three times).' },
   { pic: startBtn, text: 'Tap <b>Start</b> at the top right. The iPad now stays in the game: swiping home does nothing. <b>Options</b> has a time limit too, if you want one.' },
   { pic: tripleTop(true), text: 'To leave, press the top button three times again, type the passcode and tap <b>End</b>.' },
 ];
 
 const ANDROID: LockStep[] = [
   { pic: settingsRow('App pinning'), text: 'Open <b>Settings › Security</b> (on some phones <b>Security › More security settings</b>) and turn on <b>App pinning</b> (also called screen pinning). Turn on <b>Ask for PIN before unpinning</b> too.' },
-  { pic: recents, text: 'Open Tinker Table, then open your recent apps. Tap the Tinker Table icon at the top of its card and choose <b>Pin</b>.' },
+  { pic: recents, text: 'Open Bumpity, then open your recent apps. Tap the Bumpity icon at the top of its card and choose <b>Pin</b>.' },
   { pic: unpin, text: 'To leave, swipe up and hold (or, with buttons, touch and hold Back and Overview together), then type the tablet\'s own PIN.' },
 ];
 

@@ -544,12 +544,12 @@ function buildGrownups() {
       <div id="gu-pin" class="gu-card"></div>
       <div class="gu-card" id="gu-lock">
         <h4>Keep your child inside the game</h4>
-        <p>No app can stop a child swiping out to the home screen. The tablet itself can: lock it to Tinker Table before you hand it over, and only your passcode unlocks it.</p>
+        <p>No app can stop a child swiping out to the home screen. The tablet itself can: lock it to Bumpity before you hand it over, and only your passcode unlocks it.</p>
         ${lockGuideHtml(guessPlatform())}
       </div>
     </section>
     <section class="gu-sec" data-sec="play">
-      <img class="gu-logo" src="logo.svg" alt="Tinker Table" />
+      <img class="gu-logo" src="logo.svg" alt="Bumpity" />
       <p class="lead">${esc(INTRO)}</p>
       <h3>A simple routine for every level</h3>
       <ol class="routine">${ROUTINE.map((r) => `<li><b>${esc(r.step)}.</b> ${esc(r.say)}</li>`).join('')}</ol>
@@ -581,7 +581,7 @@ function buildGrownups() {
       </div>
       <h3>Privacy</h3>
       <div class="gu-card">
-        <p>Tinker Table collects no data: no accounts, ads, tracking or links out. Progress, the sticker book, the PIN and made puzzles are kept only on this device. A shared link contains only the puzzle itself.</p>
+        <p>Bumpity collects no data: no accounts, ads, tracking or links out. Progress, the sticker book, the PIN and made puzzles are kept only on this device. A shared link contains only the puzzle itself.</p>
         <p><a href="privacy.html">Read the privacy policy</a></p>
       </div>
     </section>`;
@@ -767,7 +767,7 @@ function showWelcome() {
   wrap.innerHTML = `
     <div class="welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
       <h3 id="welcome-title">Before you hand it over</h3>
-      <p>Tinker Table is made to play beside you. If your child will sometimes play on their own, two things help:</p>
+      <p>Bumpity is made to play beside you. If your child will sometimes play on their own, two things help:</p>
       <ol>
         <li><b>A grown-ups' PIN</b> keeps them out of the settings and the grown-ups' corner.
           <div class="acts"><button class="text-btn primary" data-w="pin">Set a PIN</button></div></li>
@@ -799,7 +799,7 @@ async function sharePuzzle(code: string, btn: HTMLButtonElement) {
   const label = btn.textContent;
   const flash = (t: string) => { btn.textContent = t; setTimeout(() => { btn.textContent = label; }, 2200); };
   try {
-    if (navigator.share) { await navigator.share({ title: 'A Tinker Table puzzle', url }); return; }
+    if (navigator.share) { await navigator.share({ title: 'A Bumpity puzzle', url }); return; }
     await navigator.clipboard.writeText(url);
     flash('Link copied!');
   } catch (e) {

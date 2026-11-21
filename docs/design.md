@@ -1,6 +1,6 @@
-# Tinker Table — design doc
+# Bumpity — design doc
 
-*Working title. Check the name before any release.*
+*Called Tinker Table until November 2026; renamed after the name check (see [release-prep.md](release-prep.md)).*
 
 ## The game in one paragraph
 A calm chain-reaction puzzle game for ages 5–8 (younger children with a grown-up), played with a parent on a tablet. Each level shows a little scene on a paper craft table and a goal shown as a picture ("ball → basket"), which a voice reads out. The child drags a few big paper parts from the tray, presses the big green **Go** button and watches the machine run. If it misses, everything gently resets to where the parts were placed, with no fail screen. If it works, there is confetti, a happy sound and a slow-motion replay. A **toy box** with every part and no goal is open from day one.

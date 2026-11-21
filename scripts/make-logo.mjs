@@ -18,7 +18,7 @@ const num = (s, name) => {
 };
 const r = (v) => Math.round(v * 100) / 100;
 
-let fontSize = 42; // the TINKER letters take their size from their group
+let fontSize = 46; // the BUMPITY letters take their size from their group
 const out = src
   .replace(/^<!--[\s\S]*?-->\s*/, '')
   // The font stack is no longer needed once the letters are shapes.

@@ -16,7 +16,7 @@ export interface TalkCard {
 }
 
 export const INTRO =
-  'Tinker Table is a calm puzzle game for children aged about 5 to 8 (younger ones can play the first room with you). Each level is a small machine with one piece missing. ' +
+  'Bumpity is a calm puzzle game for children aged about 5 to 8 (younger ones can play the first room with you). Each level is a small machine with one piece missing. ' +
   'Your child adds parts, presses Go and watches what happens. Nothing ever "fails": if the machine misses, it simply resets, ' +
   'and they can change something and try again. The game works best with you sitting beside them, talking about what you both see.';
 
