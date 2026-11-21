@@ -180,6 +180,71 @@ svg .fill { fill: currentColor; stroke: none; }
   .bar { gap: 8px; padding-inline: 8px; }
 }
 
+/* ---------- phones ---------- */
+/* Turned sideways (keep this query in step with RAIL_QUERY in src/ui/game.ts): the top bar
+   becomes a strip of buttons down the left, Go floats at the top right over the tray column,
+   and the table gets the full height. */
+@media (orientation: landscape) and (max-height: 560px) {
+  #play { flex-direction: row; }
+  #play .bar {
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 8px 4px 8px 8px;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  #play .bar::-webkit-scrollbar { display: none; }
+  #play .bar .spacer { display: none; }
+  #play .bar .icon { width: 50px; height: 50px; border-radius: 15px; flex-shrink: 0; }
+  #play .bar .icon svg { width: 32px; height: 32px; }
+  #play .bar .goal { width: 50px; height: auto; padding: 6px 0; flex-shrink: 0; border-radius: 15px; }
+  #play .bar .goal canvas { width: 44px; height: 104px; }
+  #play .bar .goal .speaker { display: none; }
+  #play.no-goal .bar .goal { display: none; }
+  #play .bar .go {
+    position: absolute;
+    z-index: 2;
+    top: calc(env(safe-area-inset-top) + 8px);
+    right: calc(env(safe-area-inset-right) + 8px);
+    width: 76px;
+    height: 60px;
+    border-radius: 20px;
+  }
+  #stage { width: auto; height: 100%; min-width: 0; }
+  .won { padding: 14px 20px; gap: 16px; }
+  .won .big { width: 88px; height: 72px; }
+  .film .frame canvas { width: clamp(60px, 10vw, 100px); }
+  /* Sticker book: the back button floats in the corner so the page gets the height. */
+  #book .bar { position: absolute; z-index: 2; top: calc(env(safe-area-inset-top) + 8px); left: calc(env(safe-area-inset-left) + 8px); padding: 0; min-height: 0; }
+  #book .bar .icon { width: 50px; height: 50px; border-radius: 15px; }
+  #book .book-page { margin-top: 8px; width: min(100% - 140px, (100dvh - 124px) * 1.6); max-height: calc(100dvh - 124px); }
+  #book .book-strip { min-height: 100px; padding-block: 6px calc(env(safe-area-inset-bottom) + 6px); }
+  /* The front page fits without scrolling. */
+  #map { gap: 2vh; padding-bottom: calc(env(safe-area-inset-bottom) + 8px); }
+  #map .logo { margin-top: 8px; }
+}
+/* Held upright, a phone's table would be too small for little fingers: ask for it turned. */
+.turn { display: none; }
+@media (orientation: portrait) and (max-width: 560px) {
+  .turn {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: var(--bg);
+  }
+  .turn svg { width: min(60vw, 240px); height: auto; }
+  .turn .turn-arrow { stroke: var(--go); stroke-width: 5; }
+  .turn .turn-phone { transform-origin: 60px 60px; animation: turn-phone 2.4s ease-in-out infinite; }
+  .turn .turn-phone rect { fill: var(--card); stroke-width: 5; }
+  /* Home stays above the picture, so there's always a way back. */
+  #btn-home { position: relative; z-index: 6; }
+}
+@keyframes turn-phone { 0%, 25% { transform: rotate(0deg); } 55%, 85% { transform: rotate(-90deg); } 100% { transform: rotate(0deg); } }
+
 /* ---------- logo ---------- */
 .logo img { display: block; height: clamp(56px, 11vh, 104px); width: auto; }
 

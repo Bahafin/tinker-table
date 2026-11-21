@@ -133,19 +133,23 @@ Safety first, then the wrapper, then the paperwork. The order inside each part i
 ### Playtest on the iPad
 With a real finger, before wrapping: the Music room, the toy box tabs and arrows, the sticker book, the pencil, the new sounds, the bin and the puzzle maker.
 
-### The app wrapper (Capacitor)
-- Saved progress, stickers and kept machines move from browser storage to app storage (iOS can clear browser storage).
-- Check that sound starts after the first tap, and that the voice still picks a nice English voice inside the app.
-- Sharing uses the native share sheet.
-- Safe areas round the notch, orientation locked to landscape on phones, app icon and splash screen.
-- A test release through TestFlight (and Google's internal testing) for real play before going public.
+### Phones and tablets, as apps (plan agreed 20 November 2026)
+1. **Phone layout: done.** On a phone turned sideways the buttons move to a strip down the left, Go floats at the top right, and the tray becomes a column (two in the toy box) down the right, so the table gets the full height: about 600×380 px on an iPhone instead of 300×180. Held upright, a phone shows a "turn me" picture during play (Home stays). The front page and the sticker book fit without scrolling. Tablets keep their layout.
+2. **App wrapper (Capacitor) and Android.** The same code as an iOS and an Android project.
+   - Saved progress, stickers and kept machines are mirrored into app storage (iOS can clear browser storage); the `tinker.` keys carry over.
+   - The voice uses a text-to-speech plugin (Android's in-app browser has no speech), sharing uses the native share sheet, and the offline cache is off inside the app.
+   - Android's back button goes back a screen. A "lock" button in the Safety section starts Android's screen pinning.
+   - Phones locked to landscape; app icon, splash screen, full screen.
+3. **iPad and iPhone without a Mac.** GitHub's macOS runners (free for this public repo) build, sign and upload to TestFlight. Signing keys live in GitHub secrets.
+4. **Own domain and links into the app.** Share links always point at the website (`https://<domain>/play#p=<code>`; old `#p=` links keep working), so anyone can play in a browser. Universal Links (iOS) and App Links (Android) open them in the app when it's installed; both need files at the domain's root, which a `github.io/tinker-table` address can't serve.
+5. **Store submission.** A test release through TestFlight and Google's internal testing for real play before going public.
 
 ### Paperwork
 - Privacy page, logo letters as outlines, and store screenshots: done. See [release-prep.md](release-prep.md).
 - Name: renamed from Tinker Table to Bumpity (20 November 2026). First searches are clean; a lawyer's clearance and a class 9 filing are still to do. See [release-prep.md](release-prep.md).
 - A support email for the privacy page and the store listings.
 - Apple's age questions and the Kids section rules (parental gate, no third-party analytics or ads).
-- Costs: $99 a year for Apple, $25 once for Google.
+- Costs: $99 a year for Apple, $25 once for Google, about $15 a year for the domain.
 
 ## Later
 - **The parent's recorded voice:**

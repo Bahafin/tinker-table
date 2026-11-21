@@ -110,6 +110,14 @@
         </button>
       </header>
       <canvas id="stage"></canvas>
+      <!-- A phone held upright: a picture asking to turn it on its side (no words). -->
+      <div class="turn" role="img" aria-label="Turn your phone on its side">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <path d="M22 60a38 38 0 0 1 62-29M98 60a38 38 0 0 1-62 29" class="turn-arrow" />
+          <path d="M78 22l7 9-11 3M42 98l-7-9 11-3" class="turn-arrow" />
+          <g class="turn-phone"><rect x="44" y="30" width="32" height="60" rx="7" /><path d="M56 82h8" /></g>
+        </svg>
+      </div>
       <div id="won" class="won hidden">
         <!-- Film strip: snapshots of the winning run, in order. Tap one to watch it again. -->
         <div id="film" class="film" role="group" aria-label="What happened"></div>

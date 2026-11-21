@@ -869,7 +869,12 @@ let game: Game | null = null;
 let current = 0;
 let wonTimer = 0;
 
-function drawGoalPic(level: Level) {
+/**
+ * The goal picture's canvas, ready to draw on. It reads left to right in the top bar, and
+ * top to bottom when the buttons are in a strip down the side (a phone turned sideways):
+ * `at(t)` is the point a fraction t along it, and `s` its short side.
+ */
+function goalCanvas() {
   const c = $<HTMLCanvasElement>('goal-pic');
   const dpr = 2;
   c.width = c.clientWidth * dpr || 400;
@@ -878,63 +883,80 @@ function drawGoalPic(level: Level) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const w = c.width / dpr, h = c.height / dpr;
   ctx.clearRect(0, 0, w, h);
+  const vert = h > w;
+  const s = vert ? w : h, long = vert ? h : w;
+  const at = (t: number) => (vert ? { x: w / 2, y: h * t } : { x: w * t, y: h / 2 });
+  /** The arrow from the object to the target. */
+  const arrow = () => {
+    const a = at(0.36), b = at(0.6), tip = at(0.61), back = at(0.53);
+    const k = 9; // half the arrowhead's width
+    ctx.strokeStyle = PAPER.ink; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+    if (vert) { ctx.moveTo(back.x - k, back.y); ctx.lineTo(tip.x, tip.y); ctx.lineTo(back.x + k, back.y); }
+    else { ctx.moveTo(back.x, back.y - k); ctx.lineTo(tip.x, tip.y); ctx.lineTo(back.x, back.y + k); }
+    ctx.stroke();
+  };
+  /** A goal part at fraction t. The pulley is drawn hanging above its point, so it is centred by hand. */
+  const part = (kind: PartKind, t: number, size: number) => {
+    const p = at(t);
+    if (kind === 'pulley') drawIcon(ctx, kind, p.x, p.y + s * 0.32, s * (vert ? 1 : 1.25));
+    else drawIcon(ctx, kind, p.x, p.y, s * size);
+  };
+  return { ctx, w, h, s, long, vert, at, arrow, part };
+}
+
+function drawGoalPic(level: Level) {
   if (level.id === 'maker' && game) { drawMakeGoal(game); return; }
+  const g = goalCanvas();
   if (!level.goal) {
-    (['ball', 'domino', 'balloon'] as PartKind[]).forEach((k, i) => drawIcon(ctx, k, w * (0.2 + i * 0.3), h / 2, h * 0.75));
+    (['ball', 'domino', 'balloon'] as PartKind[]).forEach((k, i) => {
+      const p = g.at(0.2 + i * 0.3);
+      drawIcon(g.ctx, k, p.x, p.y, Math.min(g.s * 0.75, g.long * 0.28));
+    });
     return;
   }
   if (level.goal.type === 'tune') {
     // A tune: its notes in order, as the parts that play them.
     const n = level.goal.notes.length;
-    level.goal.notes.forEach((note, i) => drawIcon(ctx, NOTE_PART[note], w * (i + 0.5) / n, h / 2, Math.min(h * 0.95, (w / n) * 0.95)));
+    level.goal.notes.forEach((note, i) => {
+      const p = g.at((i + 0.5) / n);
+      drawIcon(g.ctx, NOTE_PART[note], p.x, p.y, Math.min(g.s * 0.95, (g.long / n) * 0.95));
+    });
     return;
   }
   const kindOf = (id: string) => level.fixed.find((p) => p.id === id)!.part;
   // A ball on a rope is shown as just the ball: the rope makes the picture too tall to read.
   const obj = kindOf(level.goal.object) === 'rope' ? 'ball' : kindOf(level.goal.object);
-  // The pulley is drawn hanging above its placement point, so centre it by hand.
-  if (obj === 'pulley') drawIcon(ctx, obj, w * 0.18, h * 0.82, h * 1.25);
-  else drawIcon(ctx, obj, w * 0.18, h / 2, h * 0.8);
-  ctx.strokeStyle = PAPER.ink; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  ctx.beginPath(); ctx.moveTo(w * 0.36, h / 2); ctx.lineTo(w * 0.6, h / 2);
-  ctx.moveTo(w * 0.53, h / 2 - 9); ctx.lineTo(w * 0.61, h / 2); ctx.lineTo(w * 0.53, h / 2 + 9); ctx.stroke();
-  drawIcon(ctx, kindOf(level.goal.target), w * 0.8, h / 2, h * 0.9);
+  g.part(obj, 0.18, 0.8);
+  g.arrow();
+  g.part(kindOf(level.goal.target), 0.8, 0.9);
 }
 
 /** While making a puzzle, the goal picture fills in as the goal is picked: ? → ?, then ball → ?, then ball → basket. */
 /** The maker's goal picture: "? → ?" while building, filling in as the goal is picked. */
 function drawMakeGoal(g: Game) {
-  const c = $<HTMLCanvasElement>('goal-pic');
-  const dpr = 2;
-  c.width = c.clientWidth * dpr || 400;
-  c.height = c.clientHeight * dpr || 128;
-  const ctx = c.getContext('2d')!;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const w = c.width / dpr, h = c.height / dpr;
-  ctx.clearRect(0, 0, w, h);
+  const pic = goalCanvas();
+  const { ctx } = pic;
   const m = g.making ?? { step: 'build', object: null, target: null };
-  const slot = (x: number, kind: PartKind | null, active: boolean) => {
-    if (kind) {
-      if (kind === 'pulley') drawIcon(ctx, kind, x, h * 0.82, h * 1.25);
-      else drawIcon(ctx, kind, x, h / 2, h * 0.8);
-      return;
-    }
+  const slot = (t: number, kind: PartKind | null, active: boolean) => {
+    if (kind) { pic.part(kind, t, 0.8); return; }
+    const p = pic.at(t);
     ctx.save();
     ctx.setLineDash([6, 5]);
     ctx.lineWidth = 3;
     ctx.strokeStyle = active ? PAPER.mustard : 'rgba(60,45,30,0.3)';
-    ctx.beginPath(); ctx.arc(x, h / 2, h * 0.32, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(p.x, p.y, pic.s * 0.32, 0, Math.PI * 2); ctx.stroke();
     ctx.restore();
   };
-  slot(w * 0.18, m.object !== null ? g.placements[m.object].part : null, m.step === 'object');
-  ctx.strokeStyle = PAPER.ink; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  ctx.beginPath(); ctx.moveTo(w * 0.36, h / 2); ctx.lineTo(w * 0.6, h / 2);
-  ctx.moveTo(w * 0.53, h / 2 - 9); ctx.lineTo(w * 0.61, h / 2); ctx.lineTo(w * 0.53, h / 2 + 9); ctx.stroke();
-  slot(w * 0.8, m.target !== null ? g.placements[m.target].part : null, m.step === 'target');
+  slot(0.18, m.object !== null ? g.placements[m.object].part : null, m.step === 'object');
+  pic.arrow();
+  slot(0.8, m.target !== null ? g.placements[m.target].part : null, m.step === 'target');
 }
 
 function syncButtons() {
   if (!game) return;
+  // In the side strip there's no room for the toy box's decorative goal picture.
+  $('play').classList.toggle('no-goal', !game.level.goal && game.level.id !== 'maker');
   const making = game.mode === 'make';
   const run = game.mode === 'run' || game.mode === 'won';
   $('btn-go').classList.toggle('hidden', run || making);
@@ -1116,6 +1138,15 @@ $('btn-next').onclick = () => startLevel(current + 1 < LEVELS.length ? current +
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => { /* fine: plays online */ });
 }
+// Turning the device can move the buttons between the top bar and the side strip,
+// which changes the goal picture's shape: draw it again for the new shape.
+let goalShape = '';
+window.addEventListener('resize', () => {
+  if (!game) return;
+  const c = $<HTMLCanvasElement>('goal-pic');
+  const shape = `${c.clientWidth}x${c.clientHeight}`;
+  if (shape !== goalShape) { goalShape = shape; drawGoalPic(game.level); }
+});
 // iOS: stop pinch zoom gestures from scaling the page.
 document.addEventListener('gesturestart', (e) => e.preventDefault());
 

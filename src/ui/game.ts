@@ -21,6 +21,7 @@ interface Drag {
   grab: { x: number; y: number };
   downAt: { x: number; y: number; t: number };
   moved: boolean;
+  px: number;
   py: number;
 }
 
@@ -37,6 +38,14 @@ const TAP_SLOP = { mouse: 8, touch: 22 };
 
 /** A round rotate button beside the selected part. dir -1 turns left, +1 turns right, 0 flips. */
 interface Handle { dir: -1 | 0 | 1; px: number; py: number }
+
+/**
+ * Phones turned sideways: the buttons sit in a strip down the left (see style.css, which
+ * uses the same query) and the Go button floats at the top right, over the tray column.
+ */
+export const RAIL_QUERY = '(orientation: landscape) and (max-height: 560px)';
+/** Space kept clear at the top of the side tray for the floating Go button. */
+const GO_RESERVE = 80;
 
 /** Missed runs before the hint button appears. */
 const MISSES_BEFORE_HINT = 2;
@@ -60,6 +69,8 @@ type TrayHit = { item: number } | { tab: number } | { page: -1 | 1 } | null;
 type Box = { x: number; y: number; w: number; h: number };
 interface TrayLayout {
   scale: number; ox: number; oy: number; trayTop: number; trayH: number; item: number; cw: number; ch: number; dpr: number;
+  /** Short, wide screens (a phone turned sideways): the tray is a column at the right, from trayLeft. */
+  side: boolean; trayLeft: number;
   /** Parts showing in the tray (i: index into the tray's items) and where. */
   items: { i: number; x: number; y: number }[];
   tabs: { x: number; y: number }[];
@@ -141,7 +152,7 @@ export class Game {
   private film: HTMLCanvasElement[] = [];
   private lastShot = -1;
   private wonAt = 0;
-  private L: TrayLayout = { scale: 1, ox: 0, oy: 0, trayTop: 0, trayH: 0, item: 0, cw: 0, ch: 0, dpr: 1, items: [], tabs: [], tab: 0, prev: null, next: null };
+  private L: TrayLayout = { scale: 1, ox: 0, oy: 0, trayTop: 0, trayH: 0, item: 0, cw: 0, ch: 0, dpr: 1, side: false, trayLeft: 0, items: [], tabs: [], tab: 0, prev: null, next: null };
   /** Toy box: the room sets of parts the tray's tabs choose between, and which one is showing. */
   sets: TraySet[] | null = null;
   private setIndex = 0;
@@ -392,6 +403,13 @@ export class Game {
       c.width = Math.round(cw * dpr);
       c.height = Math.round(ch * dpr);
     }
+    // A short, wide screen (a phone on its side) can't spare a row for the tray: it goes
+    // down the right-hand side instead, and the table gets the full height.
+    if (ch < 560 && cw > ch * 1.25) {
+      const top = typeof matchMedia === 'function' && matchMedia(RAIL_QUERY).matches ? GO_RESERVE : 8;
+      if (this.sets) this.layoutSideSets(cw, ch, dpr, top); else this.layoutSide(cw, ch, dpr, top);
+      return;
+    }
     const rowH = Math.max(96, Math.min(130, ch * 0.17));
     const gap = TRAY_GAP;
     if (this.sets) { this.layoutSets(cw, ch, dpr, rowH); return; }
@@ -417,7 +435,7 @@ export class Game {
     const itemX0 = (cw - cols * (item + gap) + gap) / 2;
     const itemY0 = ch - trayH + (trayH - (rows * (item + gap) - gap)) / 2;
     const items = this.level.tray.map((_, i) => ({ i, x: itemX0 + (i % cols) * (item + gap), y: itemY0 + Math.floor(i / cols) * (item + gap) }));
-    this.L = { scale, ox, oy, trayTop: ch - trayH, trayH, item, cw, ch, dpr, items, tabs: [], tab: 0, prev: null, next: null };
+    this.L = { scale, ox, oy, trayTop: ch - trayH, trayH, item, cw, ch, dpr, side: false, trayLeft: cw, items, tabs: [], tab: 0, prev: null, next: null };
   }
 
   /**
@@ -462,7 +480,73 @@ export class Game {
     const prev = !fitsAll && this.page > 0 ? { x: areaX0, y: rowY, w: arrowW, h: blockH } : null;
     const next = !fitsAll && this.page < pages - 1 ? { x: areaX0 + areaW - arrowW, y: rowY, w: arrowW, h: blockH } : null;
     const scale = Math.min((cw - 16) / WORLD_W, (ch - trayH - 12) / WORLD_H);
-    this.L = { scale, ox: (cw - WORLD_W * scale) / 2, oy: 6, trayTop: ch - trayH, trayH, item, cw, ch, dpr, items: list, tabs, tab, prev, next };
+    this.L = { scale, ox: (cw - WORLD_W * scale) / 2, oy: 6, trayTop: ch - trayH, trayH, item, cw, ch, dpr, side: false, trayLeft: cw, items: list, tabs, tab, prev, next };
+  }
+
+  /** The table, centred in the space left of a side tray `trayW` wide. */
+  private sideTable(cw: number, ch: number, trayW: number) {
+    const trayLeft = cw - trayW;
+    const scale = Math.min((trayLeft - 12) / WORLD_W, (ch - 12) / WORLD_H);
+    return { trayLeft, scale, ox: (trayLeft - WORLD_W * scale) / 2, oy: (ch - WORLD_H * scale) / 2 };
+  }
+
+  /** A level's tray as a column (two if needed) down the right-hand side. */
+  private layoutSide(cw: number, ch: number, dpr: number, top: number) {
+    const gap = TRAY_GAP, pad = 8;
+    const n = Math.max(1, this.level.tray.length);
+    const availH = ch - top - pad;
+    const fit = (rows: number) => Math.min(84, (availH - (rows - 1) * gap) / rows);
+    let cols = 1;
+    let rows = n;
+    let item = fit(rows);
+    if (item < MIN_TOUCH_PX && n > 1) { cols = 2; rows = Math.ceil(n / 2); item = fit(rows); }
+    item = Math.max(44, item);
+    const used = cols * (item + gap) - gap;
+    const trayW = Math.max(used + 2 * pad, top > 8 ? 92 : 0);
+    const t = this.sideTable(cw, ch, trayW);
+    const blockH = rows * (item + gap) - gap;
+    const x0 = t.trayLeft + (trayW - used) / 2;
+    const y0 = top + Math.max(0, (availH - blockH) / 2);
+    const items = this.level.tray.map((_, i) => ({ i, x: x0 + (i % cols) * (item + gap), y: y0 + Math.floor(i / cols) * (item + gap) }));
+    this.L = { scale: t.scale, ox: t.ox, oy: t.oy, trayTop: ch, trayH: 0, item, cw, ch, dpr, side: true, trayLeft: t.trayLeft, items, tabs: [], tab: 0, prev: null, next: null };
+  }
+
+  /** Toy box tray on the side: a column of room tabs, then two columns of parts with up/down arrows. */
+  private layoutSideSets(cw: number, ch: number, dpr: number, top: number) {
+    const gap = TRAY_GAP, pad = 8;
+    const sets = this.sets!;
+    const n = this.trayItems().length;
+    const tab = Math.max(36, Math.min(56, (ch - 2 * pad - (sets.length - 1) * gap) / sets.length));
+    const item = 66;
+    const cols = 2;
+    const arrowH = 40;
+    const areaW = cols * (item + gap) - gap;
+    const colX = cw - pad - areaW;
+    const tabX = colX - gap - tab;
+    const tabY0 = (ch - (sets.length * (tab + gap) - gap)) / 2;
+    const tabs = sets.map((_, k) => ({ x: tabX, y: tabY0 + k * (tab + gap) }));
+    const areaH = ch - top - pad;
+    const rowsFor = (h: number) => Math.max(1, Math.floor((h + gap) / (item + gap)));
+    let rows = rowsFor(areaH);
+    const fitsAll = rows * cols >= n;
+    if (!fitsAll) rows = rowsFor(areaH - 2 * (arrowH + gap));
+    const perPage = rows * cols;
+    const pages = Math.max(1, Math.ceil(n / perPage));
+    this.page = Math.min(this.page, pages - 1);
+    const from = this.page * perPage;
+    const shown = Math.min(perPage, n - from);
+    const shownRows = Math.ceil(shown / cols);
+    const y0 = top + (fitsAll ? (areaH - (shownRows * (item + gap) - gap)) / 2 : arrowH + gap);
+    const list = Array.from({ length: shown }, (_, k) => ({ i: from + k, x: colX + (k % cols) * (item + gap), y: y0 + Math.floor(k / cols) * (item + gap) }));
+    const prev = !fitsAll && this.page > 0 ? { x: colX, y: top, w: areaW, h: arrowH } : null;
+    const next = !fitsAll && this.page < pages - 1 ? { x: colX, y: ch - pad - arrowH, w: areaW, h: arrowH } : null;
+    const t = this.sideTable(cw, ch, cw - tabX + pad);
+    this.L = { scale: t.scale, ox: t.ox, oy: t.oy, trayTop: ch, trayH: 0, item, cw, ch, dpr, side: true, trayLeft: t.trayLeft, items: list, tabs, tab, prev, next };
+  }
+
+  /** Is this screen point over the tray (where a dragged part is put away)? */
+  private inTray(px: number, py: number) {
+    return this.L.side ? px > this.L.trayLeft : py > this.L.trayTop;
   }
 
   private toWorld(e: PointerEvent) {
@@ -474,7 +558,7 @@ export class Game {
   /** What is under a finger in the tray: a part, a room tab, or a page arrow. */
   private trayHit(px: number, py: number): TrayHit {
     const L = this.L;
-    if (py < L.trayTop) return null;
+    if (!this.inTray(px, py)) return null;
     const inBox = (x: number, y: number, w: number, h: number) => px >= x - TRAY_GAP / 2 && px < x + w + TRAY_GAP / 2 && py >= y - TRAY_GAP / 2 && py < y + h + TRAY_GAP / 2;
     for (const it of L.items) if (inBox(it.x, it.y, L.item, L.item)) return { item: it.i };
     for (let k = 0; k < L.tabs.length; k++) if (inBox(L.tabs[k].x, L.tabs[k].y, L.tab, L.tab)) return { tab: k };
@@ -491,7 +575,7 @@ export class Game {
     this.layout();
     const w = this.toWorld(e);
     if (this.pencil) {
-      if (w.py > this.L.trayTop) return;
+      if (this.inTray(w.px, w.py)) return;
       this.canvas.setPointerCapture(e.pointerId);
       this.drawing = e.pointerId;
       this.stroke = [{ x: w.x, y: w.y }];
@@ -535,7 +619,7 @@ export class Game {
   private startDrag(e: PointerEvent, p: Placement, index: number, grab: { x: number; y: number }, w: { px: number; py: number }) {
     this.canvas.setPointerCapture(e.pointerId);
     this.drag = {
-      p, index, grab, pointerId: e.pointerId, moved: false, py: w.py,
+      p, index, grab, pointerId: e.pointerId, moved: false, px: w.px, py: w.py,
       origin: index >= 0 ? { ...this.placements[index] } : undefined,
       downAt: { x: w.px, y: w.py, t: performance.now() },
     };
@@ -553,6 +637,7 @@ export class Game {
     const d = this.drag;
     if (!d || e.pointerId !== d.pointerId) return;
     const w = this.toWorld(e);
+    d.px = w.px;
     d.py = w.py;
     const slop = e.pointerType === 'mouse' ? TAP_SLOP.mouse : TAP_SLOP.touch;
     if (!d.moved && Math.hypot(w.px - d.downAt.x, w.py - d.downAt.y) > slop) {
@@ -595,7 +680,7 @@ export class Game {
     }
 
     // Dropped on the tray: put it away.
-    if (w.py > this.L.trayTop) {
+    if (this.inTray(w.px, w.py)) {
       if (d.index >= 0) this.placements.splice(d.index, 1);
       this.selected = null;
       sfx.place();
@@ -667,7 +752,8 @@ export class Game {
     } else {
       out.push({ dir: -1, px: cx - r - gap / 2, py: y }, { dir: 1, px: cx + r + gap / 2, py: y });
     }
-    for (const h of out) h.px = Math.min(L.cw - r - 2, Math.max(r + 2, h.px));
+    const right = L.side ? L.trayLeft : L.cw;
+    for (const h of out) h.px = Math.min(right - r - 2, Math.max(r + 2, h.px));
     return out;
   }
 
@@ -818,7 +904,7 @@ export class Game {
     // The part being dragged, at its snapped spot.
     if (this.drag?.moved) {
       const d = this.drag;
-      const overTray = d.py > L.trayTop;
+      const overTray = this.inTray(d.px, d.py);
       const snapped = settle(clampToWorld(d.p), this.others(d.index));
       const bad = overlapsAny(snapped, this.others(d.index));
       const show = overTray ? d.p : snapped;
@@ -1104,7 +1190,7 @@ export class Game {
       const { x, y } = L.tabs[k];
       const on = k === this.setIndex;
       ctx.save();
-      ctx.translate(0, on ? -4 : 0);
+      if (on) ctx.translate(L.side ? -4 : 0, L.side ? 0 : -4);
       ctx.shadowColor = 'rgba(80,55,30,0.25)'; ctx.shadowOffsetY = on ? 4 : 2; ctx.shadowBlur = on ? 6 : 3;
       ctx.beginPath(); ctx.roundRect(x, y, L.tab, L.tab, L.tab / 2); ctx.fillStyle = s.paper; ctx.fill();
       ctx.shadowColor = 'transparent';
@@ -1120,8 +1206,11 @@ export class Game {
       ctx.shadowColor = 'rgba(80,55,30,0.2)'; ctx.shadowOffsetY = 3; ctx.shadowBlur = 4;
       ctx.beginPath(); ctx.roundRect(a.x, a.y, a.w, a.h, 14); ctx.fillStyle = '#fffaf0'; ctx.fill();
       ctx.shadowColor = 'transparent';
-      const cx = a.x + a.w / 2, cy = a.y + a.h / 2, s = Math.min(a.w, a.h) * 0.22;
-      ctx.beginPath(); ctx.moveTo(cx - dir * s * 0.5, cy - s); ctx.lineTo(cx + dir * s * 0.6, cy); ctx.lineTo(cx - dir * s * 0.5, cy + s);
+      const s = Math.min(a.w, a.h) * (L.side ? 0.3 : 0.22);
+      // On the side tray the arrows point up and down.
+      ctx.translate(a.x + a.w / 2, a.y + a.h / 2);
+      if (L.side) ctx.rotate(Math.PI / 2);
+      ctx.beginPath(); ctx.moveTo(-dir * s * 0.5, -s); ctx.lineTo(dir * s * 0.6, 0); ctx.lineTo(-dir * s * 0.5, s);
       ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = PAPER.ink; ctx.stroke();
       ctx.restore();
     }
