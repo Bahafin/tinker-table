@@ -62,3 +62,33 @@ Only you can do these, in your own Apple account:
 6. Run the workflow with **Send to TestFlight** ticked. After it finishes, App Store Connect takes 10–30 minutes to process the build; then add yourself as a tester under TestFlight › Internal Testing, and install the **TestFlight** app on the iPad to get Bumpity.
 
 The build number is the workflow's run number, so every upload is newer than the last. The version shown in the store (1.0) is `MARKETING_VERSION` in the Xcode project.
+
+## Google Play release build
+Google Play needs a signed **app bundle** (`.aab`). You sign it with an *upload key* that you
+make once and keep safe; Google then signs the copies people download ("Play App Signing").
+If the upload key is ever lost, Google can reset it, but it takes a few days.
+
+**One time, on your computer** (needs Java's `keytool`: install the free Temurin JDK 21 from
+adoptium.net, or use the one inside Android Studio):
+
+```bash
+keytool -genkeypair -v -keystore bumpity-upload.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000
+```
+
+It asks for a password and your name; choose a long password and write it down. Keep
+`bumpity-upload.jks` somewhere safe outside the project folder (a password manager or a USB
+stick), never in the repository.
+
+**Add four secrets** to the GitHub repository (Settings → Secrets and variables → Actions):
+- `ANDROID_KEYSTORE_B64`: the key file as text. In PowerShell:
+  `[Convert]::ToBase64String([IO.File]::ReadAllBytes("bumpity-upload.jks")) | Set-Clipboard`, then paste.
+- `ANDROID_KEYSTORE_PASSWORD`: the password you chose.
+- `ANDROID_KEY_ALIAS`: `upload`
+- `ANDROID_KEY_PASSWORD`: the same password (keytool uses one for both unless you chose otherwise).
+
+**Each release:** in the Actions tab, run **Android app** with **Google Play build** ticked and the
+version (for example `1.0.0`). The signed bundle is attached to the run as **bumpity-play**.
+Upload it in the Play Console (first to the closed test track; a new personal account needs a
+closed test with 12 testers for 14 days before it can publish). The version code is the run
+number, so every upload is higher than the last.
+

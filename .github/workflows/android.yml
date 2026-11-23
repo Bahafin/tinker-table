@@ -1,6 +1,8 @@
 # Builds the Android app (a debug test build) on every push to main that touches the game,
 # and on demand. The APK is attached to the run as "bumpity-android": download it from the
 # run's page and install it on an Android tablet or phone to try it (see docs/app.md).
+# Run by hand with "Google Play build" ticked, it also makes the signed .aab to upload to the
+# Play Console ("bumpity-play"), using the upload key in the repository's secrets.
 name: Android app
 
 on:
@@ -8,6 +10,15 @@ on:
     branches: [main]
     paths: ['src/**', 'public/**', 'index.html', 'android/**', 'capacitor.config.ts', 'package*.json', '.github/workflows/android.yml']
   workflow_dispatch:
+    inputs:
+      play:
+        description: 'Google Play build (signed .aab)'
+        type: boolean
+        default: false
+      version:
+        description: 'Version name shown in the store, for example 1.0.0'
+        type: string
+        default: '1.0.0'
 
 permissions:
   contents: read
@@ -40,6 +51,32 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
+      # The store build: signed with the upload key (secrets), version code = this run's number.
+      - name: Build the Google Play bundle
+        if: ${{ inputs.play }}
+        working-directory: android
+        env:
+          ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          VERSION_CODE: ${{ github.run_number }}
+          VERSION_NAME: ${{ inputs.version }}
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_B64" ]; then
+            echo "::error::The upload key secrets are missing. See docs/app.md, 'Google Play release build'."
+            exit 1
+          fi
+          echo "$ANDROID_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          export ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/upload.jks"
+          ./gradlew bundleRelease --no-daemon
+          rm -f "$RUNNER_TEMP/upload.jks"
+      - uses: actions/upload-artifact@v4
+        if: ${{ inputs.play }}
+        with:
+          name: bumpity-play
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
       - uses: actions/upload-artifact@v4
         with:
           name: bumpity-android

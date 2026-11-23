@@ -155,7 +155,35 @@ With a real finger, before wrapping: the Music room, the toy box tabs and arrows
 4. **Own domain and links into the app.** Share links always point at the website (`https://<domain>/play#p=<code>`; old `#p=` links keep working), so anyone can play in a browser. Universal Links (iOS) and App Links (Android) open them in the app when it's installed; both need files at the domain's root, which a `github.io/tinker-table` address can't serve.
 5. **Store submission.** A test release through TestFlight and Google's internal testing for real play before going public.
 
+### The web taster
+- **Why:** once the app is for sale, all 100 levels can't stay free on the web, or few parents will pay for them. A free taster lets parents try before they buy, which a paid app can't do in the store. See [marketing-plan.md](marketing-plan.md).
+- **What the web keeps:**
+  - The **Workshop** (its ten levels), the **Toy box** with the Workshop's parts, and the **Puzzle maker**.
+  - The sticker book, the pencil, the film strip, hints, the PIN and the play timer: everything that shows how the game feels.
+  - **Shared puzzle links open in full,** whatever parts they use. A puzzle a child makes in the app and sends to a grandparent must always work on the web.
+- **Kid UX:**
+  - After the Workshop the row of rooms simply ends at the Toy box and Puzzle maker. No locked rooms, no padlocks, nothing to want or ask for. The child never sees a sales message.
+  - Finishing the Workshop gets the usual celebration and stickers, nothing more.
+- **Grown-ups:**
+  - The grown-ups' corner gets a "The whole game" section: what the app adds (nine more rooms, every room's parts in the toy box, offline play as an app), the "pay once, nothing else" line, and the store badges.
+  - A shared puzzle opened on the web shows a small "Made in Bumpity" note for grown-ups, behind the PIN like every other link out.
+- **How it's built:**
+  - One codebase, two builds: `npm run build` makes the full game (for Capacitor), and a taster build (a Vite mode or env flag) makes the web version.
+  - The taster build leaves the other rooms' level files **out of the bundle**, not just hidden, so they can't be found in the page.
+  - A test checks the taster bundle has only the Workshop levels, and that a shared link using parts from every room still loads and plays.
+  - The deploy workflow builds the taster for GitHub Pages.
+- **Open question: the repository is public.** Anyone can clone it and build the full game for free. Nothing has to change until pre-orders open. Then pick one:
+  1. **Private code, public taster repo (favourite):** the code repository goes private, and its deploy workflow pushes only the built taster to a second, public repository whose GitHub Pages serves the web version. Free, and it stays on GitHub.
+  2. GitHub Pro (about $4 a month), which allows Pages from a private repository. The site itself is still public.
+  3. Cloudflare Pages or Netlify, free with a private repository, with a test address for every branch.
+  4. Keeping the code open and accepting it. The store copy is still the easy, supported way to get the game.
+  - On the free plan, making the repository private turns its Pages site off, so set up the new home first.
+  - Testing on the iPad doesn't need GitHub Pages: `npm run dev` already listens on the network, so an iPad on the same Wi-Fi can open the dev server's address. Once the app wrapper exists, TestFlight takes over.
+- **When:** switch the web over on the day pre-orders open, with the store page ready to link to. Never before there's a way to get the full game.
+- **Existing web players** lose the later rooms when it switches. Their Workshop progress, stickers and kept machines stay. A note in the grown-ups' corner says what changed and why.
+
 ### Paperwork
+- The full launch to-do list, yours and mine: [launch-checklist.md](launch-checklist.md).
 - Privacy page, logo letters as outlines, and store screenshots: done. See [release-prep.md](release-prep.md).
 - Name: renamed from Tinker Table to Bumpity (20 November 2026). First searches are clean; a lawyer's clearance and a class 9 filing are still to do. See [release-prep.md](release-prep.md).
 - A support email for the privacy page and the store listings.
