@@ -36,8 +36,8 @@ $4.99 at launch then $5.99, pre-orders in January 2027, launch around February 2
 - [x] Google Play feature graphic: 1024×500.
 - [x] Store listing text for both stores: name, subtitle, short and long descriptions, keywords, age rating and privacy answers ([store-listing.md](store-listing.md)).
 - [x] Android release build workflow (signed `.aab`), waiting only for your key.
-- [ ] Retake all store screenshots with the ten rooms, and add the iPhone sizes Apple needs (6.9-inch, 2868×1320, landscape), since the app runs on iPhones.
-- [ ] **Play timer** (the last safety item in Milestone 7): the room winds down to sleep after 15, 20 or 30 minutes, and only the PIN wakes it. It's a big part of the "calm by design" promise, so it should be in version 1.0.
+- [x] Retake all store screenshots with the ten rooms, and add the iPhone size Apple needs (6.9-inch, 2868×1320, landscape), since the app runs on iPhones.
+- [x] **Play timer** (the last safety item in Milestone 7): the room winds down to sleep after 15, 20 or 30 minutes, and only the PIN wakes it. It's a big part of the "calm by design" promise, so it should be in version 1.0.
 - [ ] **Web taster build** (Workshop, toy box and puzzle maker only), ready but switched off until pre-orders open.
 - [ ] A "The whole game" section and store badges in the grown-ups' corner, behind the PIN. Shown only once the store pages exist.
 

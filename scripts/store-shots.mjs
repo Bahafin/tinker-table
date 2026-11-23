@@ -11,14 +11,18 @@ const URL = process.env.URL ?? 'http://localhost:4173/';
 const channel = process.env.BROWSER ?? (process.platform === 'win32' ? 'msedge' : 'chrome');
 const only = process.argv[2];
 
-// iPad 12.9"/13" (App Store) and a 16:9 landscape that Google Play takes for phones and tablets.
+// iPad 12.9"/13" (App Store), iPhone 6.9" held sideways (App Store, since the app runs on
+// iPhones too), and a 16:9 landscape that Google Play takes for phones and tablets.
+// SIZE=iphone-2868x1320 takes only one size.
 const SIZES = [
   { name: 'ipad-2732x2048', width: 1366, height: 1024, scale: 2 },
+  { name: 'iphone-2868x1320', width: 956, height: 440, scale: 3 },
   { name: 'play-2560x1440', width: 1280, height: 720, scale: 2 },
-];
+].filter((s) => !process.env.SIZE || s.name === process.env.SIZE);
 
-// Progress for the screenshots: Workshop and Playroom finished, half the Attic.
+// Progress for the screenshots: Workshop, Playroom and Bathroom finished, half the Attic.
 const DONE = [
+  '61-soap-squirt', '62-soap-push', '63-soap-turn', '64-soap-slide', '65-soap-fan', '66-soap-hamster', '67-soap-roll', '68-soap-two', '69-soap-lift', '70-bath-blow',
   '06-hamster', '34-hammer', '01-roll', '46-belt-hammer', '10-boing', '13-wind', '16-pusher', '36-hammer-dominoes', '03-seesaw', '35-hammer-face',
   '31-car-push', '11-pop', '08-wake-up', '05-chain', '20-goes-up', '12-uphill', '49-car-jump', '17-safe-balloon', '32-car-ride', '33-car-catapult',
   '43-snip', '04-balloon', '02-dominoes', '44-swing-snip', '22-catapult',
@@ -70,9 +74,9 @@ const SHOTS = {
     await page.click('#btn-go');
     await wait(Number(process.env.AT ?? 2600));
   },
-  // 3. Building: parts in the tray, one still to place, in the Kitchen.
+  // 3. Building: the rocket's grand launch in Space, one part still to place.
   build: async (page) => {
-    await openLevel(page, 'Kitchen', 9);
+    await openLevel(page, 'Space', 10);
     await placeSolution(page, 1);
   },
   // 4. A win, with the film strip of the run.

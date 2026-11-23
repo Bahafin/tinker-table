@@ -128,9 +128,10 @@ Safety first, then the wrapper, then the paperwork. The order inside each part i
   - It guards the grown-ups' corner, and is asked again before clearing progress or changing the PIN. The play timer below will use the same pad.
   - The number pad shows digits (it's for grown-ups), rests after 3 wrong tries, and a forgotten PIN can be reset with a sum in words a young child can't do yet.
 - **A tidier grown-ups' corner: done.** The one long page became five short sections (Safety, Play together, Talk cards by room, Made here, Settings), with talk cards closed to one line until tapped, and printing by room.
-- **Play timer that winds down (second):**
-  - The parent picks 15, 20 or 30 minutes, or no limit.
-  - No countdown is shown. When time is up, the hamster yawns, the machine finishes its run, the room "goes to sleep" with a lullaby, and only the PIN wakes it.
+- **Play timer that winds down (second): done.**
+  - The parent picks 15, 20 or 30 minutes, or no limit, in the corner's Safety section.
+  - No countdown is shown. When time is up, a yawn plays, the machine finishes its run, and the game "goes to sleep" (a night sky, a sleeping hamster ball and a lullaby). Only a grown-up wakes it: the PIN, or the press-and-hold without one.
+  - Play time counts only while the game is on screen and the corner is closed. It survives a reload (so closing the app doesn't reset it), and starts again from zero after an hour away. A sleeping game stays asleep until a grown-up wakes it.
 - **Staying inside the game (third):**
   - An app can't stop the home swipe on an iPad. The real lock is the device's own: **Guided Access** on iPad (triple-click the side button; leaving needs the parent's passcode) and **screen pinning** on Android.
   - Done: a first-launch card for parents, "Before you hand it over", and step-by-step pictures for both in the corner's Safety section.

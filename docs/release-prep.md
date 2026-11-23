@@ -40,9 +40,10 @@ This is a search, not legal clearance. Before paying for the store accounts:
 node scripts/make-logo.mjs
 ```
 
-## 4. Screenshots: done for iPad and Google Play
+## 4. Screenshots: done for iPad, iPhone and Google Play
 - Seven pictures in each size, in [store/screenshots](../store/screenshots): the rooms, a machine running, building, a win with the film strip, the sticker book, the toy box, and the grown-ups' corner.
   - `ipad-2732x2048`: the App Store's 13-inch iPad size, landscape.
+  - `iphone-2868x1320`: the App Store's 6.9-inch iPhone size, landscape (the phone layout).
   - `play-2560x1440`: 16:9 landscape, which Google Play takes for phones and for 7- and 10-inch tablets.
 - The level and room pictures are now drawn at the screen's pixel density, so they're sharp on the iPad itself as well as in the screenshots.
 - To take them again (for example after the art pass), build the game and serve it with `npm run preview`, then run the script below. It uses the installed Edge or Chrome:
@@ -51,5 +52,4 @@ node scripts/make-logo.mjs
 node scripts/store-shots.mjs
 ```
 
-- **Not made:** iPhone screenshots. The game is designed for the iPad. If the store app also runs on iPhones, Apple needs a 6.9-inch iPhone set as well (2868×1320 landscape), and the game should get a playtest on a phone screen first.
-- The stores also want an app icon at 1024×1024 with no transparency, and Google wants a 1024×500 feature graphic. Neither exists yet.
+- The store icons (1024×1024 for Apple, 512×512 for Google) and Google's 1024×500 feature graphic are in [store](../store), made by `node scripts/store-graphics.mjs`.

@@ -14,6 +14,7 @@ import { ScreenLock } from './app-lock';
 import { BOOK_KEY, looseStickers, renderBook } from './ui/book';
 import { Pin } from './ui/pin';
 import { askPin, newPin } from './ui/pinpad';
+import { LIMITS, PlayTimer } from './ui/timer';
 import { guessPlatform, lockGuideHtml, wireLockGuide } from './parents/lock';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -553,6 +554,7 @@ function buildGrownups() {
     <section class="gu-sec" data-sec="safety">
       <h3>Safety</h3>
       <div id="gu-pin" class="gu-card"></div>
+      <div id="gu-timer" class="gu-card"></div>
       <div class="gu-card" id="gu-lock">
         <h4>Keep your child inside the game</h4>
         <p>No app can stop a child swiping out to the home screen. The tablet itself can: lock it to Bumpity before you hand it over, and only your passcode unlocks it.</p>
@@ -689,6 +691,7 @@ async function openGrownups(sec?: GuSec) {
 function showGrownups(sec?: GuSec) {
   if (!guBuilt) buildGrownups();
   renderSafety();
+  renderTimer();
   renderMade();
   $('map').classList.add('hidden');
   $('grownups').classList.remove('hidden');
@@ -706,11 +709,24 @@ function renderSafety() {
        <p>Right now this corner opens with a press-and-hold on the grown-ups' button, which a child can learn. A 4-digit PIN they don't know keeps them out of here.</p>
        <div class="acts"><button class="text-btn primary" id="pin-set">Set a PIN</button></div>`;
   box.insertAdjacentHTML('beforeend', '<p class="small">The PIN keeps a young child out of the grown-ups\' corner. It isn\'t a lock against grown-ups: it is kept only on this device, and clearing the browser\'s data removes it.</p>');
-  const done = () => { renderSafety(); syncGuButton(); };
+  const done = () => { renderSafety(); renderTimer(); syncGuButton(); };
   const on = (id: string, fn: () => Promise<unknown>) => { const b = document.getElementById(id); if (b) b.onclick = () => fn().then(done); };
   on('pin-set', () => newPin(pin));
   on('pin-change', async () => { if (await askPin(pin, 'Type the PIN you have now')) await newPin(pin, 'Choose a new PIN'); });
   on('pin-off', async () => { if (await askPin(pin, 'Turn the PIN off?')) pin.clear(); });
+}
+
+/** The play timer card in Safety: pick a limit. */
+function renderTimer() {
+  const box = $('gu-timer');
+  const names: Record<number, string> = { 0: 'No limit', 15: '15 minutes', 20: '20 minutes', 30: '30 minutes' };
+  box.innerHTML = `<h4>Play timer <span class="tag${timer.limit ? ' on' : ''}">${timer.limit ? names[timer.limit] : 'Off'}</span></h4>
+    <p>When the time is up, the hamster yawns, the machine finishes its run, and Bumpity goes to sleep with a lullaby. There's no countdown on screen to worry about. Only a grown-up can wake it, from the button in the corner of the sleeping screen.</p>
+    <div class="acts">${LIMITS.map((m) => `<button class="text-btn${m === timer.limit ? ' primary' : ''}" data-limit="${m}">${names[m]}</button>`).join('')}</div>
+    <p class="small">Play time counts only while Bumpity is on the screen. After an hour away it starts again from zero.${pin.isSet ? '' : ' <b>Set a PIN too:</b> without one, the sleeping screen wakes with a press-and-hold, which a child can learn.'}</p>`;
+  box.querySelectorAll<HTMLButtonElement>('[data-limit]').forEach((b) => {
+    b.onclick = () => { timer.setLimit(Number(b.dataset.limit)); renderTimer(); };
+  });
 }
 
 /** The grown-ups' button says "press & hold" only while there's no PIN. */
@@ -1094,6 +1110,59 @@ function startLevel(i: number, custom?: Level, start: Placement[] = []) {
 // ---------- wiring ----------
 document.addEventListener('pointerdown', unlockAudio, { capture: true });
 wireHold($('btn-grownups'), () => { void openGrownups(); }, () => pin.isSet);
+
+// ---------- play timer ----------
+const timer = new PlayTimer();
+const NIGHT = `<svg viewBox="0 0 320 200" aria-hidden="true">
+  <path d="M232 34a38 38 0 1 0 30 62a32 32 0 1 1-30-62z" class="moon"/>
+  ${[[40, 30], [90, 60], [150, 24], [290, 40], [60, 110], [300, 130], [190, 70]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3" class="twinkle"/>`).join('')}
+  <ellipse cx="160" cy="176" rx="120" ry="14" class="bed"/>
+  <circle cx="160" cy="148" r="30" class="ball"/>
+  <path d="M146 150q5 4 10 0M164 150q5 4 10 0" class="eye"/>
+  <text x="196" y="118" class="z1">z</text><text x="212" y="98" class="z2">z</text><text x="230" y="76" class="z3">Z</text>
+</svg>`;
+function buildSleep(): HTMLElement {
+  const el = document.createElement('section');
+  el.id = 'sleep';
+  el.className = 'hidden';
+  el.setAttribute('aria-label', 'Bumpity is asleep');
+  el.innerHTML = `${NIGHT}<button id="btn-wake" class="grownups-btn" aria-label="For grown-ups: wake Bumpity">
+    <span class="ring"></span>
+    <svg viewBox="0 0 48 48"><circle cx="17" cy="13" r="5" /><path d="M8 40V28a9 9 0 0 1 18 0v12" /><circle cx="34" cy="22" r="3.5" /><path d="M28 40v-7a6 6 0 0 1 12 0v7" /></svg>
+    <small>Grown-ups</small></button>`;
+  document.body.append(el);
+  wireHold(el.querySelector<HTMLElement>('#btn-wake')!, async () => {
+    if (!(await askPin(pin, 'Wake Bumpity?'))) return;
+    timer.wake();
+    el.classList.add('hidden');
+    showMap();
+  }, () => pin.isSet);
+  return el;
+}
+let sleepEl: HTMLElement | null = null;
+let yawned = false;
+function goToSleep(quiet = false) {
+  timer.sleep();
+  sleepEl ??= buildSleep();
+  sleepEl.classList.remove('hidden');
+  game?.destroy();
+  game = null;
+  stopSpeaking();
+  if (!quiet) { sfx.lullaby(); speak('Bumpity is sleepy. Time for a rest. Night night!'); }
+}
+function timerTick() {
+  const onScreen = document.visibilityState === 'visible' && $('grownups').classList.contains('hidden') && !timer.asleep;
+  if (onScreen) timer.tick(1);
+  if (!timer.timeUp || timer.asleep) return;
+  // Time is up: a yawn first, then sleep as soon as no machine is running.
+  if (!yawned) { yawned = true; sfx.yawn(); }
+  if (game?.mode === 'run') return;
+  yawned = false;
+  goToSleep();
+}
+setInterval(timerTick, 1000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') timer.welcomeBack(); });
+if (timer.asleep) goToSleep(true);
 syncGuButton();
 $('btn-gu-close').onclick = hideGrownups;
 $('btn-book').onclick = showBook;

@@ -138,6 +138,13 @@ export const sfx = {
   puff: () => { noise(0.18, 0.3, 'lowpass', 380); tone(110, 0.12, 'sine', 0.12, 0, 70); },
   /** A rocket taking off: a rising roar and a whistle. */
   blast: () => { noise(0.9, 0.35, 'bandpass', 700, 0.8); tone(300, 0.7, 'triangle', 0.08, 0, 1200); },
+  /** The hamster yawning: a slow slide down. */
+  yawn: () => { tone(520, 0.9, 'sine', 0.14, 0, 260); tone(780, 0.6, 'sine', 0.04, 0.1, 390); },
+  /** A short, slow lullaby on the xylophone's notes, for going to sleep. */
+  lullaby: () => {
+    const notes: [number, number][] = [[784, 0], [659, 0.6], [784, 1.2], [659, 1.8], [587, 2.4], [523, 3.3], [587, 3.9], [523, 4.5]];
+    for (const [f, at] of notes) { tone(f, 1.1, 'sine', 0.16, at); tone(f * 2, 0.3, 'sine', 0.03, at); }
+  },
   hmm: () => { tone(330, 0.25, 'sine', 0.18); tone(262, 0.35, 'sine', 0.18, 0.22); },
   /** A musical part: a wooden xylophone note, the bell, or the drum. */
   note: (n: Note) => {

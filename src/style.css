@@ -899,3 +899,31 @@ svg .fill { fill: currentColor; stroke: none; }
 .clear:disabled { opacity: 0.4; }
 .clear.sure { background: #f6c9bf; animation: nudge 0.3s ease-in-out 2; }
 .clear.sure .bin { fill: var(--stop); }
+
+/* ---------- play timer: the sleeping screen ---------- */
+#sleep {
+  position: fixed; inset: 0; z-index: 55;
+  display: grid; place-items: center;
+  background: radial-gradient(ellipse at 50% 30%, #3d4a73, #1f2747 70%);
+  padding: 24px;
+}
+#sleep.hidden { display: none; }
+#sleep > svg { width: min(90vw, 140dvh); height: auto; }
+#sleep .moon { fill: #f6d65b; stroke: none; }
+#sleep .moon, #sleep .twinkle, #sleep .bed, #sleep text { stroke: none; }
+#sleep .twinkle { fill: #fbf6ea; animation: twinkle 3s ease-in-out infinite; }
+#sleep .twinkle:nth-of-type(2n) { animation-delay: 1.4s; }
+#sleep .bed { fill: #6a72c9; opacity: 0.6; }
+#sleep .ball { fill: rgba(207, 232, 246, 0.35); stroke: #cfe8f6; stroke-width: 3; }
+#sleep .eye { fill: none; stroke: #fbf6ea; stroke-width: 3; stroke-linecap: round; }
+#sleep text { fill: #cfe8f6; font: 700 22px Nunito, sans-serif; animation: drift 3s ease-in-out infinite; }
+#sleep .z2 { animation-delay: 0.6s; font-size: 26px; }
+#sleep .z3 { animation-delay: 1.2s; font-size: 32px; }
+#sleep #btn-wake {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 12px); right: calc(env(safe-area-inset-right) + 12px);
+  opacity: 0.85;
+}
+@keyframes twinkle { 50% { opacity: 0.3; } }
+@keyframes drift { 50% { transform: translateY(-6px); opacity: 0.6; } }
+
