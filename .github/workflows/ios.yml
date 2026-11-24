@@ -93,16 +93,41 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npx cap sync ios
+      # Signing without a Mac or a registered device: a distribution certificate and an App Store
+      # profile made through the API for this run only, then removed (scripts/apple-signing.mjs).
+      - name: Make a signing certificate and profile
+        run: |
+          S="$RUNNER_TEMP/sign"; mkdir -p "$S"
+          /usr/bin/openssl req -new -newkey rsa:2048 -nodes -keyout "$S/key.pem" -subj "/CN=Bumpity CI" -out "$S/csr.pem" 2>/dev/null
+          node scripts/apple-signing.mjs setup "$S/csr.pem" "$S" >> "$GITHUB_ENV"
+          /usr/bin/openssl x509 -inform DER -in "$S/dist.cer" -out "$S/dist.pem"
+          /usr/bin/openssl pkcs12 -export -inkey "$S/key.pem" -in "$S/dist.pem" -out "$S/dist.p12" -passout pass:ci
+          KC="$RUNNER_TEMP/sign.keychain-db"
+          security create-keychain -p ci "$KC"
+          security set-keychain-settings -lut 3600 "$KC"
+          security unlock-keychain -p ci "$KC"
+          curl -fsSL https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer -o "$S/wwdr.cer"
+          security import "$S/wwdr.cer" -k "$KC" -A || true
+          security import "$S/dist.p12" -k "$KC" -P ci -A -t cert -f pkcs12
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k ci "$KC" >/dev/null
+          security list-keychains -d user -s "$KC" $(security list-keychains -d user | tr -d '"')
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$S/app.mobileprovision" "$HOME/Library/MobileDevice/Provisioning Profiles/"
+          mkdir -p "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
+          cp "$S/app.mobileprovision" "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles/"
+          rm -f "$S/key.pem" "$S/dist.p12"
+          security find-identity -v -p codesigning "$KC"
       - name: Archive, sign and upload to App Store Connect
         run: |
-          KEY="$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8"
-          printf '%s' "$ASC_KEY_P8" > "$KEY"
-          AUTH=(-allowProvisioningUpdates -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID")
+          # Manual signing for the app target only (the Swift packages sign nothing).
+          sed -i '' \
+            -e 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual; CODE_SIGN_IDENTITY = "Apple Distribution"; PROVISIONING_PROFILE_SPECIFIER = "'"$APPLE_PROFILE_NAME"'"; DEVELOPMENT_TEAM = '"$TEAM_ID"';/' \
+            ios/App/App.xcodeproj/project.pbxproj
           xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release \
             -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/App.xcarchive" \
-            DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic \
             CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
-            "${AUTH[@]}" archive | tail -n 30
+            archive | tail -n 30
+          test -d "$RUNNER_TEMP/App.xcarchive"
           cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -110,11 +135,21 @@ jobs:
             <key>method</key><string>app-store-connect</string>
             <key>destination</key><string>upload</string>
             <key>teamID</key><string>$TEAM_ID</string>
-            <key>signingStyle</key><string>automatic</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>signingCertificate</key><string>Apple Distribution</string>
+            <key>provisioningProfiles</key><dict><key>app.bumpity.game</key><string>$APPLE_PROFILE_NAME</string></dict>
             <key>manageAppVersionAndBuildNumber</key><false/>
           </dict></plist>
           EOF
+          KEYDIR="$HOME/.appstoreconnect/private_keys"; mkdir -p "$KEYDIR"
+          KEY="$KEYDIR/AuthKey_$ASC_KEY_ID.p8"
+          printf '%s' "$ASC_KEY_P8" > "$KEY"
           xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/App.xcarchive" \
             -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" -exportPath "$RUNNER_TEMP/export" \
-            "${AUTH[@]}"
+            -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID"
           rm -f "$KEY"
+      - name: Remove the signing certificate and profile
+        if: always()
+        run: |
+          [ -n "$APPLE_CERT_ID" ] && node scripts/apple-signing.mjs cleanup "$APPLE_CERT_ID" "$APPLE_PROFILE_ID" || true
+          security delete-keychain "$RUNNER_TEMP/sign.keychain-db" 2>/dev/null || true
