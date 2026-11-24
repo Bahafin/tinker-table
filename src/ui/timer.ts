@@ -1,6 +1,6 @@
 // The play timer. A grown-up picks a limit (15, 20 or 30 minutes, or none). Play time counts
 // only while the game is on screen and the grown-ups' corner is closed. When it runs out the
-// game goes to sleep, and only a grown-up (the PIN, or the press-and-hold without one) wakes it.
+// game goes to sleep, and only a grown-up (the PIN, or a sum in words without one) wakes it.
 // No countdown is ever shown to the child. Kept on this device, like everything else.
 
 export const TIMER_KEY = 'tinker.timer';

@@ -5,7 +5,7 @@ The four jobs the roadmap lists before release, and where each one stands.
 ## 1. Privacy policy page: done
 - [public/privacy.html](../public/privacy.html), live at `https://bumpity.app/privacy.html` (and at `https://bahafin.github.io/tinker-table/privacy.html` until the domain is switched on). Use that address as the privacy policy URL in App Store Connect and the Play Console.
 - It says what the game really does: it collects nothing, keeps progress, stickers, kept machines and made puzzles only on the device, uses the device's own voice, and puts only the puzzle into a shared link.
-- The grown-ups' corner links to it (behind the grown-ups' PIN, or the press-and-hold until a PIN is set; Apple's Kids category asks for a parental gate on any link out of the game).
+- The grown-ups' corner links to it (behind the grown-ups' PIN, or a sum in words until a PIN is set; Apple's Kids category asks for a parental gate on any link out of the game).
 - **Still to decide:** the contact line points to GitHub issues. Parents may not have a GitHub account, and the stores ask for a support email anyway, so a dedicated address (not a personal one) would be better there.
 - **Store forms that follow from it:** Apple's privacy label is "Data Not Collected". Google's Data safety form is "No data collected, no data shared". For Google's Families policy, the target age group is 5–8.
 - If the Capacitor app ever adds anything (analytics, crash reports, purchases), the page and both forms have to change first.

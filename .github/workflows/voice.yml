@@ -1,0 +1,34 @@
+# Records the game's voice clips (scripts/make-voice.py) and hands them back as a download.
+# Run it after changing anything the game says: Actions > Voice clips > Run workflow. Then put the
+# download's files in the repository (see docs/app.md, "The voice").
+name: Voice clips
+on:
+  workflow_dispatch:
+    inputs:
+      voice:
+        description: Kokoro voice (af_heart, af_bella, bf_emma...)
+        default: af_heart
+      speed:
+        description: Speaking speed (1 is normal)
+        default: '0.92'
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: VOICE_LINES="$RUNNER_TEMP/lines.json" npm run voice:lines
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: sudo apt-get update -q && sudo apt-get install -yq espeak-ng ffmpeg
+      - run: pip install --extra-index-url https://download.pytorch.org/whl/cpu torch && pip install 'kokoro>=0.9' soundfile
+      - run: python scripts/make-voice.py "$RUNNER_TEMP/lines.json" --voice "${{ inputs.voice }}" --speed "${{ inputs.speed }}" --samples samples
+      - uses: actions/upload-artifact@v4
+        with:
+          name: voice-clips
+          path: |
+            public/voice
+            src/ui/voice-clips.json
+            samples

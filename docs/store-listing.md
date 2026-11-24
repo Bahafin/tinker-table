@@ -68,7 +68,7 @@ Graphics live in [store](../store): `icon-1024.png` (App Store), `play-icon-512.
 **Export compliance:** no encryption beyond the system's (already set in the app: `ITSAppUsesNonExemptEncryption = false`).
 
 **Review notes** (for Apple's reviewer):
-> The grown-ups' corner opens with a press-and-hold on the top-right button (or a 4-digit PIN, if one is set on first launch). All links out of the app (privacy page, store links) are behind it. The game needs no account and makes no network requests except when a grown-up shares a puzzle link.
+> The grown-ups' corner (the top-right button on the map) is behind a parental gate: a multiplication asked in words, such as "What is seven times eight?", answered on a number pad, with a new sum after each wrong answer. If a parent sets a 4-digit PIN (offered on first launch), the PIN is asked instead. All links out of the app (privacy page, store links) are behind it. The game needs no account and makes no network requests except when a grown-up shares a puzzle link.
 
 ## Google Play
 **Short description** (80):

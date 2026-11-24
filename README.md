@@ -10,7 +10,7 @@ On the iPad, open it in Safari, tap Share, then **Add to Home Screen**. Open it 
 
 ### For grown-ups
 
-Press and hold the small grown-ups button in the top corner of the level map. It opens a guide on what the game practises, how to play together, and a talk card for each level with questions to ask. You can print the guide or save it as a PDF.
+Tap the small grown-ups button in the top corner of the level map and answer the sum (or type your PIN, once you've set one). It opens a guide on what the game practises, how to play together, and a talk card for each level with questions to ask. You can print the guide or save it as a PDF.
 
 ### A nicer voice
 

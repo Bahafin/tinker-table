@@ -6,6 +6,7 @@ import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow, setSkin } fro
 import { Game, drawIcon, type TraySet } from './ui/game';
 import { ALL_PARTS, TOY_PARTS } from './sim/parts';
 import { sfx, speak, stopSpeaking, unlockAudio } from './ui/audio';
+import { EXTRA_STOPS, SLEEPY_VOICE } from './ui/voice-lines';
 import { INTRO, MADE_TALK, MAKER_HOW, ROUTINE, SKILLS, TALK, TIPS, TOYS_HOW } from './parents/content';
 import { decodeLevel, decodeToy, encodeLevel, encodeToy, MADE_VOICE, SHARED_VOICE } from './levels/share';
 import { Share } from '@capacitor/share';
@@ -13,7 +14,7 @@ import { gameAddress, NATIVE, PLATFORM } from './platform';
 import { ScreenLock } from './app-lock';
 import { BOOK_KEY, looseStickers, renderBook } from './ui/book';
 import { Pin } from './ui/pin';
-import { askPin, newPin } from './ui/pinpad';
+import { askGrownup, askPin, newPin } from './ui/pinpad';
 import { LIMITS, PlayTimer } from './ui/timer';
 import { guessPlatform, lockGuideHtml, wireLockGuide } from './parents/lock';
 
@@ -263,9 +264,9 @@ function showRooms(box: HTMLElement) {
     t.append(dots);
     if (LEVELS.slice(room.first, room.first + room.count).every((l) => done.has(l.id))) t.insertAdjacentHTML('beforeend', STICKER);
   }
-  const toy = addStop('toybox', 'Toy box', PAPER.teal, '#eef7f3', '#f4faf7', thumb(TOY_BOX, true), TOY_ICON);
+  const toy = addStop('toybox', EXTRA_STOPS[0], PAPER.teal, '#eef7f3', '#f4faf7', thumb(TOY_BOX, true), TOY_ICON);
   if (loadToys().length) toy.insertAdjacentHTML('beforeend', SAVED_BADGE);
-  const maker = addStop('maker', 'Puzzle maker', MAKER_ACCENT, MAKER_PAPER, '#fdf8ec', makerScene(), MAKER_ICON);
+  const maker = addStop('maker', EXTRA_STOPS[1], MAKER_ACCENT, MAKER_PAPER, '#fdf8ec', makerScene(), MAKER_ICON);
   if (loadMine().length) maker.insertAdjacentHTML('beforeend', MADE_BADGE);
 
   const prev = document.createElement('button');
@@ -477,7 +478,7 @@ const MADE_BADGE = `<svg class="made-badge" viewBox="0 0 48 48"><circle cx="24" 
 // ---------- grown-ups' corner ----------
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
-// The PIN guards the corner; until one is set, the press-and-hold does.
+// The PIN guards the corner; until one is set, a sum in words does (askGrownup).
 const pin = new Pin();
 type GuSec = 'safety' | 'play' | 'talk' | 'made' | 'settings';
 const GU_SECS: GuSec[] = ['safety', 'play', 'talk', 'made', 'settings'];
@@ -683,9 +684,9 @@ function printTalk(scope: 'room' | 'all') {
   window.print();
 }
 
-/** Open the corner: through the PIN if there is one. */
+/** Open the corner: through the parental gate (the PIN, or a sum in words without one). */
 async function openGrownups(sec?: GuSec) {
-  if (!(await askPin(pin))) return;
+  if (!(await askGrownup(pin))) return;
   showGrownups(sec);
 }
 function showGrownups(sec?: GuSec) {
@@ -706,7 +707,7 @@ function renderSafety() {
        <p>The PIN is asked before this corner opens, and again before clearing progress or changing the PIN.</p>
        <div class="acts"><button class="text-btn" id="pin-change">Change the PIN</button><button class="text-btn" id="pin-off">Turn the PIN off</button></div>`
     : `<h4>Grown-ups' PIN <span class="tag">Off</span></h4>
-       <p>Right now this corner opens with a press-and-hold on the grown-ups' button, which a child can learn. A 4-digit PIN they don't know keeps them out of here.</p>
+       <p>Right now this corner opens with a sum in words (like "seven times eight"), which a young child can't read or work out. A 4-digit PIN is quicker for you, and keeps out an older brother or sister too.</p>
        <div class="acts"><button class="text-btn primary" id="pin-set">Set a PIN</button></div>`;
   box.insertAdjacentHTML('beforeend', '<p class="small">The PIN keeps a young child out of the grown-ups\' corner. It isn\'t a lock against grown-ups: it is kept only on this device, and clearing the browser\'s data removes it.</p>');
   const done = () => { renderSafety(); renderTimer(); syncGuButton(); };
@@ -723,18 +724,14 @@ function renderTimer() {
   box.innerHTML = `<h4>Play timer <span class="tag${timer.limit ? ' on' : ''}">${timer.limit ? names[timer.limit] : 'Off'}</span></h4>
     <p>When the time is up, the hamster yawns, the machine finishes its run, and Bumpity goes to sleep with a lullaby. There's no countdown on screen to worry about. Only a grown-up can wake it, from the button in the corner of the sleeping screen.</p>
     <div class="acts">${LIMITS.map((m) => `<button class="text-btn${m === timer.limit ? ' primary' : ''}" data-limit="${m}">${names[m]}</button>`).join('')}</div>
-    <p class="small">Play time counts only while Bumpity is on the screen. After an hour away it starts again from zero.${pin.isSet ? '' : ' <b>Set a PIN too:</b> without one, the sleeping screen wakes with a press-and-hold, which a child can learn.'}</p>`;
+    <p class="small">Play time counts only while Bumpity is on the screen. After an hour away it starts again from zero.${pin.isSet ? '' : ' Without a PIN, the sleeping screen wakes with the same sum in words as this corner.'}</p>`;
   box.querySelectorAll<HTMLButtonElement>('[data-limit]').forEach((b) => {
     b.onclick = () => { timer.setLimit(Number(b.dataset.limit)); renderTimer(); };
   });
 }
 
-/** The grown-ups' button says "press & hold" only while there's no PIN. */
-function syncGuButton() {
-  const b = $('btn-grownups');
-  b.querySelector('.how')!.classList.toggle('hidden', pin.isSet);
-  b.setAttribute('aria-label', pin.isSet ? 'For grown-ups' : 'For grown-ups: press and hold');
-}
+/** Kept as a hook for the corner's PIN settings; the button itself no longer changes. */
+function syncGuButton() { /* nothing to show */ }
 
 /** One row in Made here: a picture, a name and its buttons. */
 function madeRow(pic: HTMLCanvasElement, title: string, buttons: HTMLButtonElement[]): HTMLElement {
@@ -858,44 +855,6 @@ function hideBook() {
 function hideGrownups() {
   $('grownups').classList.add('hidden');
   showMap(); // redrawn: progress may have been cleared
-}
-
-/** Press and hold for HOLD_MS to open; a short tap just wiggles. When `instant` says so (a PIN is set), a tap opens. */
-function wireHold(btn: HTMLElement, onDone: () => void, instant: () => boolean = () => false) {
-  const HOLD_MS = 1500;
-  let start = 0, raf = 0, timer = 0;
-  const clear = () => {
-    cancelAnimationFrame(raf);
-    clearTimeout(timer);
-    start = 0;
-    btn.style.setProperty('--p', '0');
-  };
-  const stop = () => {
-    if (start && performance.now() - start < HOLD_MS) {
-      btn.classList.remove('nudge'); void btn.offsetWidth; btn.classList.add('nudge');
-    }
-    clear();
-  };
-  // The ring only shows progress; the timer decides, so it works even when frames are throttled.
-  const tick = () => {
-    btn.style.setProperty('--p', String(Math.min(1, (performance.now() - start) / HOLD_MS)));
-    raf = requestAnimationFrame(tick);
-  };
-  btn.addEventListener('click', () => { if (instant()) onDone(); });
-  btn.addEventListener('pointerdown', (e) => {
-    if (instant()) return;
-    e.preventDefault();
-    try { btn.setPointerCapture(e.pointerId); } catch { /* fine without it */ }
-    clear();
-    start = performance.now();
-    raf = requestAnimationFrame(tick);
-    timer = window.setTimeout(() => { clear(); onDone(); }, HOLD_MS);
-  });
-  btn.addEventListener('pointerup', stop);
-  btn.addEventListener('pointercancel', stop);
-  btn.addEventListener('contextmenu', (e) => e.preventDefault());
-  // Keyboard users: Enter/Space opens it straight away.
-  btn.addEventListener('keydown', (e) => { if (!instant() && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onDone(); } });
 }
 
 // ---------- play ----------
@@ -1109,7 +1068,7 @@ function startLevel(i: number, custom?: Level, start: Placement[] = []) {
 
 // ---------- wiring ----------
 document.addEventListener('pointerdown', unlockAudio, { capture: true });
-wireHold($('btn-grownups'), () => { void openGrownups(); }, () => pin.isSet);
+$('btn-grownups').onclick = () => { void openGrownups(); };
 
 // ---------- play timer ----------
 const timer = new PlayTimer();
@@ -1127,16 +1086,15 @@ function buildSleep(): HTMLElement {
   el.className = 'hidden';
   el.setAttribute('aria-label', 'Bumpity is asleep');
   el.innerHTML = `${NIGHT}<button id="btn-wake" class="grownups-btn" aria-label="For grown-ups: wake Bumpity">
-    <span class="ring"></span>
     <svg viewBox="0 0 48 48"><circle cx="17" cy="13" r="5" /><path d="M8 40V28a9 9 0 0 1 18 0v12" /><circle cx="34" cy="22" r="3.5" /><path d="M28 40v-7a6 6 0 0 1 12 0v7" /></svg>
     <small>Grown-ups</small></button>`;
   document.body.append(el);
-  wireHold(el.querySelector<HTMLElement>('#btn-wake')!, async () => {
-    if (!(await askPin(pin, 'Wake Bumpity?'))) return;
+  el.querySelector<HTMLElement>('#btn-wake')!.onclick = async () => {
+    if (!(await askGrownup(pin, 'Wake Bumpity?'))) return;
     timer.wake();
     el.classList.add('hidden');
     showMap();
-  }, () => pin.isSet);
+  };
   return el;
 }
 let sleepEl: HTMLElement | null = null;
@@ -1148,7 +1106,7 @@ function goToSleep(quiet = false) {
   game?.destroy();
   game = null;
   stopSpeaking();
-  if (!quiet) { sfx.lullaby(); speak('Bumpity is sleepy. Time for a rest. Night night!'); }
+  if (!quiet) { sfx.lullaby(); speak(SLEEPY_VOICE); }
 }
 function timerTick() {
   const onScreen = document.visibilityState === 'visible' && $('grownups').classList.contains('hidden') && !timer.asleep;

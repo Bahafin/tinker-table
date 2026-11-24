@@ -34,3 +34,16 @@ describe('voice choice', () => {
     expect(scoreVoice(v('Florence'))).toBeGreaterThan(0);
   });
 });
+
+describe('recorded voice', () => {
+  it('every line the game says has a clip, and every clip is still used', async () => {
+    const { voiceLines } = await import('../src/ui/voice-lines');
+    const clips = (await import('../src/ui/voice-clips.json')).default as Record<string, string>;
+    const { existsSync } = await import('node:fs');
+    const lines = voiceLines();
+    // Missing clips: run Actions > Voice clips (docs/app.md, "The voice").
+    expect(lines.filter((l) => !clips[l])).toEqual([]);
+    expect(Object.keys(clips).filter((l) => !lines.includes(l))).toEqual([]);
+    expect(Object.values(clips).filter((f) => !existsSync(`public/voice/${f}`))).toEqual([]);
+  });
+});

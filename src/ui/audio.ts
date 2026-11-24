@@ -1,6 +1,7 @@
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import { PLATFORM } from '../platform';
 import type { Material, Note } from '../sim/types';
+import CLIPS from './voice-clips.json';
 
 let ac: AudioContext | null = null;
 let lastClack = 0;
@@ -203,13 +204,63 @@ try {
   pickVoice();
 } catch { /* no speech */ }
 
+// Every line the game says has a recorded clip (src/ui/voice-lines.ts, made by
+// scripts/make-voice.py), played through the same audio as the sounds. The device's own speech
+// is only the fallback, for a line without a clip or audio that isn't unlocked yet.
+const clipFiles = CLIPS as Record<string, string>;
+const clipCache = new Map<string, Promise<AudioBuffer | null>>();
+let saying: AudioBufferSourceNode | null = null;
+let sayId = 0;
+
+function loadClip(file: string): Promise<AudioBuffer | null> {
+  let p = clipCache.get(file);
+  if (!p) {
+    const ctx = ac!;
+    p = fetch(`voice/${file}`)
+      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
+      .then((b) => ctx.decodeAudioData(b))
+      .catch(() => { clipCache.delete(file); return null; });
+    clipCache.set(file, p);
+  }
+  return p;
+}
+
+/** Whether a line has a recorded clip. */
+export const hasClip = (text: string) => text in clipFiles;
+
 /** Stop the voice mid-sentence (leaving a level, say). */
 export function stopSpeaking() {
+  sayId++;
+  try { saying?.stop(); } catch { /* already stopped */ }
+  saying = null;
   if (PLATFORM === 'android') { TextToSpeech.stop().catch(() => {}); return; }
   try { window.speechSynthesis?.cancel(); } catch { /* none */ }
 }
 
 export function speak(text: string) {
+  stopSpeaking();
+  const file = clipFiles[text];
+  if (file && ac) {
+    const id = sayId;
+    const ctx = ac;
+    void loadClip(file).then((buf) => {
+      if (id !== sayId) return; // something else was said, or the level was left
+      if (!buf) { deviceSpeak(text); return; }
+      if (ctx.state === 'suspended') void ctx.resume();
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(ctx.destination);
+      src.onended = () => { if (saying === src) saying = null; };
+      saying = src;
+      src.start();
+    });
+    return;
+  }
+  deviceSpeak(text);
+}
+
+/** The device's own speech: the fallback when there's no clip. */
+function deviceSpeak(text: string) {
   // Android's in-app browser has no voices of its own, so the app uses the phone's speech engine.
   if (PLATFORM === 'android') {
     TextToSpeech.stop()

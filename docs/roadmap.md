@@ -124,13 +124,13 @@ Safety first, then the wrapper, then the paperwork. The order inside each part i
 ### Safety for a child alone with the tablet
 - **Why:** a child left alone with the tablet wanders off into other apps and places they shouldn't be. Keeping them safely inside the game fits its calm, no-pressure feel.
 - **Grown-ups' PIN (first): done.**
-  - A 4-digit PIN, offered on the first-launch card, replaces the press-and-hold gate (which stays only until a PIN is set).
+  - A 4-digit PIN, offered on the first-launch card, is the quickest way past the parental gate; without one the gate asks a sum in words ("seven times eight"). The first builds used a press-and-hold, which a child can learn, so it was replaced before review.
   - It guards the grown-ups' corner, and is asked again before clearing progress or changing the PIN. The play timer below will use the same pad.
   - The number pad shows digits (it's for grown-ups), rests after 3 wrong tries, and a forgotten PIN can be reset with a sum in words a young child can't do yet.
 - **A tidier grown-ups' corner: done.** The one long page became five short sections (Safety, Play together, Talk cards by room, Made here, Settings), with talk cards closed to one line until tapped, and printing by room.
 - **Play timer that winds down (second): done.**
   - The parent picks 15, 20 or 30 minutes, or no limit, in the corner's Safety section.
-  - No countdown is shown. When time is up, a yawn plays, the machine finishes its run, and the game "goes to sleep" (a night sky, a sleeping hamster ball and a lullaby). Only a grown-up wakes it: the PIN, or the press-and-hold without one.
+  - No countdown is shown. When time is up, a yawn plays, the machine finishes its run, and the game "goes to sleep" (a night sky, a sleeping hamster ball and a lullaby). Only a grown-up wakes it: the PIN, or the sum in words without one.
   - Play time counts only while the game is on screen and the corner is closed. It survives a reload (so closing the app doesn't reset it), and starts again from zero after an hour away. A sleeping game stays asleep until a grown-up wakes it.
 - **Staying inside the game (third):**
   - An app can't stop the home swipe on an iPad. The real lock is the device's own: **Guided Access** on iPad (triple-click the side button; leaving needs the parent's passcode) and **screen pinning** on Android.

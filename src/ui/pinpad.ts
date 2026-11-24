@@ -148,6 +148,24 @@ export async function askPin(pin: Pin, title = 'Grown-ups only'): Promise<boolea
   }
 }
 
+/**
+ * The parental gate in front of the grown-ups' corner and every link out of the game: the PIN
+ * when one is set, otherwise a sum in words that a 5 to 8 year old can't read or work out yet.
+ * Resolves true when it's passed, false if closed.
+ */
+export async function askGrownup(pin: Pin, title = 'Grown-ups only', rand: () => number = Math.random): Promise<boolean> {
+  if (pin.isSet) return askPin(pin, title);
+  let sum = grownUpSum(rand);
+  let error: string | undefined;
+  for (;;) {
+    const a = await step({ title, sub: `To go on, what is ${sum.words}?`, max: 3, error });
+    if (a === null || a === 'forgot') { close(); return false; }
+    if (Number(a) === sum.answer) { close(); return true; }
+    sum = grownUpSum(rand); // a new sum each time, so guessing doesn't pay
+    error = `Not quite. What is ${sum.words}?`;
+  }
+}
+
 /** Choose a new PIN: type it twice. Resolves true when it's set. */
 export async function newPin(pin: Pin, title = 'Choose a PIN'): Promise<boolean> {
   let error: string | undefined;
