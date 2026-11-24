@@ -62,6 +62,10 @@ Only you can do these, in your own Apple account:
    - `ASC_KEY_P8`: the whole text of the `.p8` file, including the BEGIN and END lines.
 6. Run the workflow with **Send to TestFlight** ticked. After it finishes, App Store Connect takes 10–30 minutes to process the build; then add yourself as a tester under TestFlight › Internal Testing, and install the **TestFlight** app on the iPad to get Bumpity.
 
+Signing needs no Mac and no registered device: each run makes an Apple Distribution certificate and an App Store profile through the API (`scripts/apple-signing.mjs`), turns on Associated Domains for the app ID if it's off, signs, uploads, and deletes both again. Builds already uploaded stay valid.
+
+The first upload went through on 24 November 2026.
+
 The build number is the workflow's run number, so every upload is newer than the last. The version shown in the store (1.0) is `MARKETING_VERSION` in the Xcode project.
 
 ## Google Play release build
@@ -94,7 +98,7 @@ closed test with 12 testers for 14 days before it can publish). The version code
 number, so every upload is higher than the last.
 
 ## The domain (bumpity.app)
-Registered at Cloudflare on 23 November 2026. GitHub Pages serves the site; Cloudflare only
+Registered at Cloudflare on 23 November 2026; live since 24 November 2026, with HTTPS enforced. GitHub Pages serves the site; Cloudflare only
 answers DNS (no proxy, so Cloudflare never sees the visits). The site is put together by
 `npm run build:site` (`scripts/build-site.mjs`) into `_site/`:
 - `/`: the home page for grown-ups (`site/index.html`). A link with `#p=` is passed on to the game.

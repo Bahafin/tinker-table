@@ -24,8 +24,8 @@ $4.99 at launch then $5.99, pre-orders in January 2027, launch around February 2
 - [ ] **Small Business Program:** apply in App Store Connect so Apple keeps 15%, not 30% (Google does this automatically).
 
 ## 2. Signing and test builds (you set up once, I wire the rest)
-- [ ] **You, Apple:** create the app in App Store Connect (bundle ID `app.bumpity.game`), the API key and the four GitHub secrets. Steps in [app.md](app.md).
-- [ ] **Claude:** run the "iOS app" workflow with "Send to TestFlight" ticked, and fix whatever the first real upload turns up.
+- [x] **You, Apple:** create the app in App Store Connect (bundle ID `app.bumpity.game`), the API key and the four GitHub secrets. Steps in [app.md](app.md).
+- [x] **Claude:** run the "iOS app" workflow with "Send to TestFlight" ticked, and fix whatever the first real upload turns up. (First build uploaded 24 November 2026; signing now goes through the API, no device needed.)
 - [ ] **You, Android:** make the upload key (one command, below) and add four GitHub secrets. Steps in [app.md](app.md), "Google Play release build".
 - [x] **Claude:** release workflow that builds a signed `.aab` for Google Play from those secrets, with a version number that rises on every build.
 - [ ] **You:** install the TestFlight build on the iPad and the Android test build on a phone or tablet. Play with your son, and tell me what feels off.
@@ -44,11 +44,11 @@ $4.99 at launch then $5.99, pre-orders in January 2027, launch around February 2
 
 ## 4. Once the domain exists (you register it, then I do the rest)
 - [x] **Claude:** the site rebuilt for the domain: home page at `/`, the game at `/play/`, share links as `https://bumpity.app/play/#p=…`, old `#p=` links passed on.
-- [ ] **Claude:** switch GitHub Pages to bumpity.app and turn on HTTPS, once your DNS records answer.
+- [x] **Claude:** switch GitHub Pages to bumpity.app and turn on HTTPS (live 24 November 2026; old addresses redirect).
 - [x] **Claude:** Universal Links (iOS) and App Links (Android), so shared puzzles open in the app when it's installed. The files go live by themselves once the `APPLE_TEAM_ID` secret and the `ANDROID_CERT_SHA256` variable exist.
 - [ ] **You:** after the Play Console app exists, copy its signing fingerprint into `ANDROID_CERT_SHA256` (steps in [app.md](app.md)).
 - [x] **Claude:** a simple home page at the domain: the promise, screenshots, safety, privacy and support. Later: the preview video and the store badges.
-- [ ] **You:** verify the domain with GitHub and add the DNS records in Cloudflare (exact lines in [app.md](app.md), "The domain").
+- [x] **You:** verify the domain with GitHub and add the DNS records in Cloudflare (exact lines in [app.md](app.md), "The domain").
 
 ## 5. Store pages (you click, I give you the words)
 - [ ] **You, App Store Connect:**
