@@ -153,3 +153,18 @@ MX and TXT records itself. Free.
   Variables. The next deploy writes assetlinks.json. The app's side is the intent filter in
   `android/app/src/main/AndroidManifest.xml`.
 - Then re-run the deploy (Actions › Deploy to GitHub Pages › Run workflow).
+
+## The voice
+Every line the game says is a recorded clip in `public/voice/` (about 120 short MP3s), listed
+in `src/ui/voice-clips.json`. The lines come from `src/ui/voice-lines.ts`. The clips are made
+with **Kokoro**, an open-source neural voice (Apache 2.0, so fine in a paid app; no account,
+no cost), and play through the game's own audio, so every phone, tablet and browser hears the
+same voice. The device's own speech is only a fallback for a line without a clip.
+
+**After changing anything the game says** (a level's `voice`, a room name), the test
+"every line the game says has a clip" fails. To make the clips:
+1. Push the change, then GitHub › Actions › **Voice clips** › Run workflow, on your branch.
+   The voice (`af_heart`) and speed (0.92) can be changed there.
+2. Download the run's **voice-clips** file and copy its `public/voice/` and
+   `src/ui/voice-clips.json` over the repository's. Only new or changed lines are recorded again.
+3. The download also has `samples/`: the first line in eight voices, to compare.
