@@ -2,7 +2,7 @@
 
 Written 22 November 2026. Who does what, in order. Tick items off here as they land.
 Pricing, timing and marketing are in [marketing-plan.md](marketing-plan.md): pay once,
-$4.99 at launch then $5.99, pre-orders in January 2027, launch around February 2027.
+US$2.99 / CA$3.99 in launch week, then US$3.99 / CA$4.99 (Canada set by hand), pre-orders in January 2027, launch around February 2027.
 
 **You** = things only you can do: accounts, money, legal, signing keys, testing with real hands.
 **Claude** = things I can do in the code and docs, now or as soon as you unblock them.
@@ -52,7 +52,7 @@ $4.99 at launch then $5.99, pre-orders in January 2027, launch around February 2
 
 ## 5. Store pages (you click, I give you the words)
 - [ ] **You, App Store Connect:**
-  - Price tier.
+  - Price: base country US at US$2.99 for launch week, then US$3.99; change Canada by hand to CA$3.99, then CA$4.99.
   - Kids category, age band "6–8".
   - Privacy label "Data Not Collected", privacy URL, support URL.
   - Paste the listing text, upload the screenshots and the preview video.
@@ -60,7 +60,7 @@ $4.99 at launch then $5.99, pre-orders in January 2027, launch around February 2
   - Export compliance: none (already set in the app).
   - Turn on the education volume discount.
 - [ ] **You, Play Console:**
-  - Paid app at the price.
+  - Paid app at the same prices; edit Canada's price by hand.
   - Target audience 5–8 and the Families policy.
   - Data safety "No data collected".
   - Content rating questionnaire (IARC).

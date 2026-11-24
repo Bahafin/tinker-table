@@ -3,9 +3,9 @@
 Written 20 November 2026, updated 22 November for 100 levels and ten rooms. A first plan, to revisit after the first 100 sales.
 
 ## The short version
-- **Charge once, up front, for the whole game.** No ads, no purchases inside, no subscription. Launch at **$4.99**, settle at **$5.99** after launch week.
+- **Charge once, up front, for the whole game.** No ads, no purchases inside, no subscription. Launch at **US$2.99 / CA$3.99**, settle at **US$3.99 / CA$4.99** after launch week.
 - **Say "pay once, nothing else, ever" loudly.** It's the reason a careful parent picks Bumpity over the free kids' apps, so it goes in the first line of the store page, in every video and on the icon's screenshot.
-- **Keep the web version, but make it a taster.** Today all 100 levels are free on GitHub Pages, which nobody will pay $5 to get again. Make the web version the Workshop room plus the toy box, with a link (behind the PIN) to the stores.
+- **Keep the web version, but make it a taster.** Today all 100 levels are free on GitHub Pages, which nobody will pay $4 to get again. Make the web version the Workshop room plus the toy box, with a link (behind the PIN) to the stores.
 - **The machines sell themselves on video.** A 10-second clip of a chain reaction is the cheapest ad there is. Most of the effort goes into short videos and a parent's story ("I built a calm game for my son").
 - **Launch in early 2027, not for Christmas.** The safety work in Milestone 7, the trademark and the store review won't all be done well by mid-December. Use Christmas to collect a mailing list instead.
 
@@ -49,17 +49,16 @@ Paid kids' apps from small studios usually sit between $2.99 and $6.99, with $3.
 
 | Price | Use |
 |---|---|
-| **$4.99** | Launch price for the first week or two. Gives the launch posts a reason to act now ("launch price"). |
-| **$5.99** | The normal price after that. Fair for the amount of game, and it says "made with care", not "cheap". |
-| **$2.99** | Sales only: a weekend, back to school, or after a big update. Never permanently. |
+| **US$2.99 / CA$3.99** | Launch price for the first week. Gives the launch posts a reason to act now ("launch price"). Also the sale price later: a weekend, back to school, or after a big update. |
+| **US$3.99 / CA$4.99** | The normal price after that. In the common range for paid kids' apps, under CA$5, which is what we would pay ourselves, and it still says "made with care", not "cheap". |
 | **Free for a day** | Hold back. Use it once, later, only if sales have stalled and you want a burst of reviews. |
 
-Match the prices in other countries with the stores' price tiers; don't set them by hand.
+Set the US price as the base and let the stores convert it for other countries, **except Canada: set CA$4.99 (and CA$3.99 for launch week) by hand.** US$3.99 converts to about CA$5.49–5.99, which is over the CA$5 we want to stay under. App Store Connect lets you change one country's price after picking the base; the Play Console lets you edit each country's price. Store prices in the US and Canada are shown before sales tax.
 
 ### Money in your pocket
 - Join **Apple's App Store Small Business Program** (and Google's equivalent, which is automatic for the first $1M). Then the store keeps **15%**, not 30%.
-- At $5.99, that's about **$5.09 a sale** before tax (a bit less in countries where the price includes VAT).
-- The fixed costs are small: Apple's developer account is **$99 a year**, Google's is **$25 once**, the domain (bumpity.app) is about $15 a year. Around **30 sales a year** covers them.
+- At US$3.99, that's about **$3.39 a sale** (CA$4.99 → about CA$4.24). At the US$2.99 launch price it's about **$2.54**. A bit less in countries where the price includes VAT.
+- The fixed costs are small: Apple's developer account is **$99 a year**, Google's is **$25 once**, the domain (bumpity.app) is about $15 a year. Around **35 sales a year** covers them.
 - The trademark lawyer and filing (a few hundred dollars, once) is the biggest cost. It's worth doing before spending anything on ads.
 
 ### Schools
@@ -68,7 +67,7 @@ Turn on Apple's **volume purchase discount for education** in App Store Connect:
 ### An option to think about: try first, then buy once
 You said no purchases inside the app, and the plan above respects that. One alternative is worth knowing about, because it's how many ad-free kids' apps solve the "parents won't pay for something they haven't tried" problem:
 - The app is **free to download** with the Workshop room and the toy box.
-- **One single unlock** ($5.99, once, behind the grown-ups' PIN) opens every room. Nothing else is ever for sale.
+- **One single unlock** (US$3.99 / CA$4.99, once, behind the grown-ups' PIN) opens every room. Nothing else is ever for sale.
 
 It usually gets far more people to try the game, and so more sales. The costs: technically it is an in-app purchase, so Apple's privacy label and our "no purchases" line both get a little more complicated, and the store page shows "In-App Purchases". **My view:** start paid up front, because it keeps the promise clean and simple. If after two or three months the store page gets visits but few sales, switch to try-then-buy-once. The web taster does much of the same job meanwhile.
 
@@ -100,7 +99,7 @@ It usually gets far more people to try the game, and so more sales. The costs: t
 ### Paid channels (small, later, and only if the free ones work)
 - **Apple Search Ads**, exact-match keywords like "kids puzzle game", "physics game for kids", "chain reaction game". Start at $5–10 a day for two weeks and keep only keywords that sell for less than one sale's income.
 - Boosting the one or two short videos that already did well on their own.
-- Skip big ad networks. Kids' apps can't target children anyway, and broad parent ads cost more than a $5 app earns.
+- Skip big ad networks. Kids' apps can't target children anyway, and broad parent ads cost more than a $4 app earns.
 
 **Suggested budget for the first three months:** $0–300 on ads, after the free channels have shown which message works. The trademark comes first.
 
@@ -121,8 +120,8 @@ It usually gets far more people to try the game, and so more sales. The costs: t
 | **Now – mid December 2026** | Finish Milestone 7 safety (play timer). Lawyer's name clearance. Register bumpity.app and a support email. Set up the website with a mailing-list sign-up. Start filming clips at home. |
 | **Mid December – early January** | Build the web taster (see "The web taster" in [roadmap.md](roadmap.md)) but keep the full web game live for now. Post the maker's story while families are on holiday and new tablets come out of boxes ("play it on the web now, the app's coming"). Collect emails. |
 | **January 2027** | iPad and Android playtest of the app builds (the Capacitor wrapper is done), store paperwork. Open pre-orders, and switch the web over to the taster the same day. Submit the "Get featured" nomination. Send codes to 20–30 reviewers and teachers. Two short videos a week from here on. |
-| **Launch week (aim: February 2027)** | Launch at $4.99. Email the list. Product Hunt, Show HN, Reddit launch posts, r/AppHookup. Reply to every comment yourself. |
-| **Weeks 2–4** | Move to $5.99. Keep posting videos; repeat the ones that worked. Ask early happy parents (people who wrote to you) for reviews. |
+| **Launch week (aim: February 2027)** | Launch at US$2.99 / CA$3.99. Email the list. Product Hunt, Show HN, Reddit launch posts, r/AppHookup. Reply to every comment yourself. |
+| **Weeks 2–4** | Move to US$3.99 / CA$4.99. Keep posting videos; repeat the ones that worked. Ask early happy parents (people who wrote to you) for reviews. |
 | **Months 2–3** | Look at the numbers (below). Try a small Search Ads test. Decide on paid vs. try-then-buy-once. |
 | **Every 2–3 months after** | A free update with something new (a room, a part, the hamster's friend). Each update is a reason to post, email and nominate again. A short sale around back-to-school (August/September) and Christmas. |
 

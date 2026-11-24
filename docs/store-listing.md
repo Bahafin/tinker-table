@@ -10,7 +10,7 @@ Graphics live in [store](../store): `icon-1024.png` (App Store), `play-icon-512.
 
 ## Both stores
 - **Name** (Apple 30, Google 30): `Bumpity`
-- **Price:** $4.99 at launch, $5.99 after launch week (see [marketing-plan.md](marketing-plan.md)). Paid up front: no in-app purchases, no ads, no subscription.
+- **Price:** US$2.99 / CA$3.99 in launch week, then US$3.99 / CA$4.99. Set Canada by hand in both stores (see [marketing-plan.md](marketing-plan.md)). Paid up front: no in-app purchases, no ads, no subscription.
 - **Privacy policy URL:** `https://bumpity.app/privacy.html`
 - **Support URL:** `https://bumpity.app/` (Apple), **email:** `support@bumpity.app` (Google; set up with Cloudflare Email Routing, see [app.md](app.md), "The domain").
 - **Marketing URL** (Apple, optional) and **website** (Google): `https://bumpity.app/`
