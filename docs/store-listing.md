@@ -17,6 +17,10 @@ Graphics live in [store](../store): `icon-1024.png` (App Store), `play-icon-512.
 - **Category:** Apple: Games › Puzzle, plus the Kids category, age band 6–8. Google: Game › Puzzle, plus the Families programme, target age 5–8.
 
 ## App Store (Apple)
+**Copyright** (required): `2026 ` followed by your full legal name, or your company's name if you sell as a company. For example `2026 Jane Example`. No © sign needed.
+
+**Screenshots:** iPad 13-inch from `store/screenshots/ipad-2732x2048`; iPhone 6.9-inch from `iphone-2868x1320`; iPhone 6.3-inch ("medium display with Dynamic Island") from `iphone-2622x1206`.
+
 **Subtitle** (30): `Calm chain-reaction puzzles`
 
 **Promotional text** (170, can change any time without a new review):

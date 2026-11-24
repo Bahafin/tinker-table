@@ -17,6 +17,7 @@ const only = process.argv[2];
 const SIZES = [
   { name: 'ipad-2732x2048', width: 1366, height: 1024, scale: 2 },
   { name: 'iphone-2868x1320', width: 956, height: 440, scale: 3 },
+  { name: 'iphone-2622x1206', width: 874, height: 402, scale: 3 },
   { name: 'play-2560x1440', width: 1280, height: 720, scale: 2 },
 ].filter((s) => !process.env.SIZE || s.name === process.env.SIZE);
 
