@@ -11,8 +11,9 @@ Graphics live in [store](../store): `icon-1024.png` (App Store), `play-icon-512.
 ## Both stores
 - **Name** (Apple 30, Google 30): `Bumpity`
 - **Price:** $4.99 at launch, $5.99 after launch week (see [marketing-plan.md](marketing-plan.md)). Paid up front: no in-app purchases, no ads, no subscription.
-- **Privacy policy URL:** `https://bahafin.github.io/tinker-table/privacy.html` (move to the domain once it exists).
-- **Support URL / email:** still to make (see [launch-checklist.md](launch-checklist.md)).
+- **Privacy policy URL:** `https://bumpity.app/privacy.html`
+- **Support URL:** `https://bumpity.app/` (Apple), **email:** `support@bumpity.app` (Google; set up with Cloudflare Email Routing, see [app.md](app.md), "The domain").
+- **Marketing URL** (Apple, optional) and **website** (Google): `https://bumpity.app/`
 - **Category:** Apple: Games › Puzzle, plus the Kids category, age band 6–8. Google: Game › Puzzle, plus the Families programme, target age 5–8.
 
 ## App Store (Apple)

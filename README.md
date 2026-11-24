@@ -4,7 +4,7 @@ A calm chain-reaction puzzle game for kids aged 5–8 (younger ones with a grown
 
 ## Play it
 
-The game is live at **https://bahafin.github.io/tinker-table/**. Every push to `main` runs the tests, builds the game and publishes it there (`.github/workflows/deploy.yml`).
+The website is **https://bumpity.app/** (a home page for grown-ups) and the game is at **https://bumpity.app/play/**. Until the domain is switched on they are at https://bahafin.github.io/tinker-table/ and `…/play/`. Every push to `main` runs the tests, builds the site (`npm run build:site`) and publishes it (`.github/workflows/deploy.yml`).
 
 On the iPad, open it in Safari, tap Share, then **Add to Home Screen**. Open it once while online, and after that it plays offline.
 

@@ -15,8 +15,9 @@ $4.99 at launch then $5.99, pre-orders in January 2027, launch around February 2
 
 ## 1. Accounts and legal (you, start now: they take days to weeks)
 - [ ] **Trademark lawyer:** clearance search for BUMPITY in class 9, then file (US, plus UK/EU if selling there). A few hundred dollars. Do this before announcing the name. See [release-prep.md](release-prep.md).
-- [ ] **Domain:** register `bumpity.app` (about $15/year), and the social handles.
-- [ ] **Support email:** a dedicated address (for example support@bumpity.app once the domain exists). The stores require one.
+- [x] **Domain:** `bumpity.app` registered at Cloudflare (23 November 2026).
+- [ ] **Social handles** for Bumpity.
+- [ ] **Support email:** `support@bumpity.app`, forwarded to your inbox with Cloudflare Email Routing (free, 5 minutes; steps in [app.md](app.md), "The domain"). The stores require one, and the home page and privacy page already show it.
 - [ ] **Apple Developer Program:** $99/year. Enrol as an individual (fastest) or as a company (needs a D-U-N-S number, which takes 1–2 weeks). Approval can take a day or two.
 - [ ] **Google Play Console:** $25 once. New personal accounts must verify identity, and **must run a closed test with at least 12 testers for 14 days** before they can publish. Start this early.
 - [ ] **Tax and banking:** fill in the tax forms and bank details in App Store Connect (Agreements, Tax and Banking: the "Paid Apps" agreement) and in the Play Console payments profile. A paid app can't go on sale without them.
@@ -42,10 +43,12 @@ $4.99 at launch then $5.99, pre-orders in January 2027, launch around February 2
 - [ ] A "The whole game" section and store badges in the grown-ups' corner, behind the PIN. Shown only once the store pages exist.
 
 ## 4. Once the domain exists (you register it, then I do the rest)
-- [ ] **Claude:** move the website to the domain (GitHub Pages custom domain), with share links as `https://bumpity.app/play#p=…`.
-- [ ] **Claude:** Universal Links (iOS) and App Links (Android), so shared puzzles open in the app when it's installed.
-- [ ] **Claude:** a simple home page at the domain: the promise, a video, the safety page, the privacy page and the store badges.
-- [ ] **You:** add the domain's DNS records (I'll give you the exact lines).
+- [x] **Claude:** the site rebuilt for the domain: home page at `/`, the game at `/play/`, share links as `https://bumpity.app/play/#p=…`, old `#p=` links passed on.
+- [ ] **Claude:** switch GitHub Pages to bumpity.app and turn on HTTPS, once your DNS records answer.
+- [x] **Claude:** Universal Links (iOS) and App Links (Android), so shared puzzles open in the app when it's installed. The files go live by themselves once the `APPLE_TEAM_ID` secret and the `ANDROID_CERT_SHA256` variable exist.
+- [ ] **You:** after the Play Console app exists, copy its signing fingerprint into `ANDROID_CERT_SHA256` (steps in [app.md](app.md)).
+- [x] **Claude:** a simple home page at the domain: the promise, screenshots, safety, privacy and support. Later: the preview video and the store badges.
+- [ ] **You:** verify the domain with GitHub and add the DNS records in Cloudflare (exact lines in [app.md](app.md), "The domain").
 
 ## 5. Store pages (you click, I give you the words)
 - [ ] **You, App Store Connect:**

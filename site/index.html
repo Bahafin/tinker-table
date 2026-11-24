@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Bumpity: calm chain-reaction puzzles for 5 to 8 year olds</title>
+    <meta name="description" content="A calm physics puzzle game for children aged 5 to 8. Pay once: no ads, no purchases, no data collected. Play it in your browser." />
+    <meta name="theme-color" content="#e9dcc3" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="apple-touch-icon" href="icons/icon-180.png" />
+    <meta property="og:title" content="Bumpity" />
+    <meta property="og:description" content="Calm chain-reaction puzzles for 5 to 8 year olds. No ads, no purchases, no data collected." />
+    <meta property="og:image" content="https://bumpity.app/shots/machine.jpg" />
+    <script>
+      // Old and shared links (…/#p=<code>) belong to the game, which lives in play/.
+      // A copy of the game saved to a home screen also opens straight into it.
+      (function () {
+        var standalone = navigator.standalone || (window.matchMedia && (matchMedia('(display-mode: fullscreen)').matches || matchMedia('(display-mode: standalone)').matches));
+        var toGame = function () { if (/^#p=/.test(location.hash)) { location.replace('play/' + location.hash); return true; } };
+        if (!toGame() && standalone) location.replace('play/');
+        window.addEventListener('hashchange', toGame);
+      })();
+    </script>
+    <style>
+      :root {
+        --paper: #e9dcc3; --paper-dot: #ddcdb0; --card: #fbf6ec; --ink: #3b2f2a; --soft: #6b5a4e;
+        --accent: #d9822b; --accent-ink: #fff; --line: #d8c6a6;
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0; color: var(--ink); line-height: 1.55; font-size: 18px;
+        font-family: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+        background-color: var(--paper);
+        background-image: radial-gradient(var(--paper-dot) 1.5px, transparent 1.6px);
+        background-size: 24px 24px;
+      }
+      main { max-width: 980px; margin: 0 auto; padding: 32px 16px 48px; }
+      header { text-align: center; padding: 24px 0 8px; }
+      header img { width: min(420px, 80vw); height: auto; }
+      .tagline { font-size: clamp(22px, 4vw, 30px); font-weight: 700; margin: 8px 0 4px; }
+      .promise { color: var(--soft); margin: 0 0 24px; font-weight: 600; }
+      .play {
+        display: inline-block; background: var(--accent); color: var(--accent-ink); text-decoration: none;
+        font-weight: 800; font-size: 22px; padding: 14px 34px; border-radius: 999px;
+        box-shadow: 0 4px 0 #a85f17; transition: transform .1s;
+      }
+      .play:active { transform: translateY(3px); box-shadow: 0 1px 0 #a85f17; }
+      .soon { margin: 14px 0 0; color: var(--soft); font-size: 16px; }
+      .shots { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin: 40px 0; }
+      figure { margin: 0; background: #fff; padding: 8px 8px 10px; border-radius: 6px; box-shadow: 0 4px 12px rgba(80,55,30,.18); }
+      figure:nth-child(odd) { transform: rotate(-1deg); }
+      figure:nth-child(even) { transform: rotate(1deg); }
+      figure img { display: block; width: 100%; height: auto; border-radius: 3px; }
+      figcaption { font-size: 15px; font-weight: 700; text-align: center; padding-top: 8px; }
+      section.card { background: var(--card); border: 2px solid var(--line); border-radius: 18px; padding: 22px 24px; margin: 22px 0; }
+      h2 { margin: 0 0 10px; font-size: 24px; }
+      ul { margin: 0; padding-left: 22px; }
+      li { margin: 6px 0; }
+      .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 22px; }
+      footer { text-align: center; color: var(--soft); font-size: 15px; padding-top: 18px; }
+      footer a, section a { color: var(--ink); font-weight: 700; }
+      @media (max-width: 640px) {
+        body { font-size: 17px; }
+        .shots, .cols { grid-template-columns: 1fr; }
+        figure:nth-child(n) { transform: none; }
+        section.card { padding: 18px 16px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1 style="margin:0"><img src="logo.svg" alt="Bumpity" width="420" height="140" /></h1>
+        <p class="tagline">Calm chain-reaction puzzles for 5 to 8 year olds</p>
+        <p class="promise">Pay once. No ads, no purchases, no data collected. Ever.</p>
+        <a class="play" href="play/">Play in your browser</a>
+        <p class="soon">Coming soon for iPad, iPhone and Android.</p>
+      </header>
+
+      <div class="shots">
+        <figure><img src="shots/machine.jpg" alt="A puzzle: a ball, a ramp and a basket, with parts to add along the bottom" width="1280" height="720" loading="lazy" /><figcaption>Add a part. Press Go. Watch what happens.</figcaption></figure>
+        <figure><img src="shots/rooms.jpg" alt="The map of ten rooms" width="1280" height="720" loading="lazy" /><figcaption>100 puzzles in ten rooms.</figcaption></figure>
+        <figure><img src="shots/build.jpg" alt="A rocket machine being built in the Space room" width="1280" height="720" loading="lazy" /><figcaption>No score, no timer, no game over.</figcaption></figure>
+        <figure><img src="shots/toybox.jpg" alt="The toy box, with every part to build with" width="1280" height="720" loading="lazy" /><figcaption>A toy box to build anything.</figcaption></figure>
+      </div>
+
+      <section class="card">
+        <h2>What it is</h2>
+        <p>Each puzzle is a little machine with a piece missing: a ball has to reach a basket, a sleeping hamster has to find his cheese, a rocket has to reach the stars. Your child adds ramps, springs, fans, magnets and dominoes, presses Go, and watches what happens. A friendly voice explains each puzzle, so there is nothing to read. A run that misses simply resets, ready to try again, and a faint ghost of a part helps when they're stuck.</p>
+        <p>The puzzle maker turns any machine into a puzzle to send to grandparents. It opens in any web browser.</p>
+      </section>
+
+      <section class="card">
+        <h2>Safe to hand over</h2>
+        <div class="cols">
+          <ul>
+            <li>No ads, no in-app purchases, no subscription.</li>
+            <li>No accounts, no tracking, no data collected.</li>
+            <li>Works offline. Everything stays on the device.</li>
+          </ul>
+          <ul>
+            <li>A grown-ups' PIN keeps the settings and every link out of the game away from small fingers.</li>
+            <li>A play timer: after 15, 20 or 30 minutes the game falls asleep, and only a grown-up wakes it.</li>
+            <li>Step-by-step help to lock the iPad to the game with Guided Access.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>For grown-ups</h2>
+        <p>Every puzzle has a talk card in the grown-ups' corner: what it teaches, questions to ask, and something to try at home. Bumpity was made by a parent, for their own child, who playtested every room.</p>
+      </section>
+
+      <footer>
+        <p><a href="privacy.html">Privacy policy</a> · Help and questions: <a href="mailto:support@bumpity.app">support@bumpity.app</a></p>
+      </footer>
+    </main>
+    <script>
+      // This page used to be the game, so an old copy of the game's offline helper may still
+      // look after it. The game's own helper now lives in play/; retire the old one.
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (rs) {
+          rs.forEach(function (r) { if (!/\/play\/$/.test(r.scope)) r.unregister(); });
+        }).catch(function () {});
+      }
+    </script>
+  </body>
+</html>

@@ -3,7 +3,7 @@
 The four jobs the roadmap lists before release, and where each one stands.
 
 ## 1. Privacy policy page: done
-- [public/privacy.html](../public/privacy.html), live at `https://bahafin.github.io/tinker-table/privacy.html` once merged to `main`. Use that address as the privacy policy URL in App Store Connect and the Play Console.
+- [public/privacy.html](../public/privacy.html), live at `https://bumpity.app/privacy.html` (and at `https://bahafin.github.io/tinker-table/privacy.html` until the domain is switched on). Use that address as the privacy policy URL in App Store Connect and the Play Console.
 - It says what the game really does: it collects nothing, keeps progress, stickers, kept machines and made puzzles only on the device, uses the device's own voice, and puts only the puzzle into a shared link.
 - The grown-ups' corner links to it (behind the grown-ups' PIN, or the press-and-hold until a PIN is set; Apple's Kids category asks for a parental gate on any link out of the game).
 - **Still to decide:** the contact line points to GitHub issues. Parents may not have a GitHub account, and the stores ask for a support email anyway, so a dedicated address (not a personal one) would be better there.
@@ -29,7 +29,7 @@ This is a search, not legal clearance. Before paying for the store accounts:
 1. Have a trademark lawyer run a clearance search for BUMPITY in class 9 (apps), and in 41 and 28 if those matter. It costs a few hundred dollars.
 2. File for the name in class 9 (the US, and the UK/EU if the game is sold there). Filing for class 9 only keeps clear of the BUMPIT toy mark.
 3. Register bumpity.app (or playbumpity.com) and the social handles before the name is announced.
-4. The game's web address is still `bahafin.github.io/tinker-table/`, and the saved-progress keys in the browser still start with `tinker.`. The keys stay as they are, so nobody loses their progress. Renaming the GitHub repo would change the address; GitHub redirects the old repo URL but not the Pages address, so it is best done before the address is shared widely.
+4. bumpity.app is registered (23 November 2026, at Cloudflare); see [app.md](app.md), "The domain". The saved-progress keys in the browser still start with `tinker.`. The keys stay as they are, so nobody loses their progress. Renaming the GitHub repo would change the address; GitHub redirects the old repo URL but not the Pages address, so it is best done before the address is shared widely.
 
 ## 3. Logo letters as outlines: done
 - [public/logo.svg](../public/logo.svg) now draws its letters as shapes, so it looks the same on every device and needs no font. Before, each device fell back to whatever rounded font it had.

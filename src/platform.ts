@@ -11,9 +11,9 @@ export const NATIVE = Capacitor.isNativePlatform();
 /**
  * The game's public web address. Share links always point here, so whoever gets one can
  * play in a browser even without the app. (Inside the app, location is a local address.)
- * Change this when the game gets its own domain.
+ * The home page for grown-ups is the domain's root; the game is in /play/.
  */
-export const WEB_HOME = 'https://bahafin.github.io/tinker-table/';
+export const WEB_HOME = 'https://bumpity.app/play/';
 
 /** Where share links should send people: this page on the web, the public site from the app. */
 export function gameAddress(): string {

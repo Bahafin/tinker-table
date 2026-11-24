@@ -1,4 +1,5 @@
-# Builds the game and publishes it to GitHub Pages on every push to main.
+# Builds the website (home page, and the game in play/) and publishes it to GitHub Pages on
+# every push to main.
 name: Deploy to GitHub Pages
 
 on:
@@ -26,13 +27,17 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
-      - run: npm run build
+      # The home page at /, the game at /play/, and the files that open shared links in the app.
+      - run: npm run build:site
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          ANDROID_CERT_SHA256: ${{ vars.ANDROID_CERT_SHA256 }}
       - uses: actions/configure-pages@v5
         with:
           enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: _site
 
   deploy:
     needs: build

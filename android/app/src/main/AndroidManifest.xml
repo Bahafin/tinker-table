@@ -18,6 +18,14 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Shared puzzle links (https://bumpity.app/play#p=...) open in the app. Verified
+                 by /.well-known/assetlinks.json on the website. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="bumpity.app" android:pathPrefix="/play" />
+            </intent-filter>
         </activity>
 
         <provider

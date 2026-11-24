@@ -12,6 +12,7 @@ All of it is in `src/boot.ts`, `src/app-shell.ts`, `src/platform.ts` and `src/ap
 - **Full screen,** and phones are locked sideways. Tablets turn freely.
 - **Android's back button** does what the screen's own back, close or home button would. On the front page it puts the app in the background.
 - **Android "Lock Bumpity on the screen now"** in the grown-ups' corner (Safety) starts Android's screen pinning (`ScreenLockPlugin.java`). Android asks the grown-up to confirm.
+- **Shared links open in the app** when it's installed (Universal Links and App Links, for `https://bumpity.app/play…`). See "The domain" below.
 - **App ID:** `app.bumpity.game`. It can't change after the first upload to a store.
 
 ## Getting the Android test app
@@ -50,7 +51,7 @@ Only you can do these, in your own Apple account:
 1. **Join the Apple Developer Program** at [developer.apple.com/programs](https://developer.apple.com/programs/) ($99 a year). It can take a day or two to be approved.
 2. **Create the app** in [App Store Connect](https://appstoreconnect.apple.com/) › Apps › **+** › New App:
    - Platforms: iOS. Name: Bumpity. Primary language: English.
-   - Bundle ID: register **app.bumpity.game** first, under Certificates, Identifiers & Profiles › Identifiers (an "App IDs" entry, no extra capabilities), then pick it here.
+   - Bundle ID: register **app.bumpity.game** first, under Certificates, Identifiers & Profiles › Identifiers (an "App IDs" entry; tick the **Associated Domains** capability, so shared links can open in the app), then pick it here.
    - SKU: anything, for example `bumpity`.
 3. **Make an API key** so GitHub can sign and upload: App Store Connect › Users and Access › Integrations › App Store Connect API › **+**. Give it the **Admin** role (signing needs it to make the distribution certificate). Download the `.p8` file (you can only download it once) and note the **Key ID** and the **Issuer ID** shown above the list.
 4. **Find your Team ID:** developer.apple.com › Account › Membership details.
@@ -92,3 +93,59 @@ Upload it in the Play Console (first to the closed test track; a new personal ac
 closed test with 12 testers for 14 days before it can publish). The version code is the run
 number, so every upload is higher than the last.
 
+## The domain (bumpity.app)
+Registered at Cloudflare on 23 November 2026. GitHub Pages serves the site; Cloudflare only
+answers DNS (no proxy, so Cloudflare never sees the visits). The site is put together by
+`npm run build:site` (`scripts/build-site.mjs`) into `_site/`:
+- `/`: the home page for grown-ups (`site/index.html`). A link with `#p=` is passed on to the game.
+- `/play/`: the game.
+- `/privacy.html`: the privacy policy.
+- `/.well-known/apple-app-site-association` and `/.well-known/assetlinks.json`: they let shared
+  links open in the app. Each is written only once its ID is known (step 4).
+
+### 1. DNS records (you, in Cloudflare)
+First prove to GitHub that the domain is yours, so nobody else can point a GitHub site at it:
+GitHub › your picture › **Settings › Pages › Add a domain** › `bumpity.app`. GitHub shows a TXT
+record; add it in Cloudflare and press **Verify**.
+
+Then, in Cloudflare › bumpity.app › **DNS › Records**, add these. Set every one to **DNS only**
+(grey cloud), not Proxied: GitHub has to see the visits itself to make the HTTPS certificate.
+
+| Type | Name | Content |
+| --- | --- | --- |
+| A | `@` | `185.199.108.153` |
+| A | `@` | `185.199.109.153` |
+| A | `@` | `185.199.110.153` |
+| A | `@` | `185.199.111.153` |
+| AAAA | `@` | `2606:50c0:8000::153` |
+| AAAA | `@` | `2606:50c0:8001::153` |
+| AAAA | `@` | `2606:50c0:8002::153` |
+| AAAA | `@` | `2606:50c0:8003::153` |
+| CNAME | `www` | `bahafin.github.io` |
+| TXT | (from GitHub's verify step) | (from GitHub) |
+
+### 2. Switch the site to the domain (Claude, once the records answer)
+`gh api -X PUT repos/Bahafin/tinker-table/pages -f cname=bumpity.app`, wait for GitHub's
+certificate (minutes to an hour; `.app` addresses only work over HTTPS), then
+`gh api -X PUT repos/Bahafin/tinker-table/pages -F https_enforced=true`. After that the old
+`bahafin.github.io/tinker-table/…` addresses redirect to bumpity.app, so old share links still work.
+
+Saved progress in a **browser** belongs to the address, so a child who plays on the website
+starts afresh at bumpity.app (the apps are not affected). Best done before the address is shared.
+
+### 3. The support email (you, in Cloudflare)
+Cloudflare › bumpity.app › **Email › Email Routing** › Get started. Create `support@bumpity.app`
+and send it on to your own inbox (Cloudflare emails a link to confirm it). Cloudflare adds the
+MX and TXT records itself. Free.
+
+### 4. Links into the app (once the store accounts exist)
+- **iOS:** the deploy workflow reads the `APPLE_TEAM_ID` secret (the same one TestFlight uses)
+  and writes the apple-app-site-association file. The app's side is `ios/App/App/App.entitlements`
+  (`applinks:bumpity.app`). Check it with `https://app-site-association.cdn-apple.com/a/v1/bumpity.app`.
+- **Android:** Play Console › Bumpity › **Test and release › App integrity › App signing**: copy
+  the **SHA-256** fingerprint of the *app signing key* (and the upload key's, for test builds you
+  install yourself). Put them, separated by commas, in a repository **variable** (not a secret)
+  called `ANDROID_CERT_SHA256`: GitHub › repository › Settings › Secrets and variables › Actions ›
+  Variables. The next deploy writes assetlinks.json. The app's side is the intent filter in
+  `android/app/src/main/AndroidManifest.xml`.
+- Then re-run the deploy (Actions › Deploy to GitHub Pages › Run workflow).

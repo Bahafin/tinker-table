@@ -1224,7 +1224,10 @@ $('btn-next').onclick = () => startLevel(current + 1 < LEVELS.length ? current +
 // and only in the built app (the dev server reloads too often for caching).
 // The apps carry their files with them, so they don't need one.
 if (import.meta.env.PROD && !NATIVE && 'serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => { /* fine: plays online */ });
+  navigator.serviceWorker.register('sw.js').then((mine) =>
+    // The game used to live one folder up (now the home page): retire that copy's helper.
+    navigator.serviceWorker.getRegistrations().then((all) => all.forEach((r) => { if (r.scope !== mine.scope) r.unregister(); })),
+  ).catch(() => { /* fine: plays online */ });
 }
 // Turning the device can move the buttons between the top bar and the side strip,
 // which changes the goal picture's shape: draw it again for the new shape.

@@ -153,7 +153,7 @@ With a real finger, before wrapping: the Music room, the toy box tabs and arrows
    - Android's back button goes back a screen. A "lock" button in the Safety section starts Android's screen pinning.
    - Phones locked to landscape; app icon, splash screen, full screen.
 3. **iPad and iPhone without a Mac: built, waiting for the Apple account.** The iOS project exists; GitHub's macOS runners (free for this public repo) build it, run it on iPad and iPhone simulators with screenshots, and (once the Apple secrets are set) sign and upload it to TestFlight. See [app.md](app.md).
-4. **Own domain and links into the app.** Share links always point at the website (`https://<domain>/play#p=<code>`; old `#p=` links keep working), so anyone can play in a browser. Universal Links (iOS) and App Links (Android) open them in the app when it's installed; both need files at the domain's root, which a `github.io/tinker-table` address can't serve.
+4. **Own domain and links into the app: built, waiting for DNS and the store IDs.** bumpity.app (registered 23 November 2026) has a home page for grown-ups at `/` and the game at `/play/`. Share links point at `https://bumpity.app/play/#p=<code>` (old `#p=` links are passed on to the game), so anyone can play in a browser. Universal Links (iOS) and App Links (Android) open them in the app when it's installed; the files for them are written at deploy time once the Apple Team ID and the Play signing fingerprint are known. See [app.md](app.md), "The domain".
 5. **Store submission.** A test release through TestFlight and Google's internal testing for real play before going public.
 
 ### The web taster
