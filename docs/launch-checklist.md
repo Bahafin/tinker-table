@@ -74,7 +74,7 @@ US$2.99 / CA$3.99 in launch week, then US$3.99 / CA$4.99 (Canada set by hand), p
 
 ## 6. Before pressing "Submit" (both of us)
 - [ ] Playtest on a real iPad and an Android device: all ten rooms, the toy box, the puzzle maker, the sticker book, sharing a puzzle, the PIN, the lock-to-app guide.
-- [ ] **Claude:** version 1.0.0 everywhere, a final check that nothing in the app talks to the internet except shared links and the grown-ups' links, and every test passing.
+- [x] **Claude:** version 1.0 everywhere (matches App Store Connect), a final check that nothing in the app talks to the internet except shared links and the grown-ups' links (the only fetch is the bundled voice clips), and every test passing (25 November 2026).
 - [ ] **Claude:** switch the website to the taster on the day pre-orders open (see "The web taster" in [roadmap.md](roadmap.md)).
 - [ ] **You:** submit for review. Apple usually takes 1–3 days; Kids apps get a closer look. Google's first review of a new account can take up to a week.
 
