@@ -167,4 +167,4 @@ same voice. The device's own speech is only a fallback for a line without a clip
    The voice (`af_heart`) and speed (0.92) can be changed there.
 2. Download the run's **voice-clips** file and copy its `public/voice/` and
    `src/ui/voice-clips.json` over the repository's. Only new or changed lines are recorded again.
-3. The download also has `samples/`: the first line in eight voices, to compare.
+3. The download also has `samples/`: the first "Shh" line with each style of hush, to compare. The hush style is `HUSH` in `scripts/make-voice.py`.
