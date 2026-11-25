@@ -18,7 +18,7 @@ US$2.99 / CA$3.99 in launch week, then US$3.99 / CA$4.99 (Canada set by hand), p
 - [x] **Domain:** `bumpity.app` registered at Cloudflare (23 November 2026).
 - [ ] **Social handles** for Bumpity.
 - [ ] **Support email:** `support@bumpity.app`, forwarded to your inbox with Cloudflare Email Routing (free, 5 minutes; steps in [app.md](app.md), "The domain"). The stores require one, and the home page and privacy page already show it.
-- [ ] **Apple Developer Program:** $99/year. Enrol as an individual (fastest) or as a company (needs a D-U-N-S number, which takes 1–2 weeks). Approval can take a day or two.
+- [x] **Apple Developer Program:** $99/year. Enrol as an individual (fastest) or as a company (needs a D-U-N-S number, which takes 1–2 weeks). Approval can take a day or two.
 - [ ] **Google Play Console:** $25 once. New personal accounts must verify identity, and **must run a closed test with at least 12 testers for 14 days** before they can publish. Start this early.
 - [ ] **Tax and banking:** fill in the tax forms and bank details in App Store Connect (Agreements, Tax and Banking: the "Paid Apps" agreement) and in the Play Console payments profile. A paid app can't go on sale without them.
 - [ ] **Small Business Program:** apply in App Store Connect so Apple keeps 15%, not 30% (Google does this automatically).
@@ -28,6 +28,7 @@ US$2.99 / CA$3.99 in launch week, then US$3.99 / CA$4.99 (Canada set by hand), p
 - [x] **Claude:** run the "iOS app" workflow with "Send to TestFlight" ticked, and fix whatever the first real upload turns up. (First build uploaded 24 November 2026; signing now goes through the API, no device needed.)
 - [ ] **You, Android:** make the upload key (one command, below) and add four GitHub secrets. Steps in [app.md](app.md), "Google Play release build".
 - [x] **Claude:** release workflow that builds a signed `.aab` for Google Play from those secrets, with a version number that rises on every build.
+- [x] **You:** TestFlight groups made (internal, and "family-friends" with a public link). Build 10 sent to Beta App Review on 24 November 2026; once approved, the public link works and later 1.0 builds reach testers without a full review.
 - [ ] **You:** install the TestFlight build on the iPad and the Android test build on a phone or tablet. Play with your son, and tell me what feels off.
 
 ## 3. Things I can do now (no waiting)
@@ -39,6 +40,8 @@ US$2.99 / CA$3.99 in launch week, then US$3.99 / CA$4.99 (Canada set by hand), p
 - [x] Android release build workflow (signed `.aab`), waiting only for your key.
 - [x] Retake all store screenshots with the ten rooms, and add the iPhone size Apple needs (6.9-inch, 2868×1320, landscape), since the app runs on iPhones.
 - [x] **Play timer** (the last safety item in Milestone 7): the room winds down to sleep after 15, 20 or 30 minutes, and only the PIN wakes it. It's a big part of the "calm by design" promise, so it should be in version 1.0.
+- [x] **Parental gate:** the press-and-hold (which a child can learn) is replaced by a sum in words, or the PIN when one is set (build 12, 24 November 2026).
+- [x] **Recorded voice:** every line is a clip from an open-source neural voice, the same on every device (build 12). "Shh" re-recorded as a hush.
 - [ ] **Web taster build** (Workshop, toy box and puzzle maker only), ready but switched off until pre-orders open.
 - [ ] A "The whole game" section and store badges in the grown-ups' corner, behind the PIN. Shown only once the store pages exist.
 
@@ -55,7 +58,8 @@ US$2.99 / CA$3.99 in launch week, then US$3.99 / CA$4.99 (Canada set by hand), p
   - Price: base country US at US$2.99 for launch week, then US$3.99; change Canada by hand to CA$3.99, then CA$4.99.
   - Kids category, age band "6–8".
   - Privacy label "Data Not Collected", privacy URL, support URL.
-  - Paste the listing text, upload the screenshots and the preview video.
+  - Copyright: "2026 " plus your full legal name (or company name).
+  - Paste the listing text, upload the screenshots (including the 6.3-inch iPhone set) and the preview video.
   - Answer the age rating questions (answers in [store-listing.md](store-listing.md)).
   - Export compliance: none (already set in the app).
   - Turn on the education volume discount.
