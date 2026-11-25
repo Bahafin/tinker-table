@@ -27,8 +27,9 @@ SAY = []
 # A line that starts with "Shh," gets a slow, soft hush of its own, a little pause, and then the
 # rest of the line at the normal speed. Inside a sentence Kokoro says "shh" far too quickly.
 HUSH_START = re.compile(r'^Shh+,\s*')
-HUSH = 'slow'  # one of HUSHES; --samples records each, to compare
-HUSHES = ['slow', 'slower', 'breath', 'breath-long']
+# 'slow' and 'slower' (Kokoro saying a long shh) sounded like a sneeze; 'breath' is a made shush.
+HUSH = 'breath'  # one of HUSHES; --samples records each, to compare
+HUSHES = ['breath', 'breath-long', 'word']
 
 def spoken(text):
     for pat, to in SAY:
@@ -70,6 +71,9 @@ def hush(style, voice):
         x = synth(f'[Shh]({ipa})', voice, sp)
         x = x / np.max(np.abs(x)) * 0.55  # softer than the speech after it
         return x * envelope(len(x), 0.12, 0.35)
+    if style == 'word':  # the word "Hush", said slowly and softly
+        x = synth('Hush.', voice, 0.75)
+        return x / np.max(np.abs(x)) * 0.6 * envelope(len(x), 0.05, 0.25)
     return breath_hush(1.1 if style == 'breath' else 1.6) * 0.35
 
 def say(text, voice, speed, style=None):
