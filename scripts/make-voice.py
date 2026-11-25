@@ -4,7 +4,7 @@
 #   python scripts/make-voice.py <lines.json> [--voice af_heart] [--speed 0.92] [--samples DIR]
 # A clip's id comes from its text, the voice and the speed, so only new or changed lines are
 # recorded again, and clips nobody says any more are removed.
-import argparse, hashlib, json, os, subprocess, tempfile
+import argparse, hashlib, json, os, re, subprocess, tempfile
 
 import numpy as np
 import soundfile as sf
@@ -18,6 +18,19 @@ ap.add_argument('--samples', help='also write one line in several voices here, t
 args = ap.parse_args()
 
 OUT, MAP = 'public/voice', 'src/ui/voice-clips.json'
+
+# Words the voice gets wrong, with how to say them. Kokoro's reader takes a word's sounds in
+# IPA as [word](/sounds/). Only the recording changes; the game's text stays as it is.
+SAY = [
+    (r'\b([Ss])hh+\b', r'[\1hh](/ʃːː/)'),  # a hush, not "s s h"
+]
+# Other ways to try a word, recorded with --samples into samples/<name>.mp3 to compare.
+TRIES = {'shh-long': '/ʃːː/', 'shh-short': '/ʃː/', 'shh-plain': '/ʃ/', 'shh-three': '/ʃʃʃ/'}
+
+def spoken(text):
+    for pat, to in SAY:
+        text = re.sub(pat, to, text)
+    return text
 RATE = 24000
 os.makedirs(OUT, exist_ok=True)
 pipes = {}
@@ -37,12 +50,12 @@ def record(text, voice, speed, path):
 lines = json.load(open(args.lines, encoding='utf-8'))
 clips = {}
 for text in lines:
-    cid = hashlib.sha1(f'{args.voice}|{args.speed}|{text}'.encode()).hexdigest()[:12]
+    cid = hashlib.sha1(f'{args.voice}|{args.speed}|{spoken(text)}'.encode()).hexdigest()[:12]
     name = f'{cid}.mp3'
     path = os.path.join(OUT, name)
     if not os.path.exists(path):
         print('recording:', text)
-        record(text, args.voice, args.speed, path)
+        record(spoken(text), args.voice, args.speed, path)
     clips[text] = name
 for f in os.listdir(OUT):
     if f.endswith('.mp3') and f not in clips.values():
@@ -57,4 +70,8 @@ if args.samples:
     line = lines[0]
     for v in ['af_heart', 'af_bella', 'af_nicole', 'af_sarah', 'bf_emma', 'bf_isabella', 'am_michael', 'bm_george']:
         record(line, v, args.speed, os.path.join(args.samples, f'{v}.mp3'))
+    shh = next((t for t in lines if re.search(r'\bShh', t)), None)
+    if shh:
+        for name, ipa in TRIES.items():
+            record(re.sub(r'\b([Ss])hh+\b', rf'[\1hh]({ipa})', shh), args.voice, args.speed, os.path.join(args.samples, f'{name}.mp3'))
     print('samples in', args.samples)
