@@ -107,6 +107,9 @@ answers DNS (no proxy, so Cloudflare never sees the visits). The site is put tog
 - `/.well-known/apple-app-site-association` and `/.well-known/assetlinks.json`: they let shared
   links open in the app. Each is written only once its ID is known (step 4).
 
+With the repository variable `WEB_EDITION` set to `taster`, `/play/` is the free web taster
+instead of the whole game (`npm run build:taster`; see [roadmap.md](roadmap.md), "The web taster").
+
 ### 1. DNS records (you, in Cloudflare)
 First prove to GitHub that the domain is yours, so nobody else can point a GitHub site at it:
 GitHub › your picture › **Settings › Pages › Add a domain** › `bumpity.app`. GitHub shows a TXT

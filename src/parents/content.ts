@@ -775,3 +775,20 @@ export const MADE_TALK = {
   idea: 'Ask the maker how the machine is meant to work before anyone tries it. Explaining their own puzzle is great practice in planning and describing steps.',
   none: 'No puzzles made yet. They appear here once one is saved in the puzzle maker.',
 };
+
+/**
+ * "The whole game" in the grown-ups' corner, on the web only: what the store app adds, and the
+ * store links (edition.ts, STORE). In the web taster it also says why the later rooms left.
+ */
+export const WHOLE_GAME = {
+  leadTaster: 'This is the free taster of Bumpity: the Workshop, the toy box and the puzzle maker. The whole game is an app for iPad, iPhone and Android tablets.',
+  leadFull: 'Bumpity is also an app for iPad, iPhone and Android tablets.',
+  adds: [
+    'Nine more rooms, 100 puzzles in all, each room with a new part to discover: a toy car, a toaster, magnets, a rocket, a xylophone and more.',
+    "Every room's parts in the toy box and the puzzle maker.",
+    'Plays offline, full screen, with no browser around it.',
+    'Puzzles your child makes in the app still share as links, and open here on the web for anyone.',
+  ],
+  payOnce: 'Pay once, and that is all: no ads, no in-app purchases, no subscriptions, no accounts.',
+  changed: "The whole game used to be free on this website. The later rooms now live in the app, so Bumpity can pay its way without ads or tracking. Everything your child did here is still here: the Workshop's progress, the sticker book, made puzzles and kept machines.",
+};

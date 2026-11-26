@@ -7,7 +7,8 @@ import { Game, drawIcon, type TraySet } from './ui/game';
 import { ALL_PARTS, TOY_PARTS } from './sim/parts';
 import { sfx, speak, stopSpeaking, unlockAudio } from './ui/audio';
 import { EXTRA_STOPS, SLEEPY_VOICE } from './ui/voice-lines';
-import { INTRO, MADE_TALK, MAKER_HOW, ROUTINE, SKILLS, TALK, TIPS, TOYS_HOW } from './parents/content';
+import { INTRO, MADE_TALK, MAKER_HOW, ROUTINE, SKILLS, TALK, TIPS, TOYS_HOW, WHOLE_GAME } from './parents/content';
+import { STORE, TASTER } from './edition';
 import { decodeLevel, decodeToy, encodeLevel, encodeToy, MADE_VOICE, SHARED_VOICE } from './levels/share';
 import { Share } from '@capacitor/share';
 import { gameAddress, NATIVE, PLATFORM } from './platform';
@@ -480,8 +481,17 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 
 // The PIN guards the corner; until one is set, a sum in words does (askGrownup).
 const pin = new Pin();
-type GuSec = 'safety' | 'play' | 'talk' | 'made' | 'settings';
-const GU_SECS: GuSec[] = ['safety', 'play', 'talk', 'made', 'settings'];
+type GuSec = 'safety' | 'play' | 'talk' | 'made' | 'whole' | 'settings';
+/**
+ * "The whole game" (what the store app adds, and the store links) shows on the web only: in the
+ * taster always, in the whole game once a store page exists. Never inside the apps.
+ */
+const STORE_LINKS = [
+  { href: STORE.apple, label: 'Get it on the App Store' },
+  { href: STORE.google, label: 'Get it on Google Play' },
+].filter((l) => l.href);
+const SHOW_WHOLE = !NATIVE && (TASTER || STORE_LINKS.length > 0);
+const GU_SECS: GuSec[] = ['safety', 'play', 'talk', 'made', ...(SHOW_WHOLE ? ['whole' as const] : []), 'settings'];
 const GU_KEY = 'tinker.gu';
 let guSec: GuSec = (() => {
   try { const v = localStorage.getItem(GU_KEY) as GuSec; return GU_SECS.includes(v) ? v : 'safety'; } catch { return 'safety'; }
@@ -590,6 +600,17 @@ function buildGrownups() {
       <p class="note" id="gu-made-how"></p>
       <div id="gu-made" class="made-list"></div>
     </section>
+    ${SHOW_WHOLE ? `<section class="gu-sec" data-sec="whole">
+      <h3>The whole game</h3>
+      <p class="lead">${esc(TASTER ? WHOLE_GAME.leadTaster : WHOLE_GAME.leadFull)}</p>
+      <div class="gu-card">
+        <h4>What the app adds</h4>
+        <ul class="tips">${WHOLE_GAME.adds.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+        <p><b>${esc(WHOLE_GAME.payOnce)}</b></p>
+        ${STORE_LINKS.length ? `<div class="acts store-links">${STORE_LINKS.map((l) => `<a class="text-btn primary" href="${esc(l.href)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join('')}</div>` : '<p class="note">The store pages are coming soon.</p>'}
+      </div>
+      ${TASTER ? `<div class="gu-card"><h4>What changed here</h4><p>${esc(WHOLE_GAME.changed)}</p></div>` : ''}
+    </section>` : ''}
     <section class="gu-sec" data-sec="settings">
       <h3>Start again</h3>
       <div class="gu-card">
@@ -598,7 +619,7 @@ function buildGrownups() {
       </div>
       <h3>Privacy</h3>
       <div class="gu-card">
-        <p>Bumpity collects no data: no accounts, ads, tracking or links out. Progress, the sticker book, the PIN and made puzzles are kept only on this device. A shared link contains only the puzzle itself.</p>
+        <p>Bumpity collects no data: no accounts, ads or tracking${STORE_LINKS.length && SHOW_WHOLE ? ', and the only links out are to the store pages in The whole game' : ', and no links out'}. Progress, the sticker book, the PIN and made puzzles are kept only on this device. A shared link contains only the puzzle itself.</p>
         <p><a href="privacy.html">Read the privacy policy</a></p>
       </div>
     </section>`;
@@ -648,6 +669,7 @@ function buildGrownups() {
     reset.textContent = 'Cleared';
     setTimeout(() => { reset.textContent = 'Clear progress and stickers'; }, 2200);
   };
+  document.querySelector('.gu-nav [data-sec="whole"]')!.classList.toggle('hidden', !SHOW_WHOLE);
   document.querySelector('.gu-nav')!.addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-sec]');
     if (b) showSec(b.dataset.sec as GuSec);

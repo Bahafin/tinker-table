@@ -169,10 +169,12 @@ With a real finger, before wrapping: the Music room, the toy box tabs and arrows
   - The grown-ups' corner gets a "The whole game" section: what the app adds (nine more rooms, every room's parts in the toy box, offline play as an app), the "pay once, nothing else" line, and the store badges.
   - A shared puzzle opened on the web shows a small "Made in Bumpity" note for grown-ups, behind the PIN like every other link out.
 - **How it's built:**
-  - One codebase, two builds: `npm run build` makes the full game (for Capacitor), and a taster build (a Vite mode or env flag) makes the web version.
-  - The taster build leaves the other rooms' level files **out of the bundle**, not just hidden, so they can't be found in the page.
-  - A test checks the taster bundle has only the Workshop levels, and that a shared link using parts from every room still loads and plays.
-  - The deploy workflow builds the taster for GitHub Pages.
+  - **Built (25 November 2026), switched off.** One codebase, two builds: `npm run build` makes the whole game (for Capacitor, and the website for now), and `npm run build:taster` (Vite's `taster` mode, read in `src/edition.ts`) makes the taster.
+  - The taster leaves the other rooms' level files **out of the bundle**, not just hidden (`levels/index.ts`): `scripts/build-site.mjs` fails the deploy if any other room's level is in it, or a Workshop level is missing. The grown-ups' talk-card text for every level is still in it, which gives nothing away to play.
+  - `tests/taster.test.ts` checks the taster has only the Workshop, and that a shared puzzle from every room still opens and plays.
+  - The deploy workflow builds the taster when the repository variable `WEB_EDITION` is `taster`; empty (now) means the whole game.
+  - "The whole game" section: built (`main.ts`, `SHOW_WHOLE`; words in `parents/content.ts`, `WHOLE_GAME`), with the "what changed here" note in the taster. The store links go in `src/edition.ts`, `STORE`.
+  - Not built yet: the "Made in Bumpity" note on a shared puzzle opened on the web. The voice clips for every room still ship with the taster (small, and only sound).
 - **Open question: the repository is public.** Anyone can clone it and build the full game for free. Nothing has to change until pre-orders open. Then pick one:
   1. **Private code, public taster repo (favourite):** the code repository goes private, and its deploy workflow pushes only the built taster to a second, public repository whose GitHub Pages serves the web version. Free, and it stays on GitHub.
   2. GitHub Pro (about $4 a month), which allows Pages from a private repository. The site itself is still public.

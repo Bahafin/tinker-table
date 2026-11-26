@@ -100,16 +100,19 @@ import l98 from './98-rocket-two.json';
 import l99 from './99-rocket-ramp.json';
 import l100 from './100-grand-launch.json';
 import { ALL_PARTS, TOY_PARTS } from '../sim/parts';
+import { TASTER } from '../edition';
 
 /**
  * Ten levels per room, easiest first. Every level has a `difficulty` score (see
  * scripts/level-stats.test.ts and docs/design.md), and the order keeps two rules,
  * checked by tests/levels.test.ts: inside a room each level is harder than the one
  * before, and each room is harder on average than the room before it.
+ * The web taster (edition.ts) has only the Workshop: the rest aren't in its bundle at all.
  */
-export const LEVELS = [
+const WORKSHOP = [l6, l34, l1, l46, l10, l13, l16, l36, l3, l35];
+export const LEVELS = (TASTER ? WORKSHOP : [
   // Workshop
-  l6, l34, l1, l46, l10, l13, l16, l36, l3, l35,
+  ...WORKSHOP,
   // Playroom
   l31, l11, l8, l5, l20, l12, l49, l17, l32, l33,
   // Bathroom
@@ -128,7 +131,7 @@ export const LEVELS = [
   l71, l72, l76, l73, l75, l80, l78, l74, l79, l77,
   // Music room
   l51, l52, l53, l55, l56, l54, l58, l57, l59, l60,
-] as Level[];
+]) as Level[];
 
 /**
  * Rooms on the map, in order of difficulty: ten levels each, at least four of them using
@@ -142,7 +145,7 @@ export const ROOM_PART: Record<string, PartKind> = {
   bathroom: 'soap', garage: 'magnet', bedroom: 'pillow', space: 'rocket', music: 'bell',
 };
 
-export const ROOMS: Room[] = [
+const ALL_ROOMS: Room[] = [
   { id: 'workshop', name: 'Workshop', first: 0, count: 10, paper: '#f4ecdc', accent: '#c79a5b' },
   { id: 'playroom', name: 'Playroom', first: 10, count: 10, paper: '#e6eef5', accent: '#5aa2d6' },
   { id: 'bathroom', name: 'Bathroom', first: 20, count: 10, paper: '#e3f1f4', accent: '#3aa6b9' },
@@ -154,6 +157,8 @@ export const ROOMS: Room[] = [
   { id: 'garage', name: 'Garage', first: 80, count: 10, paper: '#ebe7e1', accent: '#d9822b' },
   { id: 'music', name: 'Music room', first: 90, count: 10, paper: '#f6e9ef', accent: '#b5527f' },
 ];
+/** The rooms in this build: all ten, or the Workshop alone in the web taster. */
+export const ROOMS = ALL_ROOMS.filter((r) => r.first < LEVELS.length);
 /**
  * Each room draws some parts as its own things (see render/skins.ts), so the spoken goal
  * uses the same words. Applied in order; longer phrases come first.

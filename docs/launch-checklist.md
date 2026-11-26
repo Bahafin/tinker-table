@@ -14,14 +14,14 @@ US$2.99 / CA$3.99 in launch week, then US$3.99 / CA$4.99 (Canada set by hand), p
 - [x] Name chosen (Bumpity), first trademark searches clean.
 
 ## 1. Accounts and legal (you, start now: they take days to weeks)
-- [ ] **Trademark lawyer:** clearance search for BUMPITY in class 9, then file (US, plus UK/EU if selling there). A few hundred dollars. Do this before announcing the name. See [release-prep.md](release-prep.md).
+- [ ] **Trademark lawyer:** clearance search for BUMPITY in class 9, then file (US, plus UK/EU if selling there). A few hundred dollars. Put off until the app picks up (your call, 25 November 2026); the risk is having to rename later. See [release-prep.md](release-prep.md).
 - [x] **Domain:** `bumpity.app` registered at Cloudflare (23 November 2026).
 - [ ] **Social handles** for Bumpity.
-- [ ] **Support email:** `support@bumpity.app`, forwarded to your inbox with Cloudflare Email Routing (free, 5 minutes; steps in [app.md](app.md), "The domain"). The stores require one, and the home page and privacy page already show it.
+- [x] **Support email:** `support@bumpity.app`, forwarded to your inbox with Cloudflare Email Routing (free, 5 minutes; steps in [app.md](app.md), "The domain"). The stores require one, and the home page and privacy page already show it.
 - [x] **Apple Developer Program:** $99/year. Enrol as an individual (fastest) or as a company (needs a D-U-N-S number, which takes 1–2 weeks). Approval can take a day or two.
 - [ ] **Google Play Console:** $25 once. New personal accounts must verify identity, and **must run a closed test with at least 12 testers for 14 days** before they can publish. Start this early.
-- [ ] **Tax and banking:** fill in the tax forms and bank details in App Store Connect (Agreements, Tax and Banking: the "Paid Apps" agreement) and in the Play Console payments profile. A paid app can't go on sale without them.
-- [ ] **Small Business Program:** apply in App Store Connect so Apple keeps 15%, not 30% (Google does this automatically).
+- [ ] **Tax and banking:** Apple's Paid Apps agreement signed (25 November 2026); the Canadian GST/HST (RT) number is still to sort out with the CRA. Fill in the tax forms and bank details in App Store Connect (Agreements, Tax and Banking: the "Paid Apps" agreement) and in the Play Console payments profile. A paid app can't go on sale without them.
+- [x] **Small Business Program:** applied (25 November 2026). Apply in App Store Connect so Apple keeps 15%, not 30% (Google does this automatically).
 
 ## 2. Signing and test builds (you set up once, I wire the rest)
 - [x] **You, Apple:** create the app in App Store Connect (bundle ID `app.bumpity.game`), the API key and the four GitHub secrets. Steps in [app.md](app.md).
@@ -42,8 +42,9 @@ US$2.99 / CA$3.99 in launch week, then US$3.99 / CA$4.99 (Canada set by hand), p
 - [x] **Play timer** (the last safety item in Milestone 7): the room winds down to sleep after 15, 20 or 30 minutes, and only the PIN wakes it. It's a big part of the "calm by design" promise, so it should be in version 1.0.
 - [x] **Parental gate:** the press-and-hold (which a child can learn) is replaced by a sum in words, or the PIN when one is set (build 12, 24 November 2026).
 - [x] **Recorded voice:** every line is a clip from an open-source neural voice, the same on every device (build 12). "Shh" re-recorded as a hush.
-- [ ] **Web taster build** (Workshop, toy box and puzzle maker only), ready but switched off until pre-orders open.
-- [ ] A "The whole game" section and store badges in the grown-ups' corner, behind the PIN. Shown only once the store pages exist.
+- [x] **Web taster build** (Workshop, toy box and puzzle maker only), ready but switched off until pre-orders open: `npm run build:taster`; the site switches when the `WEB_EDITION` variable is `taster` (25 November 2026).
+- [x] A "The whole game" section in the grown-ups' corner, behind the gate, on the web only: what the app adds, "pay once", and store buttons. In the whole game it shows only once a store link is filled in (`src/edition.ts`, `STORE`); in the taster it always shows (25 November 2026).
+- [ ] **Claude, once the store pages exist:** put their links in `STORE`, and swap the text buttons for Apple's and Google's official badges (their artwork rules ask for the official badge).
 
 ## 4. Once the domain exists (you register it, then I do the rest)
 - [x] **Claude:** the site rebuilt for the domain: home page at `/`, the game at `/play/`, share links as `https://bumpity.app/play/#p=…`, old `#p=` links passed on.
@@ -75,7 +76,7 @@ US$2.99 / CA$3.99 in launch week, then US$3.99 / CA$4.99 (Canada set by hand), p
 ## 6. Before pressing "Submit" (both of us)
 - [ ] Playtest on a real iPad and an Android device: all ten rooms, the toy box, the puzzle maker, the sticker book, sharing a puzzle, the PIN, the lock-to-app guide.
 - [x] **Claude:** version 1.0 everywhere (matches App Store Connect), a final check that nothing in the app talks to the internet except shared links and the grown-ups' links (the only fetch is the bundled voice clips), and every test passing (25 November 2026).
-- [ ] **Claude:** switch the website to the taster on the day pre-orders open (see "The web taster" in [roadmap.md](roadmap.md)).
+- [ ] **Switch the website to the taster** on the day pre-orders open (see "The web taster" in [roadmap.md](roadmap.md)): GitHub › the repository › Settings › Secrets and variables › Actions › Variables › `WEB_EDITION` = `taster`, then re-run "Deploy to GitHub Pages". Either of us can do it; deleting the variable switches back.
 - [ ] **You:** submit for review. Apple usually takes 1–3 days; Kids apps get a closer look. Google's first review of a new account can take up to a week.
 
 ## Costs, all in

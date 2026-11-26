@@ -10,7 +10,8 @@
     "test": "vitest run",
     "search": "vitest run scripts/level-search",
     "voice:lines": "vitest run scripts/voice-lines",
-    "build:site": "vite build && node scripts/build-site.mjs"
+    "build:taster": "vite build --mode taster",
+    "build:site": "node scripts/build-site.mjs"
   },
   "dependencies": {
     "@capacitor-community/text-to-speech": "^8.0.2",
