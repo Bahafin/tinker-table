@@ -41,12 +41,12 @@ const TAP_SLOP = { mouse: 8, touch: 22 };
 interface Handle { dir: -1 | 0 | 1; px: number; py: number }
 
 /**
- * Phones turned sideways: the buttons sit in a strip down the left (see style.css, which
- * uses the same query) and the Go button floats at the top right, over the tray column.
+ * A short table area (a phone turned sideways): the same layout as on a tablet, buttons on
+ * top and parts below, with a slimmer tray and smaller part cards so the table stays big.
  */
-export const RAIL_QUERY = '(orientation: landscape) and (max-height: 560px)';
-/** Space kept clear at the top of the side tray for the floating Go button. */
-const GO_RESERVE = 80;
+const SHORT_H = 480;
+/** The smallest part card on a short screen: still a comfortable size for a finger. */
+const MIN_TOUCH_SHORT = 50;
 
 /** Missed runs before the hint button appears. */
 const MISSES_BEFORE_HINT = 2;
@@ -70,8 +70,6 @@ type TrayHit = { item: number } | { tab: number } | { page: -1 | 1 } | null;
 type Box = { x: number; y: number; w: number; h: number };
 interface TrayLayout {
   scale: number; ox: number; oy: number; trayTop: number; trayH: number; item: number; cw: number; ch: number; dpr: number;
-  /** Short, wide screens (a phone turned sideways): the tray is a column at the right, from trayLeft. */
-  side: boolean; trayLeft: number;
   /** Parts showing in the tray (i: index into the tray's items) and where. */
   items: { i: number; x: number; y: number }[];
   tabs: { x: number; y: number }[];
@@ -158,7 +156,7 @@ export class Game {
   private film: HTMLCanvasElement[] = [];
   private lastShot = -1;
   private wonAt = 0;
-  private L: TrayLayout = { scale: 1, ox: 0, oy: 0, trayTop: 0, trayH: 0, item: 0, cw: 0, ch: 0, dpr: 1, side: false, trayLeft: 0, items: [], tabs: [], tab: 0, prev: null, next: null };
+  private L: TrayLayout = { scale: 1, ox: 0, oy: 0, trayTop: 0, trayH: 0, item: 0, cw: 0, ch: 0, dpr: 1, items: [], tabs: [], tab: 0, prev: null, next: null };
   /** Toy box: the room sets of parts the tray's tabs choose between, and which one is showing. */
   sets: TraySet[] | null = null;
   private setIndex = 0;
@@ -412,14 +410,9 @@ export class Game {
       c.width = Math.round(cw * dpr);
       c.height = Math.round(ch * dpr);
     }
-    // A short, wide screen (a phone on its side) can't spare a row for the tray: it goes
-    // down the right-hand side instead, and the table gets the full height.
-    if (ch < 560 && cw > ch * 1.25) {
-      const top = typeof matchMedia === 'function' && matchMedia(RAIL_QUERY).matches ? GO_RESERVE : 8;
-      if (this.sets) this.layoutSideSets(cw, ch, dpr, top); else this.layoutSide(cw, ch, dpr, top);
-      return;
-    }
-    const rowH = Math.max(96, Math.min(130, ch * 0.17));
+    const short = ch < SHORT_H;
+    const rowH = short ? MIN_TOUCH_SHORT + 16 : Math.max(96, Math.min(130, ch * 0.17));
+    const minTouch = short ? MIN_TOUCH_SHORT : MIN_TOUCH_PX;
     const gap = TRAY_GAP;
     if (this.sets) { this.layoutSets(cw, ch, dpr, rowH); return; }
     const n = Math.max(1, this.level.tray.length);
@@ -429,8 +422,8 @@ export class Game {
     let rows = 1;
     let cols = n;
     let item = fit(cols);
-    const maxRows = Math.max(2, Math.floor((ch * 0.45 - 14) / (MIN_TOUCH_PX + gap)));
-    while (item < MIN_TOUCH_PX && rows < maxRows) {
+    const maxRows = Math.max(2, Math.floor((ch * 0.45 - 14) / (minTouch + gap)));
+    while (item < minTouch && rows < maxRows) {
       rows++;
       cols = Math.ceil(n / rows);
       item = fit(cols);
@@ -444,7 +437,7 @@ export class Game {
     const itemX0 = (cw - cols * (item + gap) + gap) / 2;
     const itemY0 = ch - trayH + (trayH - (rows * (item + gap) - gap)) / 2;
     const items = this.level.tray.map((_, i) => ({ i, x: itemX0 + (i % cols) * (item + gap), y: itemY0 + Math.floor(i / cols) * (item + gap) }));
-    this.L = { scale, ox, oy, trayTop: ch - trayH, trayH, item, cw, ch, dpr, side: false, trayLeft: cw, items, tabs: [], tab: 0, prev: null, next: null };
+    this.L = { scale, ox, oy, trayTop: ch - trayH, trayH, item, cw, ch, dpr, items, tabs: [], tab: 0, prev: null, next: null };
   }
 
   /**
@@ -457,17 +450,18 @@ export class Game {
     const gap = TRAY_GAP;
     const sets = this.sets!;
     const narrow = cw < 700;
+    const short = ch < SHORT_H;
     const pad = 12;
     const n = this.trayItems().length;
-    const item = narrow ? 76 : Math.min(rowH - 14, 88);
-    const tab = narrow ? Math.max(44, Math.min(68, (cw - 2 * pad) / sets.length - gap)) : Math.max(44, Math.min(54, (cw - 2 * pad) / sets.length - gap));
+    const item = short ? MIN_TOUCH_SHORT : narrow ? 76 : Math.min(rowH - 14, 88);
+    const tab = short ? 36 : narrow ? Math.max(44, Math.min(68, (cw - 2 * pad) / sets.length - gap)) : Math.max(44, Math.min(54, (cw - 2 * pad) / sets.length - gap));
     const arrowW = Math.max(48, Math.round(item * 0.6));
     // Tabs on their own row, then one row of parts (narrow screens: as many rows of parts as
     // fit in the lower part of the screen).
     const areaX0 = pad;
     const areaW = cw - pad - areaX0;
     const colsFor = (w: number) => Math.max(1, Math.floor((w + gap) / (item + gap)));
-    const maxRows = narrow ? Math.max(1, Math.floor((ch * 0.55 - tab - 3 * gap - 14) / (item + gap))) : 1;
+    const maxRows = narrow && !short ? Math.max(1, Math.floor((ch * 0.55 - tab - 3 * gap - 14) / (item + gap))) : 1;
     let cols = colsFor(areaW);
     let rows = Math.min(maxRows, Math.ceil(n / cols));
     const fitsAll = cols * rows >= n;
@@ -476,9 +470,10 @@ export class Game {
     const pages = Math.max(1, Math.ceil(n / perPage));
     this.page = Math.min(this.page, pages - 1);
     const blockH = rows * (item + gap) - gap;
-    const trayH = tab + blockH + 3 * gap + 14;
-    const rowY = ch - 7 - blockH;
-    const tabY = ch - trayH + 7;
+    const edge = short ? 3 : 7; // a phone's tray hugs the edges, so the table stays bigger
+    const trayH = tab + blockH + 3 * gap + 2 * edge;
+    const rowY = ch - edge - blockH;
+    const tabY = ch - trayH + edge;
     const tabX0 = (cw - sets.length * (tab + gap) + gap) / 2;
     const tabs = sets.map((_, k) => ({ x: tabX0 + k * (tab + gap), y: tabY }));
     const inner = fitsAll ? areaW : areaW - 2 * (arrowW + gap);
@@ -490,73 +485,12 @@ export class Game {
     const prev = !fitsAll && this.page > 0 ? { x: areaX0, y: rowY, w: arrowW, h: blockH } : null;
     const next = !fitsAll && this.page < pages - 1 ? { x: areaX0 + areaW - arrowW, y: rowY, w: arrowW, h: blockH } : null;
     const scale = Math.min((cw - 16) / WORLD_W, (ch - trayH - 12) / WORLD_H);
-    this.L = { scale, ox: (cw - WORLD_W * scale) / 2, oy: 6, trayTop: ch - trayH, trayH, item, cw, ch, dpr, side: false, trayLeft: cw, items: list, tabs, tab, prev, next };
-  }
-
-  /** The table, centred in the space left of a side tray `trayW` wide. */
-  private sideTable(cw: number, ch: number, trayW: number) {
-    const trayLeft = cw - trayW;
-    const scale = Math.min((trayLeft - 12) / WORLD_W, (ch - 12) / WORLD_H);
-    return { trayLeft, scale, ox: (trayLeft - WORLD_W * scale) / 2, oy: (ch - WORLD_H * scale) / 2 };
-  }
-
-  /** A level's tray as a column (two if needed) down the right-hand side. */
-  private layoutSide(cw: number, ch: number, dpr: number, top: number) {
-    const gap = TRAY_GAP, pad = 8;
-    const n = Math.max(1, this.level.tray.length);
-    const availH = ch - top - pad;
-    const fit = (rows: number) => Math.min(84, (availH - (rows - 1) * gap) / rows);
-    let cols = 1;
-    let rows = n;
-    let item = fit(rows);
-    if (item < MIN_TOUCH_PX && n > 1) { cols = 2; rows = Math.ceil(n / 2); item = fit(rows); }
-    item = Math.max(44, item);
-    const used = cols * (item + gap) - gap;
-    const trayW = Math.max(used + 2 * pad, top > 8 ? 92 : 0);
-    const t = this.sideTable(cw, ch, trayW);
-    const blockH = rows * (item + gap) - gap;
-    const x0 = t.trayLeft + (trayW - used) / 2;
-    const y0 = top + Math.max(0, (availH - blockH) / 2);
-    const items = this.level.tray.map((_, i) => ({ i, x: x0 + (i % cols) * (item + gap), y: y0 + Math.floor(i / cols) * (item + gap) }));
-    this.L = { scale: t.scale, ox: t.ox, oy: t.oy, trayTop: ch, trayH: 0, item, cw, ch, dpr, side: true, trayLeft: t.trayLeft, items, tabs: [], tab: 0, prev: null, next: null };
-  }
-
-  /** Toy box tray on the side: a column of room tabs, then two columns of parts with up/down arrows. */
-  private layoutSideSets(cw: number, ch: number, dpr: number, top: number) {
-    const gap = TRAY_GAP, pad = 8;
-    const sets = this.sets!;
-    const n = this.trayItems().length;
-    const tab = Math.max(36, Math.min(56, (ch - 2 * pad - (sets.length - 1) * gap) / sets.length));
-    const item = 66;
-    const cols = 2;
-    const arrowH = 40;
-    const areaW = cols * (item + gap) - gap;
-    const colX = cw - pad - areaW;
-    const tabX = colX - gap - tab;
-    const tabY0 = (ch - (sets.length * (tab + gap) - gap)) / 2;
-    const tabs = sets.map((_, k) => ({ x: tabX, y: tabY0 + k * (tab + gap) }));
-    const areaH = ch - top - pad;
-    const rowsFor = (h: number) => Math.max(1, Math.floor((h + gap) / (item + gap)));
-    let rows = rowsFor(areaH);
-    const fitsAll = rows * cols >= n;
-    if (!fitsAll) rows = rowsFor(areaH - 2 * (arrowH + gap));
-    const perPage = rows * cols;
-    const pages = Math.max(1, Math.ceil(n / perPage));
-    this.page = Math.min(this.page, pages - 1);
-    const from = this.page * perPage;
-    const shown = Math.min(perPage, n - from);
-    const shownRows = Math.ceil(shown / cols);
-    const y0 = top + (fitsAll ? (areaH - (shownRows * (item + gap) - gap)) / 2 : arrowH + gap);
-    const list = Array.from({ length: shown }, (_, k) => ({ i: from + k, x: colX + (k % cols) * (item + gap), y: y0 + Math.floor(k / cols) * (item + gap) }));
-    const prev = !fitsAll && this.page > 0 ? { x: colX, y: top, w: areaW, h: arrowH } : null;
-    const next = !fitsAll && this.page < pages - 1 ? { x: colX, y: ch - pad - arrowH, w: areaW, h: arrowH } : null;
-    const t = this.sideTable(cw, ch, cw - tabX + pad);
-    this.L = { scale: t.scale, ox: t.ox, oy: t.oy, trayTop: ch, trayH: 0, item, cw, ch, dpr, side: true, trayLeft: t.trayLeft, items: list, tabs, tab, prev, next };
+    this.L = { scale, ox: (cw - WORLD_W * scale) / 2, oy: 6, trayTop: ch - trayH, trayH, item, cw, ch, dpr, items: list, tabs, tab, prev, next };
   }
 
   /** Is this screen point over the tray (where a dragged part is put away)? */
   private inTray(px: number, py: number) {
-    return this.L.side ? px > this.L.trayLeft : py > this.L.trayTop;
+    return py > this.L.trayTop;
   }
 
   private toWorld(e: PointerEvent) {
@@ -762,8 +696,7 @@ export class Game {
     } else {
       out.push({ dir: -1, px: cx - r - gap / 2, py: y }, { dir: 1, px: cx + r + gap / 2, py: y });
     }
-    const right = L.side ? L.trayLeft : L.cw;
-    for (const h of out) h.px = Math.min(right - r - 2, Math.max(r + 2, h.px));
+    for (const h of out) h.px = Math.min(L.cw - r - 2, Math.max(r + 2, h.px));
     return out;
   }
 
@@ -1207,7 +1140,7 @@ export class Game {
       const { x, y } = L.tabs[k];
       const on = k === this.setIndex;
       ctx.save();
-      if (on) ctx.translate(L.side ? -4 : 0, L.side ? 0 : -4);
+      if (on) ctx.translate(0, -4);
       ctx.shadowColor = 'rgba(80,55,30,0.25)'; ctx.shadowOffsetY = on ? 4 : 2; ctx.shadowBlur = on ? 6 : 3;
       ctx.beginPath(); ctx.roundRect(x, y, L.tab, L.tab, L.tab / 2); ctx.fillStyle = s.paper; ctx.fill();
       ctx.shadowColor = 'transparent';
@@ -1223,10 +1156,8 @@ export class Game {
       ctx.shadowColor = 'rgba(80,55,30,0.2)'; ctx.shadowOffsetY = 3; ctx.shadowBlur = 4;
       ctx.beginPath(); ctx.roundRect(a.x, a.y, a.w, a.h, 14); ctx.fillStyle = '#fffaf0'; ctx.fill();
       ctx.shadowColor = 'transparent';
-      const s = Math.min(a.w, a.h) * (L.side ? 0.3 : 0.22);
-      // On the side tray the arrows point up and down.
+      const s = Math.min(a.w, a.h) * 0.22;
       ctx.translate(a.x + a.w / 2, a.y + a.h / 2);
-      if (L.side) ctx.rotate(Math.PI / 2);
       ctx.beginPath(); ctx.moveTo(-dir * s * 0.5, -s); ctx.lineTo(dir * s * 0.6, 0); ctx.lineTo(-dir * s * 0.5, s);
       ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = PAPER.ink; ctx.stroke();
       ctx.restore();

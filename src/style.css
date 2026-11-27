@@ -184,38 +184,17 @@ svg .fill { fill: currentColor; stroke: none; }
 }
 
 /* ---------- phones ---------- */
-/* Turned sideways (keep this query in step with RAIL_QUERY in src/ui/game.ts): the top bar
-   becomes a strip of buttons down the left, Go floats at the top right over the tray column,
-   and the table gets the full height. */
+/* Turned sideways: the same layout as on a tablet (buttons on top, parts below; see
+   SHORT_H in src/ui/game.ts), with a slim bar and smaller buttons so the table stays big. */
 @media (orientation: landscape) and (max-height: 560px) {
-  #play { flex-direction: row; }
-  #play .bar {
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 6px;
-    padding: 8px 4px 8px 8px;
-    min-height: 0;
-    overflow-y: auto;
-    scrollbar-width: none;
-  }
-  #play .bar::-webkit-scrollbar { display: none; }
-  #play .bar .spacer { display: none; }
-  #play .bar .icon { width: 50px; height: 50px; border-radius: 15px; flex-shrink: 0; }
-  #play .bar .icon svg { width: 32px; height: 32px; }
-  #play .bar .goal { width: 50px; height: auto; padding: 6px 0; flex-shrink: 0; border-radius: 15px; }
-  #play .bar .goal canvas { width: 44px; height: 104px; }
-  #play .bar .goal .speaker { display: none; }
-  #play.no-goal .bar .goal { display: none; }
-  #play .bar .go {
-    position: absolute;
-    z-index: 2;
-    top: calc(env(safe-area-inset-top) + 8px);
-    right: calc(env(safe-area-inset-right) + 8px);
-    width: 76px;
-    height: 60px;
-    border-radius: 20px;
-  }
-  #stage { width: auto; height: 100%; min-width: 0; }
+  #play .bar { min-height: 0; gap: 8px; padding: 6px 10px 2px; }
+  #play .bar .icon { width: 46px; height: 46px; border-radius: 14px; }
+  #play .bar .icon svg { width: 28px; height: 28px; }
+  #play .bar .goal { height: 46px; padding: 0 8px 0 4px; border-radius: 14px; }
+  #play .bar .goal canvas { width: 124px; height: 42px; }
+  #play .bar .goal .speaker { width: 24px; height: 24px; }
+  #play .bar .go { width: 70px; height: 48px; border-radius: 16px; }
+  #play .bar .go svg { width: 30px; height: 30px; }
   .won { padding: 14px 20px; gap: 16px; }
   .won .big { width: 88px; height: 72px; }
   .film .frame canvas { width: clamp(60px, 10vw, 100px); }

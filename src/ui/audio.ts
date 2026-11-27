@@ -225,6 +225,9 @@ function loadClip(file: string): Promise<AudioBuffer | null> {
   return p;
 }
 
+/** Which voice said the last line: the recorded clip, or the device's own (the fallback). */
+export const voiceUsed: { last: 'clip' | 'device' | null; why: string } = { last: null, why: '' };
+
 /** Whether a line has a recorded clip. */
 export const hasClip = (text: string) => text in clipFiles;
 
@@ -240,12 +243,15 @@ export function stopSpeaking() {
 export function speak(text: string) {
   stopSpeaking();
   const file = clipFiles[text];
+  if (file && !ac) { voiceUsed.last = 'device'; voiceUsed.why = 'sound was not switched on yet'; }
+  else if (!file) { voiceUsed.last = 'device'; voiceUsed.why = 'this line has no recording'; }
   if (file && ac) {
     const id = sayId;
     const ctx = ac;
     void loadClip(file).then((buf) => {
       if (id !== sayId) return; // something else was said, or the level was left
-      if (!buf) { deviceSpeak(text); return; }
+      if (!buf) { voiceUsed.last = 'device'; voiceUsed.why = 'the recording did not load'; deviceSpeak(text); return; }
+      voiceUsed.last = 'clip'; voiceUsed.why = ctx.state;
       if (ctx.state === 'suspended') void ctx.resume();
       const src = ctx.createBufferSource();
       src.buffer = buf;

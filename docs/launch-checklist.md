@@ -60,7 +60,7 @@ US$2.99 / CA$3.99 in launch week, then US$3.99 / CA$4.99 (Canada set by hand), p
   - Kids category, age band "6–8".
   - Privacy label "Data Not Collected", privacy URL, support URL.
   - Copyright: "2026 " plus your full legal name (or company name).
-  - Paste the listing text, upload the screenshots (including the 6.3-inch iPhone set) and the preview video.
+  - Paste the listing text, upload the screenshots (including the 6.3-inch iPhone set) and the preview video. The iPhone screenshots were retaken on 26 November 2026 for the new phone layout: upload those, not earlier ones. The iPad set changed only in 6-toybox.
   - Answer the age rating questions (answers in [store-listing.md](store-listing.md)).
   - Export compliance: none (already set in the app).
   - Turn on the education volume discount.
