@@ -1,5 +1,7 @@
 # Records every line the game says with Kokoro (an open-source neural voice, Apache 2.0, free
-# to use in a paid app) and writes public/voice/<id>.mp3 plus src/ui/voice-clips.json.
+# to use in a paid app) and writes public/voice/<id>.mpga plus src/ui/voice-clips.json.
+# The clips are MP3 audio named .mpga: the iOS app's file server (Capacitor) answers .mp3 files
+# as media for <audio> tags, which makes fetch() fail there with "Load failed".
 # Runs in GitHub Actions (.github/workflows/voice.yml); see docs/app.md, "The voice".
 #   python scripts/make-voice.py <lines.json> [--voice af_heart] [--speed 0.92] [--samples DIR]
 # A clip's id comes from its text, the voice and the speed, so only new or changed lines are
@@ -92,21 +94,21 @@ def record(text, voice, speed, path, style=None):
         sf.write(wav, np.concatenate([pad, audio, pad]), RATE)
         # Mono MP3 plays everywhere (iOS, Android, every browser); loudness evened out.
         subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', wav, '-af', 'loudnorm=I=-16:TP=-1.5',
-                        '-ar', '24000', '-ac', '1', '-b:a', '48k', path], check=True)
+                        '-ar', '24000', '-ac', '1', '-b:a', '48k', '-f', 'mp3', path], check=True)
 
 lines = json.load(open(args.lines, encoding='utf-8'))
 clips = {}
 for text in lines:
     key = spoken(text) + (f'|hush={HUSH}' if HUSH_START.match(text) else '')
     cid = hashlib.sha1(f'{args.voice}|{args.speed}|{key}'.encode()).hexdigest()[:12]
-    name = f'{cid}.mp3'
+    name = f'{cid}.mpga'
     path = os.path.join(OUT, name)
     if not os.path.exists(path):
         print('recording:', text)
         record(spoken(text), args.voice, args.speed, path)
     clips[text] = name
 for f in os.listdir(OUT):
-    if f.endswith('.mp3') and f not in clips.values():
+    if f.endswith(('.mp3', '.mpga')) and f not in clips.values():
         os.remove(os.path.join(OUT, f))
 with open(MAP, 'w', encoding='utf-8', newline='\n') as fh:
     json.dump(dict(sorted(clips.items())), fh, indent=1, ensure_ascii=False)

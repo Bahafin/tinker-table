@@ -211,15 +211,18 @@ const clipFiles = CLIPS as Record<string, string>;
 const clipCache = new Map<string, Promise<AudioBuffer | null>>();
 let saying: AudioBufferSourceNode | null = null;
 let sayId = 0;
+/** Why the last recording failed to load, for the grown-ups' voice check. */
+let lastClipError = '';
 
 function loadClip(file: string): Promise<AudioBuffer | null> {
   let p = clipCache.get(file);
   if (!p) {
     const ctx = ac!;
     p = fetch(`voice/${file}`)
-      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
-      .then((b) => ctx.decodeAudioData(b))
-      .catch(() => { clipCache.delete(file); return null; });
+      .catch((e: Error) => Promise.reject(new Error(`fetch: ${e?.message ?? e}`)))
+      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`fetch: status ${r.status}`))))
+      .then((b) => ctx.decodeAudioData(b).catch((e: Error) => Promise.reject(new Error(`decode: ${e?.message ?? e}`))))
+      .catch((e: Error) => { clipCache.delete(file); lastClipError = e?.message ?? String(e); return null; });
     clipCache.set(file, p);
   }
   return p;
@@ -250,7 +253,7 @@ export function speak(text: string) {
     const ctx = ac;
     void loadClip(file).then((buf) => {
       if (id !== sayId) return; // something else was said, or the level was left
-      if (!buf) { voiceUsed.last = 'device'; voiceUsed.why = 'the recording did not load'; deviceSpeak(text); return; }
+      if (!buf) { voiceUsed.last = 'device'; voiceUsed.why = `the recording did not load (${lastClipError})`; deviceSpeak(text); return; }
       voiceUsed.last = 'clip'; voiceUsed.why = ctx.state;
       if (ctx.state === 'suspended') void ctx.resume();
       const src = ctx.createBufferSource();
