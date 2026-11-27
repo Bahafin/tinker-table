@@ -5,7 +5,7 @@ import { WORLD_H, WORLD_W, type Level, type Note, type PartKind, type Placement 
 import { drawFixedPin, drawPart, drawTable, PAPER, setPaperShadow, setSkin } from './render/draw';
 import { Game, drawIcon, type TraySet } from './ui/game';
 import { ALL_PARTS, TOY_PARTS } from './sim/parts';
-import { sfx, speak, stopSpeaking, unlockAudio, voiceUsed } from './ui/audio';
+import { sfx, speak, stopSpeaking, unlockAudio } from './ui/audio';
 import { EXTRA_STOPS, SLEEPY_VOICE } from './ui/voice-lines';
 import { MAKER_SAY } from './ui/maker-say';
 import { STARTERS } from './levels/starters';
@@ -638,12 +638,6 @@ function buildGrownups() {
         <p>Clears which levels are done and the sticker book, so the rooms start fresh. Made puzzles and kept machines stay.</p>
         <div class="acts"><button class="text-btn danger" id="gu-reset">Clear progress and stickers</button></div>
       </div>
-      <h3>The voice</h3>
-      <div class="gu-card">
-        <p>Every line is a recording, the same on every device. If the voice ever sounds flat or robotic, play a line here: it says which voice was used.</p>
-        <div class="acts"><button class="text-btn" id="gu-voice">Play a line</button></div>
-        <p class="note" id="gu-voice-out" aria-live="polite"></p>
-      </div>
       <h3>Privacy</h3>
       <div class="gu-card">
         <p>Bumpity collects no data: no accounts, ads or tracking${STORE_LINKS.length && SHOW_WHOLE ? ', and the only links out are to the store pages in The whole game' : ', and no links out'}. Progress, the sticker book, the PIN and made puzzles are kept only on this device. A shared link contains only the puzzle itself.</p>
@@ -685,18 +679,6 @@ function buildGrownups() {
   $('gu-made-tabs').onclick = (e) => {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-made]');
     if (b) { madeTab = b.dataset.made as typeof madeTab; renderMade(); }
-  };
-  $('gu-voice').onclick = () => {
-    const space = ROOMS.find((r) => r.id === 'space') ?? ROOMS[0];
-    const line = roomVoice(space.id, LEVELS[space.first].voice);
-    voiceUsed.last = null;
-    speak(line);
-    $('gu-voice-out').textContent = 'Listening…';
-    setTimeout(() => {
-      const v = voiceUsed;
-      $('gu-voice-out').textContent = v.last === 'clip' ? `That was the recorded voice (sound: ${v.why}).`
-        : v.last === 'device' ? `That was the device's own voice: ${v.why}.` : 'Nothing played yet: try again.';
-    }, 2500);
   };
   const reset = $<HTMLButtonElement>('gu-reset');
   reset.onclick = async () => {
