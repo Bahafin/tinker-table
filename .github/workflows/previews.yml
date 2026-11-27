@@ -1,0 +1,22 @@
+# Records the App Store preview videos (scripts/store-preview.mjs): real play with the game's own
+# sound, encoded with ffmpeg to Apple's format. Run it from Actions > Store previews, then put
+# the download's videos in store/previews/.
+name: Store previews
+on: workflow_dispatch
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: sudo apt-get update -q && sudo apt-get install -yq ffmpeg
+      - run: npm run build
+      - run: (npx vite preview --port 4173 --strictPort &) && sleep 3
+      - run: BROWSER=chrome node scripts/store-preview.mjs
+      - run: ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,channels,sample_rate -show_entries format=duration store/previews/*.mp4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: store-previews
+          path: store/previews/*.mp4
