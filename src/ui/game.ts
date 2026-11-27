@@ -5,6 +5,7 @@ import { WORLD_H, WORLD_W, type Level, type PartKind, type Placement } from '../
 import { drawFixedPin, drawPart, drawTable, PAPER, paperGrain, setPaperShadow, setSkin } from '../render/draw';
 import { sfx } from './audio';
 import { nextHint } from './hints';
+import { MAKER_SAY } from './maker-say';
 import { GOAL_OBJECTS, GOAL_TARGETS, MADE_VOICE } from '../levels/share';
 
 export type Mode = 'build' | 'run' | 'won' | 'make';
@@ -108,6 +109,8 @@ export class Game {
   placements: Placement[] = [];
   onChange: () => void = () => {};
   onWin: () => void = () => {};
+  /** Something to say out loud (the puzzle maker's steps). */
+  onSay: (line: string) => void = () => {};
 
   private fixed: Placement[];
   private sim: Sim | null = null;
@@ -144,8 +147,11 @@ export class Game {
   /** The pencil is out: the next stroke on the table draws a guess. */
   pencil = false;
   private drawing: number | null = null;
-  /** Where the goal object really went on the last run. */
-  private trail: Pt[] = [];
+  /**
+   * Where each part really went on the last run: the whole chain reaction, not only the goal
+   * object, since a child's guess often follows every step. Only parts that travelled are drawn.
+   */
+  private trails = new Map<RuntimePart, Pt[]>();
   /** Keep showing the last run's path next to the guess, until something changes. */
   private showTrail = false;
   /** Snapshots of the current run, for the film strip after a win. */
@@ -190,7 +196,7 @@ export class Game {
     this.endTimer = 0;
     this.mode = 'run';
     this.pencil = false;
-    this.trail = [];
+    this.trails.clear();
     this.showTrail = this.guess.length > 0;
     this.film = [];
     this.lastShot = -1;
@@ -249,6 +255,7 @@ export class Game {
     this.making = { step: 'object', object: null, target: null, pins: new Set() };
     sfx.place();
     this.onChange();
+    this.onSay(MAKER_SAY.object);
   }
 
   stopMaking() {
@@ -271,11 +278,11 @@ export class Game {
     const ok = () => { sfx.place(); this.onChange(); };
     if (m.step === 'object') {
       if (!GOAL_OBJECTS.has(kind)) { sfx.nope(); this.doWiggle(i); return; }
-      m.object = i; m.pins.add(i); m.step = 'target'; return ok();
+      m.object = i; m.pins.add(i); m.step = 'target'; ok(); this.onSay(MAKER_SAY.target); return;
     }
     if (m.step === 'target') {
       if (!GOAL_TARGETS.has(kind) || i === m.object) { sfx.nope(); this.doWiggle(i); return; }
-      m.target = i; m.pins.add(i); m.step = 'pins'; return ok();
+      m.target = i; m.pins.add(i); m.step = 'pins'; ok(); this.onSay(MAKER_SAY.pins); return;
     }
     if (i === m.object || i === m.target) { sfx.nope(); this.doWiggle(i); return; }
     if (m.pins.has(i)) m.pins.delete(i); else m.pins.add(i);
@@ -320,18 +327,20 @@ export class Game {
    */
   checkPuzzle(): Level | null {
     const level = this.madeLevel();
-    const fail = () => {
+    const fail = (why?: string) => {
       sfx.hmm();
+      if (why) this.onSay(why);
       const m = this.making;
       const at = m?.object ?? m?.target ?? 0;
       this.doWiggle(at);
       return null;
     };
-    if (!level) return fail();
+    if (!level) return fail(this.making?.step === 'pins' ? MAKER_SAY.noTray : undefined);
     const fixed = level.fixed.map((p) => ({ ...p, fixed: true }));
     const works = new Sim([...fixed, ...level.solution!], level.goal).runHeadless();
     const solvesItself = new Sim(fixed, level.goal).runHeadless();
-    if (!works || solvesItself) return fail();
+    if (!works) return fail(MAKER_SAY.broken);
+    if (solvesItself) return fail(MAKER_SAY.tooEasy);
     sfx.chime();
     return level;
   }
@@ -439,9 +448,10 @@ export class Game {
   }
 
   /**
-   * Toy box tray: room tabs pick a set of parts (each room's parts in its own look), and
-   * arrows page through a set that is longer than the row. Wide screens keep it all on one
-   * row so the table stays big; narrow ones put the tabs on a row of their own.
+   * Toy box and puzzle maker tray: a row of room tabs picks a set of parts (each room's parts
+   * in its own look), and below it the parts get the whole width, with arrows to page through
+   * a set that is longer than the row. (Tabs and parts used to share one row on wide screens,
+   * but ten rooms' tabs left room for only two or three parts.)
    */
   private layoutSets(cw: number, ch: number, dpr: number, rowH: number) {
     const gap = TRAY_GAP;
@@ -450,11 +460,11 @@ export class Game {
     const pad = 12;
     const n = this.trayItems().length;
     const item = narrow ? 76 : Math.min(rowH - 14, 88);
-    const tab = narrow ? Math.max(44, Math.min(68, (cw - 2 * pad) / sets.length - gap)) : Math.min(item, 68);
+    const tab = narrow ? Math.max(44, Math.min(68, (cw - 2 * pad) / sets.length - gap)) : Math.max(44, Math.min(54, (cw - 2 * pad) / sets.length - gap));
     const arrowW = Math.max(48, Math.round(item * 0.6));
-    // Wide: tabs then one row of parts. Narrow: tabs on their own row, then as many rows of
-    // parts as fit in the lower part of the screen.
-    const areaX0 = narrow ? pad : pad + sets.length * (tab + gap) + 14;
+    // Tabs on their own row, then one row of parts (narrow screens: as many rows of parts as
+    // fit in the lower part of the screen).
+    const areaX0 = pad;
     const areaW = cw - pad - areaX0;
     const colsFor = (w: number) => Math.max(1, Math.floor((w + gap) / (item + gap)));
     const maxRows = narrow ? Math.max(1, Math.floor((ch * 0.55 - tab - 3 * gap - 14) / (item + gap))) : 1;
@@ -466,14 +476,14 @@ export class Game {
     const pages = Math.max(1, Math.ceil(n / perPage));
     this.page = Math.min(this.page, pages - 1);
     const blockH = rows * (item + gap) - gap;
-    const trayH = narrow ? tab + blockH + 3 * gap + 14 : rowH;
+    const trayH = tab + blockH + 3 * gap + 14;
     const rowY = ch - 7 - blockH;
-    const tabY = narrow ? ch - trayH + 7 : rowY + (item - tab) / 2;
-    const tabX0 = narrow ? (cw - sets.length * (tab + gap) + gap) / 2 : pad;
+    const tabY = ch - trayH + 7;
+    const tabX0 = (cw - sets.length * (tab + gap) + gap) / 2;
     const tabs = sets.map((_, k) => ({ x: tabX0 + k * (tab + gap), y: tabY }));
     const inner = fitsAll ? areaW : areaW - 2 * (arrowW + gap);
     const used = Math.min(cols, n) * (item + gap) - gap;
-    const x0 = areaX0 + (fitsAll ? 0 : arrowW + gap) + (narrow ? (inner - used) / 2 : 0);
+    const x0 = areaX0 + (fitsAll ? 0 : arrowW + gap) + (inner - used) / 2;
     const from = this.page * perPage;
     const shown = Math.min(perPage, n - from);
     const list = Array.from({ length: shown }, (_, k) => ({ i: from + k, x: x0 + (k % cols) * (item + gap), y: rowY + Math.floor(k / cols) * (item + gap) }));
@@ -805,11 +815,14 @@ export class Game {
         s.step();
         this.acc -= DT;
       }
-      const o = this.level.goal && s.byId(this.level.goal.object);
-      if (o) {
-        const b = Sim.goalBody(o).getPosition();
-        const last = this.trail[this.trail.length - 1];
-        if (!last || Math.hypot(b.x - last.x, b.y - last.y) > 0.1) this.trail.push({ x: b.x, y: b.y });
+      for (const rp of s.parts) {
+        const body = Sim.goalBody(rp);
+        if (!body?.isDynamic() || rp.state.popped) continue;
+        const b = body.getPosition();
+        let tr = this.trails.get(rp);
+        if (!tr) this.trails.set(rp, (tr = []));
+        const last = tr[tr.length - 1];
+        if (!last || Math.hypot(b.x - last.x, b.y - last.y) > 0.1) tr.push({ x: b.x, y: b.y });
       }
       for (const ev of s.events) {
         if (ev.type === 'pop' || (ev.type === 'note' && ev.note === 'bell')) this.bangs.push({ x: ev.x, y: ev.y, t: this.t });
@@ -968,20 +981,24 @@ export class Game {
         ctx.fill();
       }
     }
-    if (this.showTrail && this.trail.length > 1) {
-      // Dots every 0.3 cells along the real path.
+    if (this.showTrail) {
+      // Dots every 0.3 cells along each part's real path. A part that only wobbled or tipped
+      // over where it stood (a domino, a see-saw) is left out, so the dots show the journey.
       ctx.globalAlpha = 0.85;
       ctx.fillStyle = PAPER.teal;
-      let next = 0, walked = 0;
-      for (let i = 1; i < this.trail.length; i++) {
-        const a = this.trail[i - 1], b = this.trail[i];
-        const len = Math.hypot(b.x - a.x, b.y - a.y);
-        while (next <= walked + len) {
-          const f = (next - walked) / len;
-          ctx.beginPath(); ctx.arc(a.x + (b.x - a.x) * f, a.y + (b.y - a.y) * f, 0.075, 0, Math.PI * 2); ctx.fill();
-          next += 0.3;
+      for (const trail of this.trails.values()) {
+        if (trail.length < 2 || !travelled(trail)) continue;
+        let next = 0, walked = 0;
+        for (let i = 1; i < trail.length; i++) {
+          const a = trail[i - 1], b = trail[i];
+          const len = Math.hypot(b.x - a.x, b.y - a.y);
+          while (next <= walked + len) {
+            const f = (next - walked) / len;
+            ctx.beginPath(); ctx.arc(a.x + (b.x - a.x) * f, a.y + (b.y - a.y) * f, 0.075, 0, Math.PI * 2); ctx.fill();
+            next += 0.3;
+          }
+          walked += len;
         }
-        walked += len;
       }
     }
     ctx.restore();
@@ -1215,4 +1232,10 @@ export class Game {
       ctx.restore();
     }
   }
+}
+
+/** Whether a part went somewhere: more than a cell from where it started at some point. */
+function travelled(trail: Pt[]) {
+  const o = trail[0];
+  return trail.some((p) => Math.hypot(p.x - o.x, p.y - o.y) > 1);
 }

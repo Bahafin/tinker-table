@@ -7,6 +7,8 @@ import { Game, drawIcon, type TraySet } from './ui/game';
 import { ALL_PARTS, TOY_PARTS } from './sim/parts';
 import { sfx, speak, stopSpeaking, unlockAudio } from './ui/audio';
 import { EXTRA_STOPS, SLEEPY_VOICE } from './ui/voice-lines';
+import { MAKER_SAY } from './ui/maker-say';
+import { STARTERS } from './levels/starters';
 import { INTRO, MADE_TALK, MAKER_HOW, ROUTINE, SKILLS, TALK, TIPS, TOYS_HOW, WHOLE_GAME } from './parents/content';
 import { STORE, TASTER } from './edition';
 import { decodeLevel, decodeToy, encodeLevel, encodeToy, MADE_VOICE, SHARED_VOICE } from './levels/share';
@@ -422,6 +424,21 @@ function showToyRoom(box: HTMLElement, which: 'toybox' | 'maker') {
     });
     return;
   }
+  // Starter machines: ready-made, working machines to turn into a first puzzle.
+  STARTERS.forEach((parts, k) => {
+    const b = document.createElement('button');
+    b.className = 'card saved starter';
+    b.style.setProperty('--accent', accent);
+    b.setAttribute('aria-label', `Starter machine ${k + 1}`);
+    b.append(thumb({ ...MAKER_BOX, fixed: parts }));
+    b.insertAdjacentHTML('beforeend', STARTER_BADGE);
+    b.onclick = () => {
+      startLevel(-3, undefined, parts);
+      voice = MAKER_SAY.starter;
+      speak(voice);
+    };
+    box.append(b);
+  });
   // Puzzles made here on this device.
   loadMine().forEach((code, k) => {
     const lv = decodeLevel(code, MADE_VOICE);
@@ -437,6 +454,10 @@ function showToyRoom(box: HTMLElement, which: 'toybox' | 'maker') {
     box.append(b);
   });
 }
+
+/** A light bulb marks a starter machine in the puzzle maker: an idea to begin from. */
+const STARTER_BADGE = `<svg class="made-badge" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" style="fill:${MAKER_ACCENT};stroke:#fff;stroke-width:4"/>
+<path d="M24 11a9 9 0 0 0-5 16.5V31h10v-3.5A9 9 0 0 0 24 11z" style="fill:#fff;stroke:none"/><path d="M20 35h8" style="stroke:#fff;stroke-width:3"/></svg>`;
 
 /** A big plus on the card that starts something new. */
 const PLUS_BADGE = `<svg class="plus-badge" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" style="fill:var(--accent);stroke:#fff;stroke-width:4"/><path d="M24 13v22M13 24h22" style="stroke:#fff;stroke-width:5"/></svg>`;
@@ -1078,6 +1099,7 @@ function startLevel(i: number, custom?: Level, start: Placement[] = []) {
   setSkin(room?.id ?? '');
   game.slow = slow;
   game.onChange = syncButtons;
+  game.onSay = (line) => { voice = line; speak(line); };
   game.onWin = () => {
     markDone(level.id);
     $('btn-next').classList.toggle('hidden', current < 0);
