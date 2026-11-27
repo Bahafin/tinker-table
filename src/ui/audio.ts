@@ -9,6 +9,10 @@ let lastClack = 0;
 /** iOS only allows audio after a touch, so call this from a pointer handler. */
 export function unlockAudio() {
   try {
+    // Play even when an iPhone or iPad is on silent (Safari 16.4+; the iOS app also sets this
+    // natively in AppDelegate.swift). Elsewhere this does nothing.
+    const session = (navigator as unknown as { audioSession?: { type: string } }).audioSession;
+    if (session && session.type !== 'playback') session.type = 'playback';
     if (!ac) ac = new AudioContext();
     if (ac.state === 'suspended') void ac.resume();
   } catch {
