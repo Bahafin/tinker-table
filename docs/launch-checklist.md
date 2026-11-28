@@ -70,7 +70,7 @@ US$2.99 / CA$3.99 in launch week, then US$3.99 / CA$4.99 (Canada set by hand), p
   - Data safety "No data collected".
   - Content rating questionnaire (IARC).
   - Listing text, the 1024×500 graphic, and the screenshots.
-- [ ] **You:** the 15–30 second preview video, from clips of real play. I can script it, and record the screen in the browser if you'd like.
+- [x] **Claude:** the preview videos, from real play with the game's own sound: `store/previews/` (iPad 1600×1200, 22.6 s; iPhone 1920×886, 20.8 s). Remake them with Actions > Store previews (`scripts/store-preview.mjs`). Everything for the upload, screenshots, videos and icon, sorted by App Store Connect slot: `store/app-store-upload/` (not in git; recreate by copying from `store/screenshots` and `store/previews`).
 - [ ] **You:** Apple's "Get featured" nomination 6–8 weeks before launch, and pre-orders (Apple) or pre-registration (Google).
 
 ## 6. Before pressing "Submit" (both of us)
