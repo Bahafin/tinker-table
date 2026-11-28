@@ -15,7 +15,7 @@ jobs:
       - run: npm run build
       - run: (npx vite preview --port 4173 --strictPort &) && sleep 3
       - run: BROWSER=chrome node scripts/store-preview.mjs
-      - run: ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,channels,sample_rate -show_entries format=duration store/previews/*.mp4
+      - run: for f in store/previews/*.mp4; do echo "$f"; ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,channels,sample_rate,bit_rate -show_entries format=duration "$f"; done
       - uses: actions/upload-artifact@v4
         with:
           name: store-previews
